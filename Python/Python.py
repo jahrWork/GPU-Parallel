@@ -18,7 +18,7 @@ def numpy_dot(matrix, vector):
     return matrix.dot(vector)
 
 def cupy_dot(matrix, vector):
-    return matrix.dot(vector)
+    return cupy.dot(vector)
 
 def compare_performance(dim):
     print("\nComparing performance for dimension N = {}\n".format(dim))
@@ -46,6 +46,8 @@ def compare_performance(dim):
 
 # Test con diferentes valores de N
 
+
+compare_performance(5000)
 compare_performance(10000)
 compare_performance(20000)
 compare_performance(30000)
