@@ -15,10 +15,10 @@ def cupy_random_vector(dim):
     return cp.random.rand(dim, dtype=cp.float32)
 
 def numpy_dot(matrix, vector):
-    return matrix.dot(vector)
+    return matrix.dot(vector) # Hay que revisar esto
 
 def cupy_dot(matrix, vector):
-    return cupy.dot(vector)
+    return matrix.dot(vector) # Hay que revisar esto
 
 def compare_performance(dim):
     print("\nComparing performance for dimension N = {}\n".format(dim))
