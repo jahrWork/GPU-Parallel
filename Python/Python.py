@@ -20,6 +20,7 @@ def numpy_dot(matrix, vector):
 def cupy_dot(matrix, vector):
     return cp.dot(matrix, vector)
 
+
 def compare_performance(dim):
     print("\nComparing performance with data transfer time for dimension N = {}\n".format(dim))
 
