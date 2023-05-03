@@ -48,6 +48,8 @@
 		<Filter Name="Header Files" Filter="fi;fd"/>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
-		<File RelativePath=".\Fortran.f90"/></Filter>
+		<File RelativePath=".\main.f90"/>
+		<File RelativePath=".\functions.f90"/></Filter>
+		<File RelativePath="..\Release\c_functions.lib"/>
 		<File RelativePath=".\ReadMe.txt"/></Files>
 	<Globals/></VisualStudioProject>
