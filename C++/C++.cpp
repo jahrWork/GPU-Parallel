@@ -6,7 +6,11 @@
 
 int main()
 {
+    int n;
     matrixFunction();
+
+    std::cin >> n;
+    dimensionFunction(n);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
