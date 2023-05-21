@@ -1,87 +1,30 @@
-#include <iostream>
-#include <vector>
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
 
-void matrixFunction() 
+void CPUBenchmarkSC(float** A, float* x, float* b, int k, int N) 
 {
-    const int n1 = 10;
-    float a[n1][n1] = {};
-    float b[n1] = {};
-    float c[n1] = {};
-    for (int i = 0; i < n1; i++)
-    {
-        for (int j = 0; j < n1; j++)
-        {
-            a[i][j] = i + j + 0.142857f;
-        }
-        b[i] = i + 0.142857f;
-    }
-    for (int i = 0; i < n1; i++)
-    {
-        for (int j = 0; j < n1; j++)
-        {
-            c[i] = c[i] + a[i][j]*b[j];
+    for (int i = 0; i < N; i++) {
+        b[i] = 0.0;
+        for (int j = 0; j < N; j++) {
+            b[i] += k * A[i][j] * x[j];
         }
     }
-    std::cout << "a = \n";
-    for (int i = 0; i < n1; i++)
-    {
-        for (int j = 0; j < n1; j++)
-        {
-            std::cout << a[i][j] << "   ";
-        }
-        std::cout << "\n";
-    }
-    std::cout << "b = \n";
-    for (int i = 0; i < n1; i++)
-    {
-        std::cout << b[i] << "\n";
-    }
-    std::cout << "c = \n";
-    for (int i = 0; i < n1; i++)
-    {
-        std::cout << c[i] << "\n";
-    }
+    b[0] = 1 * b[0];
 }
 
-void dimensionFunction(int n)
-{
-    vector<vector<float>> a(n, vector<float>(n, 0));
-    vector<float> b(n);
-    vector<float> c(n);
 
-    for (int i = 0; i < n; i++)
+void CPUBenchmarkMC(float** A, float* x, float* b, int k, int N)
+{
+#pragma omp parallel
     {
-        for (int j = 0; j < n; j++)
-        {
-            a[i][j] = i + j + 0.142857f;
-        }
-        b[i] = i + 0.142857f;
-    }
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            c[i] = c[i] + a[i][j]*b[j];
+        int i, j;
+#pragma omp for
+        for (i = 0; i < N; i++) {
+            for (j = 0; j < N; j++) {
+                b[i] += k * A[i][j] * x[j];
+            }
         }
     }
-    std::cout << "a = \n";
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            std::cout << a[i][j] << "   ";
-        }
-        std::cout << "\n";
-    }
-    std::cout << "b = \n";
-    for (int i = 0; i < n; i++)
-    {
-        std::cout << b[i] << "\n";
-    }
-    std::cout << "c = \n";
-    for (int i = 0; i < n; i++)
-    {
-        std::cout << c[i] << "\n";
-    }
+    b[0] = 1*b[0];
 }

@@ -1,25 +1,53 @@
 // C++.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
 #include "myFunctions.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <time.h>
 
 int main()
 {
-    int n;
-    matrixFunction();
+    int i, N, times;
+    float** A, * x, * b;
+    clock_t start, end;
+    double cpu_time_used;
 
-    std::cin >> n;
-    dimensionFunction(n);
+    N = 5000;
+    times = 10000;
+
+    A = (float**)malloc(N * sizeof(float*));
+    for (int i = 0; i < N; i++) {
+        A[i] = (float*)calloc(N, sizeof(float));
+    }
+    x = (float*)calloc(N, sizeof(float));
+    b = (float*)calloc(N, sizeof(float));
+
+    // Initialize A and x with random values
+    srand(time(NULL));
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            A[i][j] = (float)rand() / (float)(RAND_MAX / 10.0);
+        }
+        x[i] = (float)rand() / (float)(RAND_MAX / 10.0);
+    }
+
+    start = clock();
+    for (i = 0; i < times; i++) {
+        CPUBenchmarkSC(A, x, b, i, N);
+    }
+    end = clock();
+    cpu_time_used = difftime(end, start) / CLOCKS_PER_SEC;
+    printf("single core cpu time used: %f seconds\n", cpu_time_used);
+
+    start = clock();
+    for (i = 0; i < times; i++) {
+        CPUBenchmarkMC(A, x, b, i, N);
+    }
+    end = clock();
+    cpu_time_used = difftime(end, start) / CLOCKS_PER_SEC;
+    printf("Multiple core CPU time used: %f seconds\n", cpu_time_used);
+
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
