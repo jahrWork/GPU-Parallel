@@ -65,7 +65,8 @@ end
 
 N_list = vcat(N_list_1, N_list_2)
 
-# writedlm("data/C_AxB_MKL_uni.csv", [N_list computation_times[1:end-1]], ',')
-writedlm("data/julia_blis_mc.csv", [N_list computation_times], ',')
+# writedlm("data/julia_mkl_sc.csv", [N_list computation_times], ',')
+writedlm("data/julia_mkl_mc.csv", [N_list computation_times], ',')
+# writedlm("data/julia_blis_mc.csv", [N_list computation_times], ',')
 
-# Make sure you have a "data" folder inside the working folder
+# Make sure you have a "data" folder inside the working folder
