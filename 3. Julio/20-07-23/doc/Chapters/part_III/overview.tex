@@ -1,0 +1,331 @@
+\chapter*{Menu for Advanced Programming} 
+    
+    \vspace{-1.5cm}
+    \subsection*{Fortran menu}
+    \vspace{0.5cm}
+    \renewcommand{\home}{./Fortran/sources/Advanced_programming} 
+    \lstfor
+     \listings{\home/advanced_programming.f90}{Advanced programming}{Wrapper}
+              {advanced_programming.f90}
+   
+    \subsection*{Python menu}
+    \vspace{0.5cm}
+      \renewcommand{\home}{./Python/sources/Advanced_programming} 
+      \lstpython
+       \listingsp{\home/advanced_programming.py}{while}{Wrappers}
+                {advanced_programming.py}
+                
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+\chapter{Overview} 
+One of the main characteristics to reuse code is generic programming.  
+Generic programming is based on abstract variable types that are then instantiated 
+when they are used for specific variable type.
+
+Since Python is non typed language, 
+generic programming in this language is straightforward. 
+However, in Fortran the use of abstract  \lstinline{class(*)} 
+allows to use different data types at run time. 
+  
+ 
+    \newpage            
+    \section{Scope} 
+
+One of the most important matters that we need to understand when we begin to write our own codes in any programming language is the scope. 
+The scope of variables, named constants, objects, functions or procedures is the area of the program where they can be used or modified, that is, the area where each object is visible.
+
+The example that best illustrates this concept is a variable \texttt{c} declared inside a function \texttt{f( x )}. 
+This variable named \texttt{c} can be initialized, used and modified inside the function. 
+However, outside this area, \texttt{c} is not seen or the name \texttt{c} could refer to a totally different entity. 
+In this case \texttt{c} is said to be a \textit{local variable}.
+When a variable is declared at the beginning of a program, outside the scope of any function, it is said to be a \textit{global variable} and it can be used everywhere in your program unless you intentionally limit its scope. 
+
+Notice that \textit{global} and \textit{local} sometimes refer to those entities that are seen by the whole program or just some parts of the code, respectively. 
+On other occasions, \textit{global} and \textit{local} entities refer to one specific unit of program/subprogram, for instance, a variable declared at the beginning of a module is a \textit{global} variable for that module, so any subroutine or function defined inside will see it. However, this does not necessarily mean that the variable is seen by the main unit of program that uses this module. 
+
+%Another example is the variable declared at the beginning of a subroutine that has a function declared inside, it is considered a global variable for the subroutine and functions nested but it is considered local according to the main program. 
+
+Each programming language has its own set of rules to consider entities as global or local, however, sometimes the programmer can limit or enlarge the scope.
+The statements \texttt{public} and \texttt{private} change the scope of entities in Fortran so they can be accessed or not outside a module.
+Hence, private variables or procedures are specified explicitly. Otherwise, global module variables are visible outside by default.   
+
+Scope is an essential concept when talking about modular programming and encapsulation. Some constants may be placed at the beginning of the code as global entities so every part of the code can see the same value (e.g. \texttt{pi = 4 * atan(1)}), in this case it is strongly recommend to use the \texttt{parameter} attribute so its value can not change during the execution. However, we want each subprogram unit to use their own set of variables and constants without interfering with the rest of parts of the program. Furthermore, we also want every subprogram to use only local variables so everything needed is either declared inside or passed via parameter. 
+As a general rule, the use of global variables should be reduced as possible, these entities can be easily modified unintentionally leading to hard to fix bugs.  
+
+
+
+    \section{Functional Programming}
+Scientific programming is very close 
+to mathematics. Numerical schemes and approximation are grounded on vector spaces of finite and 
+infinite dimensions. Hence, experts developers have a deep knowledge of mathematics and they 
+feel conformable when writing in codes that mimic the mathematical functions. 
+Functional programming paradigm allows mathematician to talk the same language that they are used to. 
+There are also other reasons why functional programming is growing in popularity. 
+\begin{enumerate}
+\item Complex simulations involve complex process of data. Functional programming avoids 
+the control flow by concentrating in what to do. When complexity grows exponentially, 
+functions should work independently of the outer world. 
+\item Hierarchical knowledge based on function composition and abstraction layers. 
+Functional programming is grounded on lambda calculus and in function composition concepts that 
+allow to build huge codes with different abstraction layers organized in a knowledge hierarchical fashion. 
+\item Parallel programming. 
+Since computational requirements are growing with more realistic simulations, parallel programming is
+becoming a common reality. Different functions are run simultaneously in different processors. 
+ Functional programming adapts flawlessly to the parallel programming 
+strategy by minimizing side effects with pure functions. 
+\end{enumerate}
+Object oriented languages tend to be imperative performing actions sequentially.  
+Sentence are  put in order to understand how the program performs and variables are followed
+to achieve the desired result. On the contrary, when developing codes with functional 
+programming paradigm, the driver is the function or what to do. 
+Functional programming is  declarative which means that functions are built by functional composition
+and no flow control is followed. Its power lies in declarativity and expressivity.
+
+Functional programming concentrates on operations like mapping which transform a complete set 
+of elements in another set or collection of objects by means of a pure function.  
+There is no need to follow the flow ot the program to check the right performance of the operation. 
+It looks really elegant.
+
+Everything started with the hardware.
+Imperative style suited better for hardware due to the von Neumann architecture. 
+John Backus in 1977 asked in his famous Turing Award lecture:
+ "Can Programming Be Liberated from the von Neumann Style?". 
+ It was the origin of functional programming. 
+
+
+\newpage 
+    \section{Overloading} 
+Scientific programming has common operations that are performed for different 
+space domains or different data types. In those cases, functions or operators can be  overloaded 
+to generalize different types or data structures.  
+Overloading is usually referred to:  
+\begin{enumerate}
+\item Function overloading.
+\item Operator overloading.
+\end{enumerate}
+Functional overloading refers to creation of multiple functions with the same name but with different implementations. 
+Calls to an overloaded function will run a 
+specific implementation of that function depending on the arguments of the call. 
+Function overloading is usually named: static polymorphism in which a function call is resolved by matching 
+type, kind and rank of actual arguments with a function with same type, kind and rank of dummy arguments.
+Function overloading is usually associated with statically-typed programming languages such as Fortran. 
+The determination of which function to use for a particular call is resolved at compilation time.
+Those languages which are untyped, such as Python, do not support function overloading. 
+
+
+Operator overloading complements the definition of classical operators for operands of new types. 
+For example, the operator \verb|*| is natively overloaded for real or complex numbers. 
+In automatic differentiation technique, dual numbers 
+$$ z = a + b \epsilon
+$$ 
+with $\epsilon^2=0$ 
+are defined to calculate exact derivatives of real functions. 
+If basic operators and intrinsic functions are overloaded for those dual numbers, 
+this technique allows to calculate 
+exact derivatives of real functions is implemented very easily. 
+
+Operator overloading is syntactic sugar which means that things are made easier to read or to express.
+It makes the language "sweeter" for human use.
+Sometimes, operator overloading is termed operator {\it ad hoc} polymorphism.
+In scientific computing, operator overloading allows to manipulate objects with the same syntax as on paper.
+
+
+
+    \newpage 
+    \section{Object Oriented Programming}
+
+Contrary to functional programming, object-oriented programming is not born 
+from strong mathematical foundations but from the need of describing the solution to a problem 
+by creating simulations of real life systems.
+
+This programming paradigm is based on the concept of \textit{object} which presents 
+a state in the form of data (usually called properties) and 
+a behaviour in the form of procedures (usually called methods).
+In addition, an object has identity, an unique name that differentiates it from other objects. 
+Hence, an object ties together what is it and how it relates.
+
+There are similar ideas behind the category theory of mathematics.
+But also, the definition of some objects in common branches of mathematics follow a pattern similar to the mentioned. 
+Sometimes a mathematical object is defined by what they do together with what they are. 
+Notice for example the definition of a field, it has a set which could be identified with 
+its state, but also two operations that must accomplish with a bunch of axioms. 
+This could be identified with its behaviour. 
+
+%Ejemplo de un objeto
+Let's see what classes and objects are through an example. 
+Imagine you want to simulate the evaporation of a bunch of spherical fluid droplets. 
+Each droplet presents an state like its temperature, its size, the mass fraction of fluid at its surface, a spatial discretization to solve conservation equations, etc.
+Also, a droplet behaves in a specific way, it updates its physical properties according to the temperature (Specific heat capacity, heat transfer coefficient, etc.) or decreases its size while it evaporates.
+Hence, each droplet could be programmed as an object in the simulation. 
+Notice that all the droplets share the same properties and behaviours so the class ``droplet'' 
+is defined as a blueprint for all the droplets.
+This blueprint gathers the properties, maybe carrying default values, and the methods, including a method to construct a new droplet. 
+Once a new individual droplet is introduced in the simulation, an object of class droplet is instantiated using the constructor. 
+%Podria dar como ejemplo un integer que en Python todo son objetos.
+
+Four principles are usually associated to the use of objects and classes: 
+abstraction, encapsulation, inheritance and polymorphism. 
+The languages are usually classified into Object Based Language and Object Oriented Language.
+The former is used for any language that supports the concept of encapsulating state and behaviour 
+in an object while it does not need to support inheritance or polymorphism. 
+For example Fortran 90 was an Object Based Language, however, nowadays it allows both inheritance or polymorphism.
+If a language is Object Based but also supports the full bunch of principles mentioned, then they are Object Oriented Languages. 
+For example Python, Java, C++, Lisp or MATLAB.
+
+
+
+
+
+
+
+
+    \newpage 
+    \section{Pointers} 
+
+A pointer is a variable that stores a memory address. 
+This memory address refers to some number, array of numbers or some object. 
+The same memory address can be stored in different pointers that represent  
+objects or arrays with different shapes or ranks. 
+There are  distinct uses of pointers: 
+\begin{enumerate}
+\item To improve performance for repetitive operations and to optimize memory management. 
+If program processes a large data set, it is usually cheaper to operate contents through 
+its address or reference instead of copying to some other variable he data set. 
+\item To hold the addresses of entry points of functions. Pointers to functions 
+are used to compose new functions or to bind methods. 
+\item To pass arguments or functions to other functions.
+When functions are called, inputs arguments can be passed by value or by reference or address. 
+In Fortran, if arguments are scalar, they are passed by value but if arguments are arrays or other objects, 
+arguments are passed by reference. 
+In Python, all arguments are passed by reference. 
+\item To see the same data structure  with different shapes. 
+In simulation programs, when discretizing space domain, 
+it is desirable to work  with variables shaped as tensors of some specific rank. 
+When discretizing the time domain, temporal schemes work with column vector of data. 
+These two different ways of working with variables can be done through pointers with different shape pointing to
+the same space of memory. 
+\item To connect blocks for simulating multi-domain dynamical systems. 
+This type of systems is characterized by a set of black boxes or pure functions which are connected to 
+each other. Outputs of different blocks are connected to inputs of other blocks. 
+This dynamical system is built by creating different blocks or functions and then  
+connecting outputs with inputs by pointing different variables. 
+
+\end{enumerate}
+Because pointers allow access to memory addresses, 
+there are risks associated with using them and their use should be restricted to advanced 
+programmers because the learning curve is very steep. 
+Python does not have pointers even though every object is a pointer internally. 
+Languages such as Fortran has restricted their use to be safer. For example, 
+when calling a function, array arguments are passed by reference and
+Fortran checks the TKR(type, kind, rank) rule to match dummy arguments with actual 
+arguments. Besides, the compiler allows to array bounds checking
+to verify that the pointer or the actual argument contains 
+a value that is a valid memory address.
+
+
+\newpage 
+    \section{Wrappers} 
+A wrapper refers to functions 
+that wrap around other function in order to change its interface or to complement 
+its functionality. 
+Many times, different software packages are used in the same project where a specific 
+interface is defined. To adapt the open source libraries to our specific interface 
+requirements, a wrapper encapsulates some existing function. 
+This is perhaps the most common and easy use of wrappers for ensuring compatibility or 
+interoperability. 
+
+Sometimes, the Application Program Interface (API) of some module or package 
+is not well designed and creates a lot of intercommunication problems due to its 
+huge channel of information associated to different variables or objects. 
+By developing an intelligent wrapper and without changing any line of code 
+of the existing package, the new API can improve a lot allowing developers to concentrate
+in the functionality by reducing the API complexity.  The wrapper of the new API 
+is the only component that communicates  with both parts of the programming code.
+An easy example of these kind of wrappers is the use of functions 
+measuring physical magnitudes written in Anglo-Saxon system of units. 
+When these functions are used by the  International System of Units, or SI, a wrapper 
+to convert input argument and output value to SI is required. 
+Besides, input arguments can be checked and modified before calling the function to increase robustness
+or the function by means of a wrapper. 
+Another important application of wrappers is related to the connection of two different programming 
+paradigms: object oriented programming (OOP) and functional programming (FP). 
+These two different software developments can be separated in different modules or packages 
+and a wrapper written with in OOP or FP can be used to connect these two worlds. 
+
+
+%The most important characteristic associated to the use of wrappers is there is no need to modify 
+%the existing or validated software to change functionality. 
+%Other important and advanced use of wrappers is associated to extra functionalities. 
+%In this case, wrappers are built not to modify the interface or to adapt different software but 
+%to create new functionality without modifying the existing one. 
+%This advanced use of wrappers can be understood as  levels of selection and evolution in 
+%natural life. New wrappers are created by requirements imposed by software and environment. 
+%Ancestral layers are not modified and subsequent layers increase functionality 
+%by creating wrappers that are superposed in chronological order giving rise to evolved components. 
+
+Another important and advanced use of wrappers is associated with extra and new functionalities. 
+In this case, wrappers are built not to 
+modify the interface  but to create a new functionality without modifying the existing one. This advanced 
+use of wrappers can be understood as the evolution of species in nature. 
+Ancestral layers are not modified, such as metabolism or growth. However, subsequent layers, 
+such as developing an extreme metabolism,  increase functionality by creating superposed 
+wrappers in chronological order, giving rise to new components that their 
+environment will select. 
+An extensive set of these new functionalities quasi-randomly and very usually appear, 
+but only the ones that satisfy 
+the requirements imposed by the proper software and the environment survive, 
+as in the test-driven development methodology and the evolution of 
+species.
+
+
+
+
+
+In Python, decorators or wrappers are syntactic sugar (easier to code) for software components. 
+It's possible to apply multiple decorators at the same time to the same function. 
+A bunch of useful decorators allow the developer to create new functionalities by superposing 
+decorators to existing functions changing the functionality 
+without writing a line a new code. 
+
+
+
+
+
+%\newpage 
+    %\section{Mixing Python and Fortran}
+
+\newpage 
+    \section{Parallel programming} 
+Processors have reached the ceiling in terms of the frequency in which the operations 
+could be performed, and thus an new type of computation appears: parallelism.  
+Parallel computing performs simultaneously many calculations. 
+Large problems are divided into smaller ones which are solved at the same time.
+
+One parameter to measure the improvement of the parallelized program is the the speedup. 
+The speedup is defined as the ratio of the execution time on a single processor divided by 
+the execution time on a multiple processor system. 
+If these small problems are independent to each other, the speedup that parallelism could attain 
+is proportional to the number of processors. 
+Generally, this small tasks need to communicate to each other decreasing the speedup of the 
+overall performance. 
+
+One the most challenging task of the developer is to design the partition of the 
+whole problem by minimizing the communication between individual tasks.  
+This is the most difficult task because it demands a deep knowledge of the whole computing 
+problem. Besides, depending on the code design, this partitioning task could be not rewarding 
+giving rise to parallel codes with poorer performances than sequential original codes. 
+Generally, it is said that a code implemented with functional programming paradigm is easier to 
+parallelize than a code written with object oriented programming paradigm. 
+This fact is related to pure functions and referential transparency that 
+assure that functions give the same result no matter the processor they are running. 
+%There are only a few programming languages that allow parallelism natively such as: Haskell, 
+%Julia or Fortran. 
+
+
+               
