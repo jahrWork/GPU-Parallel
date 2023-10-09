@@ -1,0 +1,87 @@
+\clearpage
+
+\section{Month 4 - August}
+
+\subsection{Optimization module - optimization.f90}
+The \texttt{optimization.f90} file integrates a user interface that prompts the user to select from a variety of performance aspects in Fortran. The options available for selection include:
+
+\begin{itemize}[itemsep=0.3ex]
+    \item Loop / Array Ordering
+    \item Indirect Addressing
+    \item Repeated Array Accesses
+    \item Array Layout
+    \item Array Allocation
+    \item Array Slicing
+    \item Array Temporaries
+    \item Register Spilling
+    \item Floating Point Issues
+    \item NPROMA Slicing
+\end{itemize}
+
+For each of these topics, the program is designed to conduct specific performance tests, demonstrating the practical implications of the respective best practices in real-time Fortran applications. In the subsequent sections, we will present and analyze the results from some of these tests, providing insights into the impact of these practices on computational efficiency and performance.
+
+\paragraph{Reflections on the Optimization Module Results}
+From our exploration of the \textit{optimization} module this month, it has become evident that performance optimization in Fortran, while systematic in theory, can yield unpredictable outcomes in practice. While many results align with our expectations, underscoring the value of adhering to best practices, there are instances where the outcomes deviate from the anticipated. Such discrepancies highlight the intricate nature of performance tuning and the myriad of factors that can influence computational efficiency. As we progress in our research, it's imperative to maintain a balance. While the lessons from this module are invaluable, it might be prudent to cease further investigation in areas with diminishing returns and refocus our efforts on core objectives. Nonetheless, the knowledge accrued from this module will undoubtedly shape our future approaches and strategies in Fortran programming.
+
+\clearpage
+
+\subsubsection{Loop Array Ordering}
+\textbf{Description:} Loop array ordering deals with the sequence of loops to traverse multi-dimensional arrays. The order can significantly impact cache locality and thus performance. Some results:
+\begin{itemize}[itemsep=0.3ex]
+    \item \texttt{-Od (nreps=2000)} - Bad: 96.17, Good: 97.1
+    \item \texttt{-O1, -O2, -O3 (nreps=2000)} - Bad: N/A, Good: N/A
+\end{itemize}
+
+\subsubsection{Indirect Addressing}
+\textbf{Description:} Indirect addressing refers to accessing data using pointers or indices, which can sometimes cause the compiler to miss optimization opportunities. Some results:
+\begin{itemize}[itemsep=0.3ex]
+    \item \texttt{-Od (nreps=20000)} - Bad: 54.27, Good: 57.82
+    \item \texttt{-O1 (nreps=20000)} - Bad: 8.01, Good: 11.3
+    \item \texttt{-O2 (nreps=20000)} - Bad: 3.157, Good: 3.141
+    \item \texttt{-O3 (nreps=20000)} - Bad: 3.163, Good: 3.165
+\end{itemize}
+
+\subsubsection{Repeated Array Accesses}
+\textbf{Description:} Repeatedly accessing the same array elements can be optimized by storing the elements in temporary variables to reduce access time. Some results:
+\begin{itemize}[itemsep=0.3ex]
+    \item \texttt{-Od (nreps=20000)} - Bad: 500.5, Good: 484.1
+    \item \texttt{-O1, -O2, -O3 (nreps=2000)} - Bad: N/A, Good: N/A
+\end{itemize}
+
+\subsubsection{Array Layout}
+\textbf{Description:} Array layout optimization aims at arranging data in memory to maximize cache utilization. Some results: 
+\begin{itemize}[itemsep=0.3ex]
+    \item \texttt{-Od (nreps=2000000)} - Bad: 10.76, Good: 14.38
+    \item \texttt{-O1 (nreps=2000000)} - Bad: 6.13, Good: 8.14
+    \item \texttt{-O2 (nreps=2000000)} - Bad: 6.13, Good: 8.74
+    \item \texttt{-O3 (nreps=2000000)} - Bad: 6.12, Good: 8.13
+\end{itemize}
+
+\subsubsection{Array Allocation}
+\textbf{Description:} Array Allocation highlights the distinctions between heap and stack memory allocations in Fortran, emphasizing their implications for performance and multithreading.
+
+
+\subsubsection{Array Slicing}
+\textbf{Description:} Array slicing is the practice of taking sub-arrays from an existing array, which can sometimes slow down operations if not done carefully. Some results:
+\begin{itemize}[itemsep=0.3ex]
+    \item \texttt{-Od (nreps=100000)} - Bad: 522.6, Good: 715.6
+    \item \texttt{-O1 (nreps=100000)} - Bad: 109.2, Good: 76.8
+    \item \texttt{-O2 (nreps=100000)} - Bad: 17.11, Good: 18.98
+    \item \texttt{-O3 (nreps=100000)} - Bad: 17.2, Good: 17.38
+\end{itemize}
+
+\subsubsection{Array Temporaries}
+\textbf{Description:} Using temporary arrays can sometimes be inefficient as it might require extra memory allocation and data movement.
+
+\subsubsection*{Register Spilling}
+\textbf{Description:} Register spilling occurs when there are more active variables than registers, leading to inefficient use of memory. Some results:
+\begin{itemize}[itemsep=0.3ex]
+    \item \texttt{-Od (nreps=100000000)} - Bad: 17.37, Good: 17.32
+    \item \texttt{-O1, -O2, -O3 (nreps=2000)} - Bad: N/A, Good: N/A
+\end{itemize}
+
+\subsubsection{Floating Point Issues}
+\textbf{Description:} Floating-point arithmetic, like division and exponentiation, can be computationally expensive.
+
+\subsection*{Disclaimer}
+While many of these practices theoretically promise improved performance, it's important to note that their practical application can sometimes lead to unexpected outcomes. As observed, certain implementations appear to interfere with, or even negate, the compiler's internal optimizations when activated (showed as N/A in the results).

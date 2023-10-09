@@ -1,0 +1,47 @@
+% DISEÑO DE CABECERA Y PIE DE PÁGINA
+\lstMakeShortInline"
+\newlength{\myoddoffset}
+\setlength{\myoddoffset}{\marginparwidth + \marginparsep + 0.5cm}
+\usepackage{fancyhdr}
+\fancyheadoffset[rh]{\myoddoffset}
+\fancyfootoffset[rh]{\myoddoffset}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{ \hspace{2pt} \rightmark}
+\lhead{
+    \includegraphics[width = 4.2cm]{upm_logo.png}
+}
+\rhead{
+    \begin{Large}{\Project}\end{Large}
+}
+% \lfoot{} \cfoot{} \rfoot{\thepage}
+\fancyfoot[RO]{\thepage}
+
+
+\newgeometry{
+    top=1.7in, 
+    bottom=1.1in, 
+    left = 2.5cm, 
+    right = 2cm, 
+    headsep = 2.5cm, 
+    ignoremp
+}
+\fancyheadoffset[rh]{0pt}
+\fancyfootoffset[rh]{0pt}
+
+\fancypagestyle{plain}{		% Modificar el pagenumber en los capitulos
+	\fancyhf{} 
+	\fancyfoot[RO]{\thepage} % same placement as with page style "fancy"
+	\renewcommand{\headrulewidth}{0pt}
+	}
+	
+
+
+% % ABSTRACT
+% \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+% \let\endchangemargin=\endlist 
+% \newcommand\summaryname{Abstract}
+% \newenvironment{Abstract}%
+%     {\small\begin{center}%
+%     \bfseries{\summaryname} \end{center}}

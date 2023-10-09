@@ -1,0 +1,3 @@
+﻿  compare_performance.cpp
+G:\Mi unidad\AERO\BECA GPUs\Benchmarks_GPU_Parallel\Códigos\C++\compare_performance\compare_performance\compare_performance.cpp(44,15): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+  compare_performance.vcxproj -> G:\Mi unidad\AERO\BECA GPUs\Benchmarks_GPU_Parallel\Códigos\C++\compare_performance\Debug\compare_performance.exe

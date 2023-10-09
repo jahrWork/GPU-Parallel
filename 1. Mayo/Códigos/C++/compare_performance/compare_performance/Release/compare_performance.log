@@ -1,0 +1,4 @@
+﻿  Generando código
+  Previous IOBJ not found, fall back to full compilation.
+g:\mi unidad\aero\beca gpus\benchmarks_gpu_parallel\c�digos\c++\compare_performance\compare_performance\compare_performance.cpp : fatal error C1083: No se puede abrir el archivo intermedio para compilador: 'Release\compare_performance.ipdb': Permission denied
+LINK : fatal error LNK1257: error de generación de código

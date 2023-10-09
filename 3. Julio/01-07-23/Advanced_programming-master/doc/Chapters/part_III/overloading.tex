@@ -1,0 +1,302 @@
+
+\chapter{Overloading functions and operators}    \label{ch:overloading}
+From the mathematical point of view operators and functions representing 
+common concepts can be to different types of different n-dimensional spaces.
+It is desirable to maintain the same operators or the same function names 
+by overloading function names and operator symbols. 
+If the programming language is a compiling language, such as Fortran, 
+the compiler identifies, at compilation time, the type of the operands or the arguments 
+involved when calling a function and it selects automatically the proper operation. 
+If the language is untyped interpreted language, such as Python, overloading is not supported. 
+However, there are many alternatives to emulate overloading in Python. 
+
+Operators can be applied to elements of sets with different types.
+For example, the operator \texttt{+} 
+is defined differently for real numbers of complex numbers. However, the same operator 
+is used for those different operations. This is done by overloading the operator. 
+If $x$ and $y$ are reals, the expression $ x+y $ involves the operator \texttt{+}
+which is the classical sum. 
+However, if  $u$ and $v$ are complexes, 
+the expression $ u+v $ involves the same operator \texttt{+}. It this case, 
+the result yields a complex number in which 
+the real part is the sum of real parts of $ u $ and $ v $
+and the imaginary part is the sum of imaginary parts of $ u $ and $ v $.
+Many operands and functions are previously overloaded by the native language.
+
+Additionally to operators, functions can also be overloaded. 
+Functions are overloaded with n-dimensional spaces. 
+For example, the mathematical concept: integral 
+can be defined and overloaded for line integrals or surface integrals. 
+ 
+
+\newpage 
+\section{Overloading functions in n-dimensional spaces}
+
+In this example, the function \texttt{Integral} is created to overload line integrals 
+and surface integrals. 
+Let's consider the  line integral in a compact segment $[a, b]$: 
+\begin{equation}   
+    I =  \int _a ^b f(x) \ dx, \qquad f: \mathbb{R} \rightarrow \mathbb{R},   
+\end{equation} 
+and the surface integral in a compact square $ \Omega = [a, b] \times [c,d]$:   
+\begin{equation}   
+    I =  \int _{\partial \Omega} f(x, y) \ dx \ dy, 
+    \qquad f: \mathbb{R}\times \mathbb{R} \rightarrow \mathbb{R}.   
+\end{equation} 
+From the software point of view, using the same word \texttt{Integral}
+to invoke surface or line integrals is desirable. 
+Besides, a surface integral can be expressed by the following way: 
+\begin{equation}   
+    I =  \int _{a} ^b \left(   \int _{c} ^d f(x,y) \ dy      \right) \ dx,
+\end{equation} 
+in which the integrand is defined with the parametric line integral:
+\begin{equation}   
+   I_1(x) = \int _{c} ^d f(x,y) \ dy.  
+   \label{I1}   
+\end{equation} 
+The final expression for the surface integral is:  
+\begin{equation}   
+    I =   \int _{a} ^b I_1(x) \ dx. 
+    \label{I2D}  
+\end{equation} 
+Hence, a surface integral can be defined by functional composition of line integrals. 
+In the expression,  $ I_1(x) $, the variable $ x $ acts as a parameter
+and $ I_1(x) $ is calculated by means a line integral. 
+ 
+In the following pages, these two concepts overloading and functional composition
+are taken into account to write two implementations in Fortran and Python. 
+
+ 
+\newpage  
+\subsection*{Fortran}
+
+\renewcommand{\home}{./Fortran/sources/Advanced_programming/overloading} 
+\lstfor
+
+First, the overloading implementation is explained. Once two different functions are 
+created for line and surface integrals, the overloading implementation is done
+with the following code: 
+\vspace{0.5cm}  
+\listings{\home/overloading.f90}{interface Integral}{end interface}{overloading.f90}
+At compilation time, function invocations are analyzed ans its proper function
+is identified. In the following code, two integrals are invoked with 
+different number and type of arguments.
+\vspace{0.5cm} 
+\listings{\home/overloading.f90}{subroutine test_Integral}{end subroutine}{overloading.f90}
+The first \texttt{Integral} invocation has three arguments, the two first are reals and the 
+third \texttt{f1} is a real function.
+The second \texttt{Integral} invocation has five arguments, the four first are reals and 
+the fith \texttt{f2} is a real function 
+$(\mathbb{R}\times \mathbb{R} \rightarrow \mathbb{R})$.
+What rest is to write, \texttt{Integral1D} and \texttt{Integral2D} accoding to their 
+specifications.  
+\newpage  
+
+Let's begin with  \verb|Integral1D| implementation. 
+Even though the numerical method to approximate the line integral is not relevant, 
+a Riemann approximation is shown in the following code to have a complete testing
+example that could be used as a template. 
+\vspace{0.5cm} 
+\listings{\home/overloading.f90}{function Integral1D}{end function}{overloading.f90} 
+Note that the third argument is defined as a \verb|f_R_R| procedure or function. 
+Hence, the definitions of \verb|f_R_R| for line integrals and \verb|f_R2_R|
+for surface integrals are given in the following code: 
+\vspace{0.5cm} 
+\listings{\home/overloading.f90}{abstract interface}{end interface}{overloading.f90} 
+ 
+\newpage  
+Let's finish with \verb|Integral2D| implementation. 
+Taking into account the definition of a surface integral expressed 
+by  equations (\ref{I2D}) and (\ref{I1}), the following implementation is clear: 
+
+\vspace{0.5cm}  
+\listings{\home/overloading.f90}{function Integral2D}{end function}{overloading.f90} 
+\verb|Integral2D|  is built by a line integral (\verb|Integral1D|) 
+in which the integrand is parametric line integral defined by: 
+\vspace{0.5cm}   
+\listings{\home/overloading.f90}{function Parametric_I1D}{end function}{overloading.f90} 
+    
+ 
+ 
+\newpage
+\subsection*{Python}
+\renewcommand{\home}{./Python/sources/Advanced_programming/overloading}
+\lstpython 
+The same concepts are applied to implement an overloaded \verb|Integral| in Python. 
+As it is mentioned repetitively, Python allows writing shorter codes 
+than Fortran but paying the price of no specifying function arguments or variables. 
+
+
+Even though Python does not allow overloading, an easy proposa  is shown to 
+emulate overloading in the following code: 
+\vspace{0.5cm} 
+\listingsp{\home/overloading.py}{def Integral }{None}{overloading.py} 
+At execution time, the \verb|Integral| function 
+checks how may arguments are present. If the invocation is done with three
+arguments, line integral is assumed. 
+ If the invocation is done with five
+arguments, surface integral is assumed. Otherwise, \verb|Integral| function
+will show an error.  
+
+In the following code, an example of the overloaded  \verb|Integral| is shown: 
+\vspace{0.5cm}
+\listingsp{\home/overloading.py}{def test_Integral}{y}{overloading.py}
+Note that the first invocation has three arguments and the second invocation has five 
+arguments. Note also that anonymous functions or lambda functions have been 
+expressed in the last argument to make the example more compact.  
+
+
+\newpage
+Finallly, \verb|Integral1D| and \verb|Integral2D| ae implemented according to their
+definitions.
+\verb|Integral1D| is approximated by Riemann sums 
+\vspace{0.5cm}
+\listingsp{\home/overloading.py}{def Integral1D}{return}{overloading.py}
+
+And \verb|Integral2D| is expressed by means of \verb|Integral1D| function 
+according to its definition given by (\ref{I2D}) and (\ref{I1}). 
+\vspace{0.5cm}
+\listingsp{\home/overloading.py}{def Integral2D}{a, b, I1}{overloading.py}
+
+
+
+\newpage 
+\section{Overloading functions with complex numbers}
+
+In this example, an ordinary differential system of equations is integrated
+in real variable and complex variable. 
+Let's consider the first order 
+differential system of equations of dimension $ N $ in real variable: 
+\begin{equation}   
+    \frac{dU }{ dt} =  F( U,t ) , \qquad 
+    F: \mathbb{R}^N \times \mathbb{R} \rightarrow \mathbb{R}^N,   
+    \label{cauchy}
+\end{equation} 
+where $ U(t) \in \mathbb{R}^N $. This system of equations together with 
+the initial condition $ U_0 $ constitutes a Cauchy problem and allows 
+to determine the solution $ U(t) $ for all $ t \in [0, T]$.
+To approximate numerically the solution of the Cauchy problem, a partition of
+the time segment $ [0, T] $ is considered. 
+Once this partition is defined by different time steps $ t_n $, the solution 
+can be approximated by any temporal scheme. 
+The Euler scheme is the easiest numerical method to approximate numerically 
+the solution $ U^{n+1} $ at time step $t_{n+1} $ from the solution 
+$ U^{n} $ at time step $t_{n} $. 
+\begin{equation}   
+    U^{n+1}=  U^n + \Delta t \ F( U^n, t_n), \qquad 
+    n=0, \ldots, N  
+    \label{euler}   
+\end{equation}
+In this example, 
+the harmonic oscillator ($ \ddot x   + x = 0 $)  is integrated.
+This oscillator can be formulated as a first order system of two equations:
+\begin{equation}   
+    \frac{d}{dt }   
+ \begin{pmatrix}
+ x \\
+ \dot x
+ \end{pmatrix}   
+    = 
+  \begin{pmatrix}
+  \dot x \\
+  - x
+  \end{pmatrix}
+  \label{oscillator}
+\end{equation}
+where the state vector can be  defined with $ U = ( x, \ \dot x  )^T $ 
+and, consequently,  $ F= ( U_2, \ -U_1  )^T $. The same harmonic oscillator
+can be expressed in complex variable by doing  $ Z = x + i \ \dot x  $. 
+In complex variable, the equations of the harmonic oscillator yields: 
+\begin{equation}   
+    \frac{dZ}{dt }  = - i \ Z.
+    \label{coscillator}
+\end{equation} 
+The main objective of this section is to show different alternatives 
+to integrate in complex variable by means of functions written for 
+real variable. 
+
+Since Python is untyped, a minor modification will allow to integrate 
+in real or in complex variable with the same functions.
+On the contrary, Fortran variables are obliged to be typed.  
+In this case, instead of writing new software to overload the Euler 
+scheme, a different approach will be shown. The real function $ F $ in equation
+(\ref{cauchy}) will be build by means of the complex function of equation
+(\ref{coscillator}) and the complex system of equations will be integrated in real 
+variable with minor modifications. 
+
+In the following pages, these ideas will be developed 
+to write two implementations in Fortran and Python. 
+
+ 
+\newpage  
+\subsection*{Fortran}
+First, the \verb|Euler| function 
+is implemented for real variable. Given an approximate solution \verb|U1| 
+at time step \verb|t1|, the solution \verb|U2| at  time step  \verb|t2| 
+is calculated by (\ref{euler}). 
+\vspace{0.4cm}  
+\renewcommand{\home}{./Fortran/sources/Advanced_programming/polymorphism} 
+\lstfor
+\listings{\home/polymorphic_ODES.f90}{function Euler}{end function}{polymorphic_ODES.f90}
+Then, the real function of the harmonic oscillator (\ref{oscillator}) is defined by:
+\vspace{0.4cm} 
+\listings{\home/polymorphic_ODES.f90}{function oscillator}{end function}{polymorphic_ODES.f90}
+Finally, a loop allows to calculate and to store every time 
+step of the time partition. The matrix \verb|U(0:N,Nv)| holds \verb|N+1|
+time steps for every \verb|Nv| variables. 
+\vspace{0.4cm} 
+\listings{\home/polymorphic_ODES.f90}{simulation}{end do}{polymorphic_ODES.f90}
+
+
+\newpage 
+To integrate the complex system, 
+the harmonic oscillator equations (\ref{coscillator}) written in complex 
+variable are implement with the following function: 
+\vspace{0.4cm} 
+\listings{\home/polymorphic_ODES.f90}{complex_oscillator}{end function}{polymorphic_ODES.f90}
+Finally, the function \verb|complex_simulation| is built with complex 
+arguments. It defines a real function \verb|F| which is created 
+by means of the complex function \verb|Fc| and then 
+the problem can be simulated in real variable. 
+\vspace{0.4cm} 
+\listings{\home/polymorphic_ODES.f90}{complex_simulation}{end subroutine}{polymorphic_ODES.f90}
+
+ 
+\newpage
+\subsection*{Python}
+As it was mentioned, to overload the Python code to integrate a complex problem 
+is much easier because Python functions are implemented without knowing 
+the type of variables. 
+First, the \verb|Euler| function 
+is implemented. Given an approximate solution \verb|U1| 
+at time step \verb|t1|, the solution \verb|U2| at  time step  \verb|t2| 
+is calculated by (\ref{euler}).
+\vspace{0.4cm} 
+\renewcommand{\home}{./Python/sources/Advanced_programming/polymorphism}
+\lstpython 
+\listingsp{\home/polymorphic_ODES.py}{def Euler}{return}{polymorphic_ODES.py.py}  
+Then, the real function of the harmonic oscillator (\ref{oscillator}) is defined by:
+\vspace{0.4cm} 
+\listingsp{\home/polymorphic_ODES.py}{def oscillator}{return}{polymorphic_ODES.py}
+Finally, a loop allows to calculate and to store every time 
+step of the time partition. The matrix \verb|U(0:N,Nv)| holds \verb|N+1|
+time steps for every \verb|Nv| variables. 
+\vspace{0.4cm} 
+\listingsp{\home/polymorphic_ODES.py}{def simulation}{Euler}{polymorphic_ODES.py}
+To integrate the system in complex variable, 
+the complex function of the harmonic oscillator (\ref{coscillator}) is defined by:
+\vspace{0.4cm} 
+\listingsp{\home/polymorphic_ODES.py}{def complex_oscillator}{return}{polymorphic_ODES.py}
+\newpage 
+In the following code, the harmonic oscillator is integrated in real and in complex variable with the same 
+code: 
+\vspace{0.5cm} 
+\listingsp{\home/polymorphic_ODES.py}{def complex_ODES}{complex_oscillator}{polymorphic_ODES.py} 
+Note that while \verb|U0| is a nump array of real components, \verb|Z0| is a complex variable holding the 
+same initial condition than \verb|U0|. 
+The key idea of this overloading is hidden in the function \verb|simulation|. When this function is called, 
+a numpy array to store different time steps of all variables is created. The type of its components 
+is the same as the type of the initial condition. Hence, if the \verb|simulation| function is called 
+with a complex initial condition, the numpy array \verb|U| has complex components and different operations are 
+well defined. Similarly, if the initial condition has real components, the numpy array \verb|U| 
+is created with real components and everything works flawlessly as expected. 

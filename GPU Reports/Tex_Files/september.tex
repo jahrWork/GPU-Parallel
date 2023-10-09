@@ -1,0 +1,465 @@
+\clearpage
+
+\section{Month 5 - September}
+
+\subsection*{Back to May}
+
+We took a good look at our optimization module. It was a great learning step, but there might be better ways to push performance. We originally wanted to beat Matlab in speed, and we did it. Now, we're checking which tools can help us improve even more.
+
+We aim to compare the speed-up achieved using multicore versus singlecore on the CPU. Additionally, we'll examine the performance differences between GPU and CPU.
+
+We'll be trying out a few libraries, including Intel MKL, BLIS, and AOCL Blas for the CPU. On the GPU side, we're using \texttt{cupy} to see how it handles the matrix multiplication $C = A \times B$.
+
+
+\subsection*{Theoretical Limits}
+Understanding processors' capabilities is vital for estimating matrix multiplication performance. For matrix multiplication \(C = A \times B\), with matrices of dimension \(N \times N\), repeated \(TIMES\) times, the workload is defined by:
+\begin{equation}
+    N_{\text{ops}} = 2 \times N^3 \times TIMES
+\end{equation}
+Matrix multiplication involves a sequence of four operations:
+\begin{enumerate}
+    \item Accessing values in matrix A
+    \item Accessing values in matrix B
+    \item Conducting the multiplication
+    \item Storing results in matrix C
+\end{enumerate}
+
+\subsection{Vectorization}
+Vectorization is a fundamental feature inherent to modern processor architectures. It pertains to the execution of operations on extensive data sets, in contrast to singular data elements. Processors equipped with 512-bit registers can process multiple data elements concurrently. This capability allows for optimal use of the processor's computational resources, enhancing the speed of operations. As a result, operations previously restricted to serial execution can now undergo parallel processing, increasing computational efficiency and reducing execution time for data-intensive tasks.
+
+\clearpage
+
+\subsection{Micro-operations}
+Micro-operations illustrate a processor's capacity to process multiple tasks within one cycle, enabled by pipelining and throughput techniques.
+
+In the past, first-generation CPUs typically executed fewer than one operation per cycle. In contrast, contemporary pipelined superscalar processors can perform several operations in a single cycle, although this is constrained by specific limits determined by different CPU processing stages.
+
+The micro-operations performance of various processors is tabulated below:
+
+\subsection{Estimating CPU Time}
+Based on the above factors, CPU performance can be estimated as:
+\begin{equation}
+    t_{\text{CPU}} = \frac{4 \times N_{\text{ops}}}{{V_{\text{vectorization}}} \times GHz_{\text{CPU}} \times M_{\text{micro-ops}} \times C_{\text{CPU}}}
+\end{equation}
+
+Where the parameters are:
+\begin{enumerate}
+    \item $V_{\text{vectorization}}$: Vectorization factor: 16 (512-bit)
+    \item $M_{\text{micro-ops}}$: Micro-operations factor: 4, 6 (AMD Zen 3) or even 8 (Apple Silicon)
+    \item $GHz_{\text{CPU}}$: Clock speed of the CPU
+    \item $C_{\text{CPU}}$: Number of cores in the CPU
+    \item The factor of 4 accounts for the 4-step sequence in matrix multiplication, as discussed earlier.
+\end{enumerate}
+
+\subsection{GPU Time Estimation}
+GPUs, having a different architecture, excel in parallelism with a high core count. The estimated operational time for a GPU is:
+\begin{equation}
+    t_{\text{GPU}} = \frac{N_{\text{ops}}}{GHz_{\text{GPU}} \times C_{\text{GPU}}}
+\end{equation}
+
+\subsection{Comparative Analysis: CPU vs GPU}
+Comparing CPU and GPU operational speeds, we obtain:
+\begin{equation}
+    \frac{t_{\text{CPU}}}{t_{\text{GPU}}} = \frac{4 \times GHz_{\text{GPU}} \times C_{\text{GPU}}}{GHz_{\text{CPU}} \times F_{\text{vec}} \times F_{\mu} \times C_{\text{CPU}}}
+\end{equation}
+It's important to consider that actual performance may vary from these theoretical estimations.
+
+
+\clearpage
+
+\subsection{Repository of the code and how have been used}
+
+\subsubsection{Fortran - Intel MKL}
+
+The following Fortran code utilizes Intel's Math Kernel Library (MKL). The Intel MKL is a highly optimized, extensively threaded, and thread-safe library of mathematical functions for science, engineering, and financial applications. It's designed to provide maximum performance on a range of Intel processors (We might get worse results because of that, I have an AMD CPU).
+
+
+
+\begin{lstlisting}[language=Fortran]
+    program C_AxB
+    
+    use omp_lib
+
+    implicit none
+    real, allocatable :: A(:,:), B(:,:), C(:,:)
+    real :: power
+    integer :: i, unitNum
+    integer :: rate, t0, t1
+    character(len=250) :: fileName
+    integer (kind=8) :: N_ops, N, TIMES
+    real :: execution_time
+    
+    N_ops = 2 * 10000_8**3;
+    write(*,*) "CPU TEST RUNNING with N_ops = ", N_ops
+    
+    ! Loop TIMES(N)
+    do N = 25, 2499, 25
+        
+        TIMES = nint(N_ops / real(2*N**3, 8))
+        
+        allocate(A(N, N), B(N, N), C(N, N))
+        call random_number(A)
+        call random_number(B)
+        C = 0
+        
+        call system_clock(t0)
+        call system_clock(count_rate=rate)
+
+        !$omp parallel do private(i) % Multicore with OpenMP
+        do i = 1, TIMES
+            call sgemm("N", "N", N, N, N, 1e0, A, N, B, N, 0, C, N)
+        end do
+        call system_clock(t1)
+        !$omp end parallel do
+        
+        execution_time = (t1 - t0) / real(rate)
+        write(*,*) N, TIMES, execution_time
+        deallocate(A, B, C)
+        
+    end do
+    
+    
+    ! Loop N(TIMES)
+    do TIMES = 64, 1, -1
+        
+        power = 1./3
+        N = nint((real(10000_8**3) / TIMES)**power)
+        dimensions(TIMES) = N
+        
+        allocate(A(N, N), B(N, N), C(N, N))
+        call random_number(A)
+        call random_number(B)
+        C = 0
+        
+        call system_clock(t0)
+        call system_clock(count_rate=rate)
+        !$omp parallel do private(i) % Multicore with OpenMP
+        do i = 1, TIMES
+            call sgemm("N", "N", N, N, N, 1e0, A, N, B, N, 0, C, N)
+        end do
+        !$omp end parallel do
+        call system_clock(t1)
+        
+        execution_time = (t1 - t0) / real(rate)
+        write(*,*) n, times, execution_time
+        deallocate(A, B, C)
+        
+    end do
+    
+    close(unitNum)
+    
+    end program C_AxB
+
+\end{lstlisting}
+
+
+\textbf{OpenMP directives:} In this Fortran example utilizing Intel's Math Kernel Library (MKL), the employment or omission of OpenMP directives is pivotal. While the program is inherently optimized for Intel processors, the OpenMP integration provides flexibility. By including or excluding these directives, users can either exploit the full parallel capabilities of their multi-core systems or opt for single-core execution. 
+
+\subsubsection*{Single core:}
+
+\begin{lstlisting}[language=Fortran]
+        do i = 1, TIMES
+            call sgemm("N", "N", N, N, N, 1e0, A, N, B, N, 0, C, N)
+        end do
+\end{lstlisting}
+
+\subsubsection*{Multi core:}
+
+\begin{lstlisting}[language=Fortran]
+        !$omp parallel do private(i) % Multicore with OpenMP
+        do i = 1, TIMES
+            call sgemm("N", "N", N, N, N, 1e0, A, N, B, N, 0, C, N)
+        end do
+        !$omp end parallel do
+\end{lstlisting}
+
+\clearpage
+
+\subsubsection{C - BLIS and AOCL}
+
+BLIS (BLAS-like Library Instantiation Software Framework) is a portable \href{https://github.com/flame/blis#how-to-download-blis}{software} framework for instantiating high-performance BLAS-like dense linear algebra libraries. The framework was designed to isolate essential kernels of computation that, when optimized, immediately enable optimized implementations of most of its commonly used and computationally intensive operations.
+
+The AMD Optimized C/C++ \& Fortran Compilers (AOCC) leverage the AMD Zen core microarchitecture. These AOCC compilers provide improved performance on AMD processors, and the same optimizations available in the AOCC compilers are now available in \href{https://github.com/amd/blis}{AMD's fork of BLIS}.
+
+Since AOCL is a fork of BLIS, it utilizes the same set of API calls and functionalities. This means that code written using BLIS functions can be easily ported to make use of AOCL.
+
+\subsection*{Singlecore}
+\vspace{-1em}
+\begin{lstlisting}[language=C]
+#include <stdio.h>
+#include <time.h>
+#include <math.h>
+#include "blis.h"
+
+int main( int argc, char** argv )
+{
+    FILE *fp;
+    num_t dt_r, dt_c;
+    dim_t m, n, k;
+    inc_t rs, cs;
+    long long int N_ops, TIMES;
+    double elapsed_time;
+
+    obj_t a, b, c;
+    obj_t* alpha;
+    obj_t* beta;
+
+    dt_r = BLIS_SINGLE_PREC;
+    dt_c = BLIS_SINGLE_PREC;
+    rs = 0; cs = 0;
+    alpha = &BLIS_ONE;
+    beta  = &BLIS_ZERO;
+    N_ops = 2 * 10000LL * 10000LL * 10000LL;
+
+    fp = fopen("octubre_blis_single.csv", "w");
+    if (!fp) {
+        perror("Failed to open file");
+        return 1;
+    }
+    fprintf(fp, "N,TIMES,Execution Time (s)\n");
+
+    for (dim_t dim = 25; dim <= 2499; dim += 25)
+    {
+        m = n = k = dim;
+        TIMES = N_ops / (2LL * m * n * k);
+
+        
+        bli_obj_create( dt_c, m, n, rs, cs, &c );
+        bli_obj_create( dt_r, m, k, rs, cs, &a );
+        bli_obj_create( dt_c, k, n, rs, cs, &b );
+
+        bli_randm( &a );
+        bli_randm( &b );
+        bli_setm( &BLIS_ZERO, &c );
+
+        clock_t start = clock();
+        for (long long int i = 0; i < TIMES; i++)
+        {
+            bli_gemm( alpha, &a, &b, beta, &c );
+        }
+
+        clock_t end = clock();
+        elapsed_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+        fprintf(fp, "%ld,%lld,%f\n", dim, TIMES, elapsed_time);
+        printf("%lld,%lld,%f\n", dim, TIMES, elapsed_time);
+
+        bli_obj_free( &a );
+        bli_obj_free( &b );
+        bli_obj_free( &c );
+    }
+
+    for (long long int TIMES = 64; TIMES >= 1; TIMES--)
+    {
+        double power = 1.0 / 3.0;
+        long long int N = (long long int) round(pow((double)(10000LL * 10000LL * 10000LL) / TIMES, power));
+
+        m = n = k = N;
+
+        bli_obj_create(dt_c, m, n, rs, cs, &c);
+        bli_obj_create(dt_r, m, k, rs, cs, &a);
+        bli_obj_create(dt_c, k, n, rs, cs, &b);
+
+        bli_randm(&a);
+        bli_randm(&b);
+        bli_setm(&BLIS_ZERO, &c);
+
+        clock_t start = clock();
+        for (long long int i = 0; i < TIMES; i++)
+        {
+            bli_gemm(alpha, &a, &b, beta, &c);
+        }
+
+        clock_t end = clock();
+        double elapsed_time = (double)(end - start) / CLOCKS_PER_SEC;
+
+        fprintf(fp, "%lld,%lld,%f\n", N, TIMES, elapsed_time);
+        printf("%lld,%lld,%f\n", N, TIMES, elapsed_time);
+
+        bli_obj_free(&a);
+        bli_obj_free(&b);
+        bli_obj_free(&c);
+    }
+
+    fclose(fp);
+    return 0;
+}
+\end{lstlisting}
+
+
+\subsection*{Multicore}
+
+
+\begin{lstlisting}[language=C]
+#include <stdio.h>
+#include <math.h>
+#include <omp.h>
+#include "blis.h"
+
+int main( int argc, char** argv )
+{
+    FILE *fp;
+    num_t dt_r, dt_c;
+    dim_t m, n, k;
+    inc_t rs, cs;
+    long long int N_ops, TIMES;
+    double elapsed_time;
+
+    obj_t a, b, c;
+    obj_t* alpha;
+    obj_t* beta;
+
+    dt_r = BLIS_SINGLE_PREC;
+    dt_c = BLIS_SINGLE_PREC;
+    rs = 0; cs = 0;
+    alpha = &BLIS_ONE;
+    beta  = &BLIS_ZERO;
+    N_ops = 2 * 10000LL * 10000LL * 10000LL;
+
+    fp = fopen("octubre_aocl_multi.csv", "w");
+    if (!fp) {
+        perror("Failed to open file");
+        return 1;
+    }
+    fprintf(fp, "N,TIMES,Execution Time (s)\n");
+
+    for (dim_t dim = 25; dim <= 2499; dim += 25)
+    {
+        m = n = k = dim;
+        TIMES = N_ops / (2LL * m * n * k);
+
+        bli_obj_create( dt_c, m, n, rs, cs, &c );
+        bli_obj_create( dt_r, m, k, rs, cs, &a );
+        bli_obj_create( dt_c, k, n, rs, cs, &b );
+
+        bli_randm( &a );
+        bli_randm( &b );
+        bli_setm( &BLIS_ZERO, &c );
+
+        double start = omp_get_wtime();
+
+        #pragma omp parallel for
+        for (long long int i = 0; i < TIMES; i++)
+        {
+            bli_gemm( alpha, &a, &b, beta, &c );
+        }
+
+        double end = omp_get_wtime();
+        elapsed_time = end - start;
+
+        fprintf(fp, "%lld,%lld,%.10f\n", dim, TIMES, elapsed_time);
+        printf("%lld,%lld,%.10f\n", dim, TIMES, elapsed_time);
+
+        bli_obj_free( &a );
+        bli_obj_free( &b );
+        bli_obj_free( &c );
+    }
+
+    for (long long int TIMES = 64; TIMES >= 1; TIMES--)
+    {
+        double power = 1.0 / 3.0;
+        long long int N = (long long int) round(pow((double)(10000LL * 10000LL * 10000LL) / TIMES, power));
+
+        m = n = k = N;
+
+        bli_obj_create(dt_c, m, n, rs, cs, &c);
+        bli_obj_create(dt_r, m, k, rs, cs, &a);
+        bli_obj_create(dt_c, k, n, rs, cs, &b);
+
+        bli_randm(&a);
+        bli_randm(&b);
+        bli_setm(&BLIS_ZERO, &c);
+
+        double start = omp_get_wtime();
+
+        #pragma omp parallel for
+        for (long long int i = 0; i < TIMES; i++)
+        {
+            bli_gemm(alpha, &a, &b, beta, &c);
+        }
+
+        double end = omp_get_wtime();
+        elapsed_time = end - start;
+
+        fprintf(fp, "%lld,%lld,%.10f\n", N, TIMES, elapsed_time);
+        printf("%lld,%lld,%.10f\n", N, TIMES, elapsed_time);
+
+        bli_obj_free(&a);
+        bli_obj_free(&b);
+        bli_obj_free(&c);
+    }
+
+    fclose(fp);
+    return 0;
+}
+\end{lstlisting}
+
+Both the following terminal commands reveals the shared nature of the AOCL and BLIS libraries:
+
+\begin{lstlisting}[language=bash]
+gcc gemm.c -I/.../AOCL_folder/blis/include/zen3/ -L/usr/local/lib/libblis.so -lblis -lm -lpthread -o gemm.x
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+gcc gemm.c -I/.../BLIS_folder/blis/include/zen3/ -L/usr/local/lib/libblis.so -lblis -lm -lpthread -o gemm.x
+\end{lstlisting}
+
+The AOCL, being a fork of BLIS, originates from the BLIS codebase, making their APIs and functionalities align closely. For multicore, you need to add the \texttt{-fopenmp} flag.
+
+
+\subsubsection{Python - CuPy}
+
+CuPy is an open-source matrix library that leverages the computational power of Graphics Processing Units (GPUs) to deliver accelerated performance for array operations. Comparable to NumPy, a well-established array library in Python, CuPy offers a multidimensional array and mathematical functions with a similar use.
+
+The primary advantage of CuPy is its ability to directly use CUDA-native memory and algorithms.
+
+\begin{lstlisting}[language=Python]
+import csv
+import cupy as cp
+import numpy as np
+
+def ab_multiply(C, A, B, TIMES):
+    for _ in range(TIMES):
+        C[:] = cp.dot(A, B)  # gemm on GPU
+        C_cpu = cp.asnumpy(C) # Transferencia de C de la GPU a la memoria principal
+
+def perform_computation_and_record_time(N, TIMES):
+    print(N)
+    A = cp.random.rand(N, N).astype(cp.float32)
+    B = cp.random.rand(N, N).astype(cp.float32)
+    C = cp.empty((N, N))
+    
+    start_event = cp.cuda.Event()
+    end_event = cp.cuda.Event()
+    start_event.record()
+    ab_multiply(C, A, B, TIMES)
+    end_event.record()
+    end_event.synchronize()
+
+    elapsed_time = cp.cuda.get_elapsed_time(start_event, end_event)
+    computation_times.append(elapsed_time)
+    N_list.append(N)
+   
+N_ops = 2 * 10000**3
+computation_times = []
+N_list = []
+
+# TIMES(N) loop
+for N in range(250, 2499, 25):
+    TIMES = int(np.ceil(N_ops / (2 * N**3)))
+    perform_computation_and_record_time(N, TIMES)
+
+# N(TIMES) loop
+for TIMES in range(64, 0, -1):
+    N = round((N_ops / (2.0 * TIMES)) ** (1./3))
+    perform_computation_and_record_time(N, TIMES)
+
+
+
+# Write results to CSV
+with open(
+    "Resultados/results_octubre_gpu_nomem.csv", mode="w", newline="", encoding="utf-8"
+) as file:
+    writer = csv.writer(file)
+    writer.writerows(zip(N_list, computation_times))
+\end{lstlisting}

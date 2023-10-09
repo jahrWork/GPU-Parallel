@@ -1,0 +1,198 @@
+\usepackage[utf8]{inputenc}         % Permite escribir códigos especiales
+
+% AJUSTES DEL IDIOMA
+\usepackage[spanish]{babel}
+\decimalpoint
+\renewcommand{\spanishtablename}{Tabla}
+\addto\extrasenglish{
+    \renewcommand{\subsubsectionautorefname}{Section}
+    \renewcommand{\subsectionautorefname}{Section}
+    \renewcommand{\sectionautorefname}{Section}
+}
+\usepackage[title]{appendix}
+\renewcommand{\appendixname}{Anexos}
+\renewcommand{\appendixtocname}{Anexos}
+\renewcommand{\appendixpagename}{Anexos}
+
+
+% GEOMETRIA
+\usepackage[paper=A4]{typearea}
+\usepackage[includemp,
+            top=2 cm,
+            left = 1.2 cm, 
+            right = 1.2 cm,
+            bottom=2 cm,
+            headsep = 3.5 cm,
+            marginparwidth=2 cm,
+            marginparsep=0.4 cm]{geometry}
+
+
+% INDENTACION
+\usepackage{indentfirst}
+\setlength{\parskip}{5pt}       
+\setlength{\parindent}{0pt}
+
+
+% ESPACIADO
+\usepackage{setspace}
+\spacing{1.2}
+\let\ph\mlplaceholder % shorter macro
+
+
+% GENERAR PDF/A y otras cosas del pdf
+\usepackage[a-1b]{pdfx}
+\usepackage[pdftex]{graphicx}
+    \graphicspath{
+      {./Figures/Portada_HF/}
+      {./Figures/01/}
+      {./Figures/02/}
+      {./Figures/03/}
+      {./Figures/04/}
+      {./Figures/05/}
+      {./Figures/06/}
+      {./Figures/A_01/}
+      {./Figures/A_02/}
+    }
+\usepackage{pdfpages}               % Incluir PDF diferente tamaño
+
+
+% URLS Y LINKS
+\hypersetup{hidelinks}    % Hide borders links
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu
+
+
+% EXPRESIONES MATEMATICAS Y SÍMBOLOS
+\usepackage{textcomp}               % Symbols in text
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{derivative}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\DeclareMathOperator{\Tr}{Tr}
+\usepackage{bigints}
+\usepackage{gensymb}    % Para hacer los circulitos de grados
+\usepackage{eurosym}
+\usepackage{fontawesome}
+
+
+% INCLUIR CÓDIGO EN EL DOCUMENTO
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Listado}		% Para que las listas sean es español
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}      % MATLAB CODE
+% \lstset{
+%     inputencoding=utf8,
+%     literate={Á}{{\'A}}1 {á}{{\'a}}1 {É}{{\'E}}1 {é}{{\'e}}1 {Í}{{\'I}}1 {í}{{\'i}}1 {Ó}{{\'O}}1 {ó}{{\'o}}1 {Ú}{{\'U}}1 {ú}{{\'u}}1 
+%     }
+
+%\lstset{
+%  basicstyle         = \mlttfamily,
+%  escapechar         = ",
+%}
+%\usepackage[numbered]{matlab-prettifier}
+
+
+% ACRONIMOS
+% https://tex.stackexchange.com/questions/25520/how-can-i-use-the-latex-acronym-package-and-optionally-create-an-acronym-list-i
+% https://sourceforge.net/p/texstudio/discussion/907839/thread/7ced058c/  -> SI NO APARECEN LOS ACRONIMOS
+\usepackage[acronym,smallcaps]{glossaries}		% ,nonumberlist
+% \loadglsentries[\acronymtype]{./Tex_Files/acronyms.tex}
+\makeglossaries
+%\usepackage{nomencl}
+%\makenomenclature
+%\usepackage{etoolbox}
+%\renewcommand\nomgroup[1]{%
+%  \item[\bfseries
+%  \ifstrequal{#1}{P}{Propiedades físicas}{%
+%  \ifstrequal{#1}{S}{Señales ópticas}{%
+%  \ifstrequal{#1}{F}{Fibra óptica}{%
+%  \ifstrequal{#1}{C}{Material compuesto}{}}}}%
+% ]}
+
+
+% BIBLIOGRAFÍA
+%\usepackage{biblatex}
+%\addbibresource{references.bib}
+%\setlength\parindent{0pt}
+
+
+% DISEÑO DE TABLAS Y FIGURAS 
+% \usepackage{subfigure}
+% \usepackage{subfloat}
+\usepackage{caption}
+\usepackage{subcaption}		% https://tex.stackexchange.com/questions/295456/texstudio-beginsubfigure-unrecognized-command
+\usepackage{svg}
+\usepackage{import}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{threeparttable}
+\usepackage{booktabs}
+\usepackage{tabu}
+\usepackage{bigstrut}
+\usepackage{tabularx}
+    \makeatletter
+    \def\hlinewd#1{%
+    \noalign{\ifnum0=`}\fi\hrule \@height #1 \futurelet
+    \reserved@a\@xhline}
+    \makeatother
+\usepackage{placeins}  %para poder poner Floatbarrier
+
+
+% ENUMERACIONES
+\usepackage{enumerate}
+\usepackage{enumitem}  % Selecionar la forma del item
+
+
+% NOTAS PIE DE PAGINA
+\usepackage[colorinlistoftodos]{todonotes}  % TO DO
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+
+% DEFINICIÓN DE COLORES 
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+
+% COMANDOS
+\providecommand\phantomsection{}    % Para añadir phantomsections al indice
+
+
+% LANDSCAPE
+\usepackage{pdflscape}
+\usepackage{everypage}
+\usepackage{lipsum}
+% Landscape configuration
+\newcommand{\Lpagenumber}{\ifdim\textwidth=\linewidth\else\bgroup
+  \dimendef\margin=0 %use \margin instead of \dimen0
+  \ifodd\value{page}\margin=\oddsidemargin
+  \else\margin=\evensidemargin
+  \fi
+  \raisebox{\dimexpr -\topmargin-\headheight-\headsep-0.5\linewidth}[0pt][0pt]{%
+    \rlap{\hspace{\dimexpr \margin+\textheight+\footskip}}}%
+\egroup\fi}
+\AddEverypageHook{\Lpagenumber}%
+% Code
+%\begin{landscape}
+% Text
+%\end{landscape}
+
+
+% MISCELANEO
+\usepackage{cite}
+\usepackage{csquotes} % Cita en el texto
+\usepackage{comment} % Comentar en bloque
+\usepackage{lastpage} % Citar la última página
+\usepackage{relsize} % Tamaños relativos
+\usepackage{bm} % Para poner negrita math tablas
+\usepackage{printlen}
+\usepackage{afterpage}	% añadir algo despues de una pagina

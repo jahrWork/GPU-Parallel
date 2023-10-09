@@ -1,0 +1,949 @@
+\chapter{Computer, programming languages and paradigms} 
+
+%De qué va Foundations de forma historiada
+This chapter is intended to give the reader more context about the concepts treated before.  
+The following sections review some building blocks of the theory of computation 
+through the names of the people that worked on them: Turing, Church, Neumann and Backus.
+
+Notice that each section from 6.1 to 6.4 extends the concepts treated in chapters 1 to 4.
+Concepts like model of computation, the Von Neumann architecture and how it influences a programming language are summarized in section \ref{sec:vonNeu}.
+The main ideas behind the imperative and declarative programming paradigms are treated in section \ref{sec:impvsdec}.
+Vector languages, another essential property desired for scientific computing are introduced in section \ref{sec:veclan}.
+Section \ref{sec:fpro} gives a theoretical description for Functional Programming, a paradigm usually included within the declarative paradigms. 
+ 
+Finally, the authors consider that a brief knowledge of the history of computers and programming languages 
+allow to understand how different programming skills or paradigms have evolved during the last decades. 
+For this reason, a pleasant history tour is proposed in section \ref{sec:films}. 
+The birth of computers, the space race and the influence of profound mathematicians among other factors conformed the origin of computing languages. 
+Several movies and documentaries are recommended to understand those naive and happy days and how geeks and nerds had a big influence in the first stages of personal computer business.
+  
+  
+   
+  %In this part, basic operations are presented as a first approach to 
+  %perform simple mathematical operations.
+  % to learn applied mathematics 
+  %a chapter including  
+  %In it the reader can become familiar to the use of basic sentences in order
+  
+  %Some notions of theory of computation are revised here so a reader that is new 
+  %to the scientific programming can familiarize himself.
+  
+ 
+
+    \newpage   
+    \section{Von Neumann style}  \label{sec:vonNeu}
+    %\vspace{-0.3cm}
+The theory of computation gives the basis for the automatic processing of information where there is a 
+problem to solve (a function between a bunch of inputs and their associated outputs) 
+and a machine (analog, digital, quantum, etc.) to solve it. 
+The tools of the theory of computation tell 
+if the problem can be solved in the \textbf{framework of a model of computation}, 
+using an \textbf{algorithm} and 
+\textbf{how efficiently} is going to be solved.
+
+But first let's define what a model of computation is: a mathematical abstract construction 
+that describes how to compute the output of a mathematical function given its input.
+The Turing machine, invented by Alan Turing in 1936 by the name of ``a-machine'', is a model of computation. 
+The purpose for this model of computation was to give answer to some essential questions 
+in the theory of computation and mathematics in general. 
+
+This abstract construction consists on a scanning head capable of reading from an 
+infinite tape of cells, a single cell at a time. 
+This tape has information coded and once a cell is read, the machine can delete that cell, 
+write another symbol or leave the symbol. 
+Then, it can move to a different position in the tape. 
+According to the current state of the 
+machine and the position in the tape the machine follow a set of rules (also coded) and take some action or another. 
+
+Everything that is computable and everything that a machine can compute nowadays can be theoretically programmed in a Touring machine 
+although maybe inefficiently. 
+Furthermore, it is said that any system capable of doing what a Touring machine can do is Touring-complete and 
+than can also compute everything that is computable. 
+These ideas can be applied to programming languages apart from computers and,
+given a computable algorithm, find if it can be implemented in the specific language.
+It turns that all programming languages nowadays are Touring-complete as soon as they allow 
+mainly if-then-else structures and go-to statements. 
+
+Notice that a conceptual model of computation is intimately related not only to the 
+real machines we use everyday from a hardware point of view (laptops, PCs, smartphones, etc.) 
+but also to the programming language. 
+Computers today are built by implementing what 
+a Turing machine describes theoretically, using an architecture. 
+The architecture is the set of rules and methods that describe how software 
+and hardware are organized, interrelate and work to conform a machine.
+
+%von Neumann architecture
+The most common architecture used in the machines around us (although not the only option) is the von Neumann architecture. 
+In this description of a computer, a Central Processing Unit (CPU) is in charge of executing the instructions that are stored in a Memory Unit (which is separated from the CPU). 
+In that memory, with each memory position uniquely identified by an address, the data and program are stored together. 
+Some Buses transfer data, addresses and control commands between different parts of the computer
+and at the same time allows the communication with input/output devices.
+Hence, in the simplest description of this architecture we have three elements; CPU, memory and a bus to transfer data between both. 
+The CPU works following an instruction cycle composed by three stages:
+\begin{enumerate}[label=(\roman*)]
+    \item It fetches the next instruction of the program from the memory address (a counter points to this address),
+    \item this instruction is decoded and 
+    \item the CPU performs the actions required by the instruction (reading addresses, performing arithmetic, writing in memory, etc.)
+\end{enumerate} 
+
+According to John Backus in his article ``Can Programming Be Liberated from the von Neumann Style? A Functional Style and Its Algebra of Programs'' 
+this bus that connects CPU and memory acts as a bottleneck. 
+He says this is because in each instruction cycle the bus transmit a single word (let's say 64 bits) between memory and CPU.
+The purpose of any program is to modify the content of the memory so at the end of the execution the output of our function (or problem to solve) is stored.
+But this process is performed by pumping single words at a time through this bus.
+In addition, from all the information sent back and forth, a large part is not useful for the solution of our problem: names of data, other data needed to compute those names, memory addresses, etc. 
+
+Notice that this architecture not only describes how the hardware is organized but also how data and programs work.
+Backus states that the von Neumann computer is the intellectual parent of conventional programming languages. 
+Inevitably, this architecture has influenced how they are built to the point that 
+they are high level software versions of the von Neumann machine. 
+%The chapter \ref{chap:basicop} delves into this idea by comparing the code written with a programming language and a von Neumann machine.
+
+%Aqui contar como influencia el lenguaje en profundidad...
+Notice that the \textit{variables} in a programming language imitate the \textit{memory cells} of the von Neumann architecture.
+The \textit{control statements} emulate the \textit{jump and test instructions} and
+the \textit{assignment statement} imitate the \textit{fetching, performing arithmetic and storing process}. 
+
+The assignment statement \texttt{v = 3*5 + 2} becomes the bottleneck of programming languages in the sense that a program is mainly concerned 
+with the flow of assignments of single variables (imitating single words). 
+By executing assignments many times, maybe altering subscripts (imitating memory addresses), 
+the program ends up with the result stored in a variable (imitating the storage in memory). 
+Furthermore, this assignment statement splits the programming languages into two worlds: 
+a world of expressions with strong algebraic properties (\texttt{3*5 + 2}) and a world of statements with few mathematical properties (\texttt{v =}).
+%In this paper, he proposes an alternative to this reality based on the functional programming style. 
+
+
+
+
+
+ 
+    \newpage
+    \section{Imperative versus declarative programming}  \label{sec:impvsdec}
+    \vspace{-.5cm}
+It has been mentioned that the paradigm of a programming language makes reference to 
+the group of features or ideas that describes how to write a program, its conceptual framework. 
+While some languages are focused on how the code is organized, 
+others give importance to the dataflow through operations.
+
+The ideas behind the universal Turing machine and 
+the von Neumann computer architecture gave rise 
+to what is called the imperative programming paradigm. 
+This paradigm is mainly focused on the control flow of the program,
+obtaining the solution of some problem with a bunch of control statements,
+variables and assignments. 
+John Backus, among others, asked himself if different programming paradigms 
+were possible to solve problems. 
+It was the birth of the functional programming, closer to mathematics than to a specific computer 
+architecture and focused on the result of the computation rather than the flow control of the program. 
+
+%RAM model and Church lambda 
+The Turing machine is not the only computational model developed historically,
+others are Register machines or lambda calculus ($\lambda$-calculus).
+The latter was developed by Alonzo Church and gives support to the functional programming paradigm, 
+which is included within the declarative paradigms together with more paradigms like logical, mathematical, constraint programming, etc.
+%exactly like the imperative paradigm finds its foundations in the Touring machine.
+
+The lambda calculus is focused on the use of transformation rules and 
+not in the machine that implements these rules so it is closer to software than hardware.
+It is built with three kind of terms: variables, abstractions and applications. 
+Essentially an abstraction here can be seen as a function (with an argument and a function body). 
+Hence, the programs are built by applying functions to other functions instead of 
+assigning (storing) values to variables and iterating with them. 
+All computable algorithms can be computed using lambda calculus so it is Turing complete.
+
+
+
+
+
+
+%Notice that the functional programming is included within the declarative paradigms 
+%A programming paradigm is the approach used to build the program, the features that define how to solve the problem with the computer. 
+%Some of these computation models give rise to a programming paradigm. 
+%Take a look at the next section to delve into this idea.  
+%Paradigmas
+%We have mentioned three essential models of computation: a Turing machine, Random-access Machines and $\lambda$-calculus (developed by ).
+%and functional programming is supported by the concepts of lambda calculus. 
+%Some of these computation models give rise to a programming paradigm like imperative programming or functional programming
+
+        \vspace{-.5cm}
+        \subsection*{Imperative programming}
+        \vspace{-.5cm}
+In the imperative programming paradigm the programmer tells the machine how to perform each task step by step. 
+The program state is changed through assignment statements so the main focus is \textbf{how} the result is obtained. 
+Structural Paradigm and Object-Oriented Paradigm (OOP) are included in this group being the latter one of the most famous programming paradigm. 
+In the OOP everything revolves around the ideas of classes, objects, methods and attributes.
+
+Advantages:
+\begin{itemize}[noitemsep]
+    \item Very easy to implement
+    \item Relatively easy to learn
+    \item Easier to debug when the code is not huge
+    \item Easy to understand for beginners and external developers 
+    %(thinking in what a single-core processor would do with the code)
+    %\item Contains loops and variables
+\end{itemize}
+
+Disadvantages:
+\begin{itemize}[noitemsep]
+    \item More buggy compared to Declarative
+    \item More difficult to organize than declarative programming
+    \item Quickly becomes voluminous and hard to maintain or extent
+    \item Loses clarity while its size grows
+    \item Less efficient for long term
+    \item Difficult to create reusable code
+    \item Parallel programming not available
+\end{itemize}
+
+Some languages that mainly follow the imperative paradigm are:
+\begin{itemize}
+    \item Java, Python, C++, Ruby, Smalltalk
+\end{itemize}
+        
+        \vspace{-.5cm}
+        \subsection*{Declarative programming}
+        %\vspace{-.5cm}
+In the declarative programming paradigm the programmer just tells the computer what to obtain and its properties but not the control flow to perform the task.
+Functional Paradigm, Logical Paradigm, Mathematical Paradigm and Reactive Paradigm are included in this group.
+The functional paradigm finds its roots in mathematics, it is language independent and
+uses the concept of function as central model for its abstractions instead of the data structures.
+As a result, data are loosely coupled to functions.
+
+Advantages:
+\begin{itemize}[noitemsep]
+    \item Short and efficient Code
+    \item Implemented by methods not yet known in the moment of coding
+    \item Easier to maintain, extend and optimize
+    \item Easier to create reusable code
+    \item Uses a high level of abstraction making easier to represent complex logic
+    %\item Maintenance is possible irrespective of application development
+\end{itemize}
+
+Disadvantages:
+\begin{itemize}[noitemsep]
+    \item Hard to understand for external developers and beginners
+    %\item Needs from abstract theoretical programming models 
+    \item Hard to consider specific characteristics of individual applications during programming
+\end{itemize}
+
+Some languages that allows a declarative paradigm are:
+\begin{itemize}
+    \item JavaScript, Haskell, Scala, Erlang, Lisp
+\end{itemize}
+
+
+
+%The central model for the abstraction is the function which are meant for some specific computation and not the data structure.
+
+%Imperative and declarative programming paradigms are treated in the chapter \ref{chap:impdec} using examples that illustrate the main difference between them. 
+%Functional programming is treated during the whole book, starting in the section \ref{sec:fpro}.
+% Ever since I started learning react I heard this buzzword Functional Programming. I have searched all over the internet and found some 
+% useful resources, watched countless youtube videos and finally got the hang of it, And probably you'll get it too till the end of this 
+% article.
+% First we will see how programming paradigm works, then we will cover functional programming and once we know the basics we will go over the 
+% implementation with JavaScript's Map, Reduce and Filter method.
+ 
+ % Programming Paradigms
+ % Basically there are various approaches to write you programs. If you've done a CS major you'd probably know these and if you didn't don't 
+ % worry its a method to solve a problem. There are two main paradigms Imperative programming and Declarative programming.
+ 
+ %Instructions, machine and style
+ %Backus Fortran and its paper 
+ %The strong relation between imperative programming languages and the von Neumann computer was treated by John Backus in its paper ``Can 
+ %Programming Be Liberated from the von Neumann Style? A Functional Style and Its Algebra of Programs''. 
+ %He remarks the parallelism between the von Neumann memory and the use of variables to store data.
+ %Also the similarities between the instruction cycle of a CPU (fetch, store, execute) and the assignment statement of a programming language. 
+ 
+ 
+    \section{Vector languages} \label{sec:veclan}
+ 
+From all the features that define the paradigm of a programming language, 
+some of them are essential to make a language suitable for scientific programming.
+To allow a functional programming style would be one of these, 
+but also a syntax close to mathematics 
+or an array programming construction. 
+An array programming language, also called vector language, has the possibility 
+to operate a whole group of values with the same expression.
+Hence, the same operations applied to a number can also be applied to vectors, matrices and higher dimension arrays
+in a closer to maths style, greatly simplifying mathematical expressions.
+
+It is relatively new the development of array programming languages 
+being Fortran the first one to include it in the 90's with the ISO/IEC standard 1539:1991. 
+Other languages like MATLAB, R or the NumPy extension of Python also support array programming.
+Matrix arithmetic are built-in in these languages and therefore, 
+expressing the mathematical language in a natural way is feasible.
+
+Let's consider for example the addition of two vectors, matrices or other tensors. 
+The common mathematical notation would express $w = u + v$ wether $u$ and $v$ are vectors or higher dimension tensors. 
+In scalar languages like C, the operation addition is defined for single values. 
+Hence, the array addition needs a loop in the subscripts of both operands:
+\vspace{-0.3cm}
+\begin{verbatim}
+for (i = 0; i < n; i++)
+    w[i] = u[i] + v[i];
+\end{verbatim}
+\vspace{-0.3cm}
+Of course, the addition of higher dimension arrays needs from nested loops 
+iterating in the different dimensions subscripts. 
+Vector languages like Fortran, no matter the rank of the operands, 
+would just need the following expression:
+\vspace{-0.3cm}
+\begin{verbatim}
+w = u + v
+\end{verbatim}
+\vspace{-0.3cm}
+
+Take note of the difference between array programming and array processors. 
+The former makes reference to how the programmer codes the mathematical operations in its program. 
+The latter is related to how the processor operates that group of numbers; 
+by performing all the operations together under the same processor instruction in a considerably increase of speed.
+Both features imply an increase of performance for the coding and executing of scientific programs, 
+however, we are only considering in this book the advantages of an array programming language.
+
+Since both concepts are independent, scalar languages can also benefit 
+from the vectorization performed in array processors or even 
+the parallelization of tasks with multiple processors (called multi-processors). 
+However, this is done by the compiler under several optimizations of the code.
+On the contrary, array programming is automatically intended to implicit parallelization. 
+%Array processing is distinct from parallel processing in that one physical processor performs operations on a group of items simultaneously while parallel processing aims to split a larger problem into smaller ones (MIMD) to be solved piecemeal by numerous processors. Processors with two or more cores are increasingly common today
+
+%A FUTURO AQUI PODEMOS TRATAR LA DIFERENCIA ENTRE 
+%VECTOR LANGUAGE - VECTOR PROCESSOR (PROCESADOR CON DISTINTOS ALUs CREO) - MULTIPROCESSOR (MUCHOS PROCESADORES o MUCHOS CORES, PARALELO) 
+
+ 
+ 
+    \section{Functional programming} \label{sec:fpro}
+
+With his visionary paper, where John Backus presented his Function-level programming (FP), he accelerate the research in Functional Programming.
+These researches end up in the modern functional languages, however, these are based on the lambda calculus instead of the paradigm described by Backus. 
+Hence, the ideas developed in his paper under the name of functional programming do not fully coincide with the current concept of functional programming. 
+%Let's take a look at the main ideas behind his alternative to von Neumann programming languages. 
+
+He based his alternative to von Neumann programming languages on the idea of changing variables by functions/programs and operations by combining forms. 
+Combining forms means to take some functions and combine them with algebraic laws so a new one is obtained.
+These algebraic laws are similar to the algebraic laws ranging over numbers and used to solve equations.
+Thanks to the general theorems of the algebra associated to algebraic laws, the paradigm gains its power. 
+%In addition, these laws give the power to the paradigm since they allow to use general theorems of the algebra for the programs. 
+
+Backus uses a comparison between an inner product coded using imperative style: 
+\vspace{-0.5cm}
+\begin{verbatim}
+c := 0
+for i := 1 step 1 until n do
+    c := c + a[i]xb[i]
+\end{verbatim}
+and his functional style:
+\newline\newline
+\texttt{Def IP $\equiv (/+)\circ(\alpha \times)\circ \textrm{Trans}$} 
+\newline\newline
+where \texttt{/} involves inserting the operation between members of the argument, 
+\texttt{$\alpha$} applies the operation to all members and
+\texttt{Trans} transposes the argument.
+
+He remarks the following ideas among others:
+\vspace{-0.3cm}
+\begin{enumerate}[noitemsep, label=(\roman*)]
+    \item Instead of operating on a state changed by means of control statements (\texttt{for}), a program can only operate on its arguments. 
+    Only two rules are needed: one that applies a function to its arguments and other that combines different functions. 
+    
+    \item It is hierarchical: complex entities are built from simpler ones. 
+    The complex entities are functions built from the combination of simpler functions.
+    
+    \item It is static and nonrepetitive: the programmer does not need to mentally execute the code to understand it. 
+    Then, is only worried about the meaning of the program, not how it is implemented. 
+    
+    \item It operates on whole conceptual units instead of operating one word at a time. 
+    The operation is considered an abstraction that admits any kind of data structure. 
+    Hence, no extra data (\texttt{n}) is needed to describe the operation except for the arguments. 
+%    The same operation performed over a number can be performed over a higher level elements
+    %\item No procedure declaration is needed and no substitution rules are applied to make the operation general.
+\end{enumerate}
+ 
+Nowadays, the functional programming paradigm is completely based on mathematics and 
+more specifically on the lambda calculus. 
+It seeks to have each line of code made up of mathematics which, 
+although it only needs from variables and functions to work, is extremely powerful.
+
+This paradigm takes its name from the fact that its main operation is the application of functions to arguments and 
+every function is at the same time composed by other functions and glued together. 
+Some of the basic principles underlying this paradigm are:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Immutability:} Neither assignment statements nor variables are needed.
+    Hence, once declared a value, it never changes, making the program more predictable. 
+    
+    \item \textbf{No side effects:} Side effect in a function is every observable effect different than computing the result of the function applied to its arguments.
+    A functional program should not contain any side effects, eliminating then a big source of bugs. 
+    From a practical perspective, functional programming tries to reduce as much as possible side effects, letting them exist when they are required. 
+    %An advantage directly obtained from this principle is that the order of execution becomes irrelevant.
+    Since the value returned by a function is going to be immutable (no side effects can change it), 
+    the function can be evaluated at any point in the code, the order of execution and the control flow become irrelevan.
+    
+    \item \textbf{Pure functions:} These functions, apart from lacking side effects, always return the same result for the same input arguments.
+    Considering that the expression can be evaluated at any point in the code the function calls can be replaced by their returned value and the program is still as predictable as before.  
+    This property is called \textbf{referential transparency} and makes functional programs more tractable mathematically. 
+    
+    \item \textbf{First-class functions:} Those that i) accept other functions as arguments,
+    ii) return them as results, iii) can be assigned to variables or iv) can be included in any data structure. 
+    Functions are treated as first-class entities when they support the operations available to other entities like common variables with no restrictions. 
+    By treating functions as simple as variables the language becomes much more flexible. 
+    Many concepts are born here: 
+    \textbf{higher-order functions} (when at least the function takes one or more functions as arguments or returns a function as a result) or
+    \textbf{closures} (functions returned by a parent function, higher-order, that at the same time access the internal state of the parent).
+    %Currying   
+    %\item \textbf{Lazy evaluation:}    
+\end{enumerate}
+ 
+This paradigm contributes mainly with two features to modularity; higher-order functions and lazy evaluation. %ref a Huges y su paper
+Modularity is a key property in a well-structured software, it simplifies debugging, allows to test independent pieces of code and code reuse.  
+Hence, considering the basic principles of the paradigm and the qualities inherited from being a declarative paradigm,
+functional programming has the potential to make a program 
+short, effective, easy and part by part debuggable, reusable, maintainable, testable, predictable, and well-structured among others. 
+
+
+
+
+%Predictable, Testable, Reusable, Customisable, Cacheable, Maintainable, Composable and Readable.
+ 
+
+ %Functional programming (FP) is highly influenced by Mathematics realm. 
+ %FP would love to have all Mathematics included in every line of code.
+% Although Math is only built with functions and variables, it’s still very powerful and expressive. 
+% That’s what FP is trying to do. 
+% Solving every single problem using functions and functions only (exactly how the big brother (Maths) would do it).
+ 
+%That’s why functions’ freedom (making them first-class) comes into work. 
+%When you can treat a function in a programming language as simple as a variable, that language would be much more flexible and opens a lot of rooms for improvements. 
+ 
+% 1. Imperative Paradigm
+% In which control flow is explicit, where the programmer instructs the program how to change its state. Where it includes more paradigms:
+% 
+% 
+% 2. Declarative Paradigm
+% In which control flow is implicit, where the programmer instructs the program what should be done without specifying how to it should be 
+% done.
+
+
+
+
+\newpage 
+\section{Programming through history}   \label{sec:films}
+To understand different characteristic of modern programming languages
+is helpful to revise the history of informatics. In this chapter, 
+some documentaries and movies are commented to whet the appetite of the 
+reader in deep concepts such as: imperative programming, functional programming, 
+open and free software, data privacy and future of human being. 
+This chapter should not be considered  a comprehensive selection of movies 
+or documentaries about the history of informatics. 
+It covers some interesting movies or documentaries, 
+from the point of view of the authors, to explain some aspects 
+of the software world that are revealing for a software 
+developer.  
+  
+From the pioneering days to our days, languages and programs have evolved 
+a lot trying to make the coding process more efficient in terms of developing time 
+and having codes more robust. Mathematics have been an important pillar to underpin
+the evolution of programming  languages. 
+At the beginning, programs were built with a reduced set of machine instructions 
+to achieve the desired result. These programs were far from the human natural language.
+Since math allow to model or to express by its formalism some part of the reality, first 
+languages tried to translate mathematical formulas to machine code. This was the purpose 
+of John Backus and his team at IBM in 1954 when they developed 
+the Fortran (Formula-translation) language. 
+Fortran was the first high-level programming language to implement mathematical equations. 
+Before those years, Allan Turing in 1936 invented the computer as a mathematical  abstraction 
+imagining a machine with an infinitely long tape feeding instructions to manipulate symbols. 
+This was called the universal Turing machine 
+which is a mathematical model of the modern computers that we all use in our days. 
+Later, Turing and his team at Bletchley built an analogical machine 
+to crack the ‘Enigma’ code. 
+  
+  
+\newpage 
+The following list treats to give a basic historic perspective
+of the most relevant contributions  to programming languages:
+ 
+ \begin{itemize} 
+ \setlength\itemsep{0cm}
+ \item[1812] Charles Babbage invented the first mechanical computer: the Difference Engine.
+ Babbage died before the complete successful engineering of his inventions. 
+ \item[1872]  Ada Lovelace. Daughter of the poet Lord Byron. Lovelace invented the first language with perforated cards. 
+ \item[1889]   Herman Hollerith invented an electromechanical tabulating machine for punched cards 
+ to assist automation census. Hollerith founded a company with several other companies to form the 
+ Computing-Tabulating-Recording Company. In 1924, the company was renamed 
+ "International Business Machines" (IBM). 
+ \item[1904] John Ambrose Fleming invented the first thermionic  vacuum valve which was the origin
+ of digital computers.  
+ \item[1936] Alan Turing developed the  Universal Turing machine. 
+ \item[1939] Alan Turing deciphered enigma. 
+ \item[1945]
+ ENIAC (Electronic Numerical Integrator and Computer) was the first programmable digital computer. 
+ It was designed for ballistic calculations but its first program was a feasibility study 
+ of a thermonuclear weapon.
+ ENIAC was 30 feet by 60 feet, weighing 30 tons and using 19000 vacuum tubes.
+ 
+ \item[1945]  John von Neumann described the von Neumann architecture of computers based on: 
+ CPU (Control Processing Unit), Memory and Input/Output devices. 
+ This architecture is still present in our days.
+   
+ 
+ 
+ \item[1947]  Kathleen Hylda Valerie Booth wrote the first assembly language.
+ %She helped design three different machines including the ARC (Automatic Relay Calculator), 
+ %SEC (Simple Electronic Computer), and APE(X)C.
+ %Transistor. First assembly language with von Neumann. 
+ 
+ \item [1947] 
+ The  transistor was invented by American physicists John Bardeen and Walter  Brattain 
+ while working under William Shockley at Bell Labs. 
+ The three shared the 1956 Nobel Prize in Physics for their achievement. All modern computers
+ are based on billions of transistors. 
+   
+ 
+ \item[1954]  John Backus father of Fortran language at IBM and NASA 
+ with its first orbital calculations.
+ \item[1977]  John Backus won the Alan Turing award. 
+  His lecture was: "Can machines be liberated from the von Neumann style ?" 
+  \end{itemize}      
+
+
+Our journey begins when Allan Turing deciphering enigma and first NASA calculating 
+John Glenn first orbital flights around the Earth with a Fortran program running on IBM computer. 
+  
+  
+
+  \newpage 
+\subsection*{Algorithms and machines: "The imitation game"} 
+ In 1952, Alan Turing was arrested for homosexuality. 
+ Homosexuality was punished at that time in England. 
+ In 1936, Turing had invented a hypothetical computing device that came to be known 
+ as the ‘universal Turing machine’. 
+ Whilst working for the National Physical Laboratory (NPL), 
+ Turing published a design for the ACE (Automatic Computing Engine), which was 
+ arguably the forerunner to the modern computer. 
+ The ACE project was not taken forward, however, and he later left the NPL. 
+ In 1942,  Turing developed the Bombe machine to decipher messages encrypted by the German Enigma 
+ machine during the Second World War. 
+ 
+   
+   
+
+\subsection*{First numerical computing: "Hidden figures"}
+ Hidden Figures is a 2016 American biographical  film 
+ about African American female mathematicians and engineers 
+ who worked at the National Aeronautics and Space Administration (NASA) 
+ during the Space Race.
+ Katherine Johnson works at the Langley Research Center in Hampton, Virginia in 1961, 
+ alongside her colleagues Mary Jackson and Dorothy Vaughan. 
+ NASA installed an IBM 7090 electronic computer to expedite calculations and to replace human computers. 
+ Dorothy takes a book about Fortran and teaches herself and her co-workers programming. 
+ %On the day of the John Glenn's launch, discrepancies are found in the IBM 7090 calculations, 
+ %and Katherine is asked to check the capsule's landing coordinates.   
+ This movie shows how computers and Fortran programs were demanded by NASA
+ to expedite calculations and how Dorothy and her team had to acquire programming skills 
+ at a time where even IBM engineers were disoriented with a new technology. 
+ 
+  
+   
+  
+
+\subsection*{First personal computers: "Triumph of nerds"}
+ Triumph of the Nerds is a 1996 British/American television documentary.
+ It explores the development of the personal computer in the United States from World War II to 1995. 
+ Triumph of the Nerds was written and hosted by Robert X. Cringely (Mark Stephens) 
+ and based on his 1992 book Accidental Empires. 
+ The documentary comprises interviews with important figures connected with the personal computer, 
+ including Steve Jobs, Steve Wozniak, Bill Gates, Steve Ballmer, Paul Allen, Bill Atkinson, 
+ Andy Hertzfeld, Ed Roberts, and Larry Ellison. 
+ 
+ %Cringely followed the series with Nerds 2.0.1 (titled Glory of the Geeks in the UK), 
+ %a history of the Internet to 1998. 
+ %In 2012, 
+ %Cringely released the full interview that Steve Jobs gave in 1995 for Triumph of the Nerds as Steve
+ 
+
+ \subsubsection*{Part I}
+ This documentary is divided in three parts and describes the birth of personal computers at a time where 
+ mainframes were the only computers. Nerds began to play with electronic devices  
+ creating a growing interest in personal computers. Cobol, Fortran and Basic were the 
+ first languages. Nerds thought it was a bible for them. 
+ For a 10 years old, it was an incredible thrilling experience.
+  
+ In 1971, Intel invented the Microprocessor but they didn't realize the potential of the personal computers.    
+ In 1975, Ed Roberts in Albuquerque invented the first personal computer without monitor or keyboard.
+ It was named ALTAIR and based on a Intel 8080 Microprocessor.
+ It was created to play and people began to think what to do with that useless computer.   
+ Paul Allan began with the Altair and with a tape of paper programming in Basic. 
+ They attached a keyboard and a monitor and at the end of 1975 it was a  groovy revolution. 
+   
+ The first Apple computer was created to impress the club. 
+ Two years past from 1975 to build Apple 2. Wozniak was the Mozart of the digital computer. 
+ He succeeded with 21 years old. 
+ One of the first useful programs was VisiCalc, the first spreadsheet to evaluate 
+ profits and expenses instead of running numbers by hand. 
+ Dan Bricklin was the programmer but he didn't make money. 
+ He wanted to make a better world. 
+   
+  
+
+ \subsubsection*{Part II}
+ In 1980 Apple II was a success and  IBM appeared into the scene. 
+ At that time IBM was involved with mainframes. 
+ IBM was  a entire  conservative culture social culture:  a strict dress code, 
+ singing songs of IBM's culture,
+ working from 9 to 5 and  washing the car on Saturday. 
+ While being IBMers, they noticed the explosion of Apple II. 
+ Besides, IBM realized that  a personal computer  needed software: a computer language and an  
+ operating system.  At that time, Gary kildall created the first OS: CPM.
+ %Bill gates has the basic language. CPM . First OS. He was not a 
+ %fighter. Bill gates was very competitive.
+ Gary didn't receive IBM and Bill Gates saw the opportunity. 
+ They replicated CPM in four months: they call it PC DOS 1.0. 
+ Bill Gates  bought the OS replicate by Tim Patterson. 50 thousand dollars was the price. 
+ Then, Bill and Paul become multi  billionaire.  
+ In 1981, IBM entered in the market with Lotus 1/2/3.
+ It was the Killer application. The market was euphoric. 
+ People wanted to copy the IBM by  reverse engineering. 
+   
+ Engineers from Texas Computer founded Compaq Computer. 
+ Micro was available from Intel but the ROM bios was patented.
+ After being advice by engineering lawyers, Compaq looked for virgin senior engineers 
+ (those who never saw the IBM PC).  After the virgins test, 15 senior engineers were hired. 
+ It took one year to accomplish that PC and one million dollars. 
+ Terror was in IBM because prices went down due to competence.   
+ IBM with a new operating system: OS/2 tried to steal the business to Microsoft. 
+ It was a culture clash between IBM and Microsoft. 
+ In 1990,  Microsoft with Windows broke 
+ relations with IBM but the Windows idea came from Apple.   
+ %It was one of the biggest business errors of IBM. 
+ %IBM gave  1/3 of the cake to Intel and 1/3 to Microsoft.
+   
+  
+
+ \subsubsection*{Part III} 
+ A revolution to make the personal computer friendlier.  
+ In 1995,  Microsoft Windows announced its OS. 
+ Those ideas were invented 20 years ago. 
+ It all began in 1971 in  Xerox at Palo Alto. 
+ They created the first GUI (Graphical User Interface).
+ Engineers had a lot of freedom in Xerox developing  their dreams. The mouse was 
+ created there but there were a terrible mismatch between researchers and managers. 
+ 
+ At that time, Steve Jobs wanted to change the world not to earn money.
+ In 1979, Steve  visited to Xerox's researchers. 
+ Steve Jobs had the vision . Xerox showed Steve three things: 1) a network like internet, 
+ 2) a GUI and  3) object oriented programming. He 
+ was blinded by 2). It was a turning point. 
+ After an hour Steve understood what was going on. 
+ Apple developed Lisa with one hundred engineers. 
+   
+ In 1981, Apple was in trouble because IBM was selling software that didn't run on MAC. 
+ IBM had software. In 1983 they announced a game to 
+ create software for MAC. Bill Gates was there. 
+ Steve didn't realize that Bill was going to be his rival instead of IBM. 
+ Macintosh was the first 
+ affordable PC with a GUI but with  very bad sales. 
+ It was 1000 dollars more expensive than IBM.  
+ %Commercial against IBM tirany.   
+ Steve Jobs made agreement with Bill gates to create software. 
+ He thought that the Big Blue was the enemy. 
+   
+   
+ %What you see is what you get. 
+ %Wysiwyg. 
+ Apple needed a killer application. 
+ The problem was the dot printer. Agreement with Adobe people to create laser images printings. 
+ Adobe also developed in Xerox 
+ Apple bought those software.
+ They developed a killing application. 
+ Steve terrified everyone. 
+ So one steve left apple was twofold. 
+   
+ Scotty talked with Apple board and decided to follow Scotty plans. 
+ Steve said that he hired the wrong guy: Scotty Pepsi cola.  Steve left the company.   
+ In 1984, Microsoft launched Windows to challenge Macintosh.    
+ Apple sewed Microsoft. A long a legal battle of six years and  Apple lost. 
+ Steve said that Microsoft didn't have taste 
+ in the sense that they don't think original ideas. 
+   
+ %Society needs 30 years to arrange Advances in technologies. 
+   
+   
+   
+
+\newpage    
+\subsection*{Home computers in Europe: "Clive Sinclair"} 
+ While USA was euphoric with personal computers in Europe another visionary: 
+ Clive Sinclair (Micro men) revolved the market.    
+ Clive existed to push barriers and an inventor was obliged to dream. 
+ He created Sinclair company close to Cambridge university. 
+ Clive wanted to develop his electric car and his television but his colleague 
+ Christopher Curry wanted to create a home computer.   
+ %Margaret Thatcher ( Zacher) was elected.    
+ Clive and Curry broke relations and in 1978 Curry Christopher created
+ a company with Hermann Hauser an Austrian entrepreneur  who obtained his Ph D in Cavendish
+ lab. They meet the Cambridge processor group joining those guys who did everything for fun. 
+    
+ %Radionics 1978. 
+    
+ Clive saw the announcement of 2000 pounds of Apple II and thought why it was so expensive. 
+ He visioned a personal computer in every home in Britain for 99 ponds.
+ In 1980, Sinclair Research launched the first Sinclair ZX80 for 99 pounds.  
+  
+    
+ Acorn Computes, the company founded by Christopher Curry launched a personal computer 
+ with memory and more power.   
+ BBC announced a computer home initiative to put a computer in every school of the country.    
+ Chris and Clive began to fight to win a  BBC computer conquest. 
+ %Thy met in a bar to discuss B
+ %oin forces   
+ %Nerds eating with the tester wires.
+ %They have a computer series. 
+ BBC was expecting something different. Chris said that he would do something in four days. 
+ He asked his team to do it and they did it:  Acorn computer prototype. 
+ Acorn won the conquest and launched then BBC computer. 
+ 
+ In 1982, Sinclair Research launched the 125 pounds ZX Spectrum. 
+ It was a revolution not only with nerds in Britain but also Europe with Zilog Z80 microprocessor that was a 
+ software-compatible extension and enhancement of the Intel 8080. 
+ Quantum Leap was another powerful computer launched by Sinclair Research  in 
+ 1984 available for 399 pounds but it was not like the ZX Spectrum. 
+ Clive was concerned with his electric car and the computer boom became to an end. 
+ Clive Sinclair sold more than 12000 electric mobile cars C5.  
+ Sinclair company was sold to Amstrad computers. 
+ 
+ %What else can I do ? 
+ %BBC micro from acorn did not have so many games. 
+ %. Ready to ship in 20 days.
+ %   BBC basic language. It was success.
+ %Sinclair clash with Chris in a pub. 
+    
+    
+ Acorn was considered the British Apple.    
+ Acorn designed to ARM microchip. The most famous microchip.
+ The ARM chip designed by Acorn team has gone on to be the most popular michochip in history.  
+ As of 2018, over 100.000 million copies of the ARM processor have been manufactured, powering much of the world's mobile computing and 
+ embedded systems. Population of the world in 2018: 7600 million persons. 
+ Acorn sold 1.5 million BBC micros 
+ 250000 unsold computer electrons.     
+ The company was bought by Olivetti in 1985. 
+      
+    
+ The home computer market was dominated by giant American companies. 
+       
+  
+ 
+    
+   
+    
+\subsection*{The birth of internet: "Lo and Behold"} 
+ Lo and Behold, Reveries of the Connected World is a 2016 American documentary film 
+ directed by Werner Herzog. It comprimes 10 chapters from the birth of Internet to possible future 
+ scenarios. 
+ 
+ In 1969, Internet was born at UCLA.   
+ It was the first node for decades. 
+ Stanford did the first communication. 
+ Stanford and UCLA were connected by internet and by by a telephone at the same time.  
+ They intended to transmit the word 'LOGIN' letter by letter,  
+ but the system crashed with the letter 'G'. 
+ Hence, the first message on the Internet was 'LO' as in 'Lo and Behold'.    
+ %    Arpanet. 197--. Protocol and technology.    
+ The film explores the beneficial of  Internet through the following chapters: 
+ \begin{itemize} 
+ \setlength\itemsep{0cm}
+ \item I. The Early Days
+ \item II.  The Glory of the Net
+ \item III. The Dark Side
+ \item IV. Life Without the Net
+ \item I. The End of the Net
+ \item VI.  Earthly Invaders
+ \item VII.  Internet on Mars
+ \item VIII.  Artificial Intelligence
+ \item IX. The Internet of Me
+ \item X. The Future
+ \end{itemize} 
+ 
+     
+    
+   
+
+\subsection*{Free software: "The Revolution OS. The code"}
+ Revolution OS is a 2001 documentary film that introduces the concept of GNU, 
+ open source and the free software movement. It also describes the birth of Linux movement
+ with  interviews to  Richard Stallman, Linus Torvalds, 
+ Eric S. Raymond and Bruce Perens.
+ They are perhaps the most relevant persons who created a software revolution that it is still live.  
+ Richard Stallman defined the free software as new human right to male people free. 
+ Bruce Perens worked on the open source definition and allow others to think in a collaborative way when 
+ developing software. Linus Torvald,  leading the Linux movement, was perhaps one of the first example of this idea. 
+ To analyze and to understand that software movement, Eric Steven Raymond wrote: "The Cathedral and the Bazar: 
+ musing on Linux and open source by accidental revolutionary". 
+ In this book Raymond discussed  how is possible to develop software by breaking all strict software rules of engineers.  
+ 
+ Since there are slight differences between open source and free software when working on a collaborative
+ software project,  let's say the objectives are absolutely different.  Whereas the main objective of the open source 
+ movement is to optimize the developing software process by collaborating, the main objective of 
+ the free software movement is to make people free with allowing them to choose or to develop free or non-proprietary
+ tools for their everyday life.  Free software demands freedom. Open source demands quality. 
+ In 1983, R Stallman created the GNU operating system. 
+ GNU is like Unix. But unlike Unix, GNU gives its users freedom to develop or modify 
+ under the  General Public License (GNU GPL).
+ At that time, people working on the university, wanted to have a Unix SUN SPARC station at home. That's why Linux was so important. 
+ R. Stallman  began to write GNU Unix by developing compilers, editors and some other tools. But one piece was missing: the kernel which is 
+ the portion of the operating system that facilitates interactions between hardware and software components.  In 1991, Linus Torvald created 
+ the free kernel. 
+ An IBM PC with Linux cost 2000 dollars  in comparison  7000 dollars a of a SUN SPARC. 
+ R. Stallman proposed to name the new operating system:  GNU/Linux  but Linux was finally its name.  
+ Linus Torvalds said that R. Stallman was the great philosopher and he was the engineer. 
+ 
+ At that time,  Bill Gates defended private software and quality of Linux operating system 
+ was by far superior to Windows Microsoft OS. Hence, Linux gained dominance over Microsoft in professional 
+ applications.  
+ 
+ 
+  
+  
+
+\subsection*{Artificial intelligence: "The thirteenth floor"} 
+ The Thirteenth Floor is a 1999 science fiction film written and directed by Josef Rusnak. 
+ In this film, very real human simulations are done with a supercomputer. 
+ In 2000, The Thirteenth Floor was nominated for the Saturn Award for Best Science Fiction Film, but lost to The Matrix.
+ 
+ This film is chosen because of the close relation with  "simulated reality" theory by Nick Bostrom.
+ In 2003, Nick Bostrom published his paper: "Are you living in a computer simulation ?".
+ In 2014, Nick Bostrom in his book : "Superintelligence: Paths, Dangers, Strategies" 
+ defines thoroughly superintelligence and the post human stage in which a supercomputers exceed the human intelligence and reality could be 
+ conceived as a simulation. He also analyzes dangers of this scenario and 
+ how society sholud be prepared to receive theses advances. 
+ 
+ 
+ 
+        %\subsection*{Math and computers: "The colors of infinity"} 
+    
+  
+
+\newpage    
+\subsection*{Data privacy: "The great hack"}
+ The Great Hack is a 2019 documentary film about the Facebook–Cambridge Analytica data scandal.
+ Cambridge Analytica was dedicated to collect big data to reinforce a  sales strategy creating massive campaigns that approached users in a 
+ personal manner.
+ The documentary focuses on Professor David Carroll, Brittany Kaiser (former business development director for Cambridge Analytica), and 
+ British investigative journalist Carole Cadwalladr. Their stories expose the work of Cambridge Analytica in the politics of various 
+ countries, including the United Kingdom's Brexit campaign and the 2016 United States elections.   
+ Project Alamo was a database of voter information created for Donald Trump's 2016 presidential campaign
+ that spent one million dollars per day in Facebook ads. 
+ Cambridge Analytica collected 5000 data points of every person to model personality.   
+  
+ Roger McNamee is an American businessman, investor, venture capitalist and musician.
+ He was one of the first Facebook investors. In this documentary he says that 
+ Facebook was created to connect people but after the Cambridge Analytica data scandal, he felt guilty and 
+ he was not able to sleep at night. 
+ One of the main problems of data privacy is that we are in love with free service in which   we accept 
+ that our private data associated to way of life or customs can be used for financial or politic purposes. 
+ 
+ Carole Cadwalladr relates very emotively, in her TED talk, that they are driving us apart
+ and trying to explain how our private data  is affecting our life by means of these social media platforms. 
+ %Is this what you want. 
+ %You have to understand how you data. 
+ She finishes saying that our dignity is at stake. 
+ David Carroll continues to teach and advocate for data rights to be recognized as the new human rights. 
+ 
+   
+     
+        
+\subsection*{Social networks: "The social dilemma"}
+The Social Dilemma is a 2020 American documentary film about 
+addiction to social media and how people emotions are manipulated  
+and how disinformation is spread.
+The documentary describes a very concerned situation. 
+When you look around you is like the world is going crazy. 
+In 2006 Facebook was looking at Google with admiration. 
+They created something good and the same time a machine to make money.  
+The documentary explains that if the  product is free, you are the product.  
+ % Book: Jaron Lanier. Ten arguments for deleting your social media accounts. Right now.
+ % Robert macnameee: selling their users. 
+ % 
+ % What do they do with our data ? 
+ % They build models that predict our actions. Hi
+Facebook techniques are: engagement by  giving you back the dopamine hit. 
+Social media is a drug that directly affects the release of dopamine in the reward pathway. 
+People spend on average around 3 hours a day on Social media. 
+  
+ %A pacifier. Social media. 
+  
+There are hundreds of algorithms running simultaneously feeding  
+ %Few people working on those algorithms. 
+only one machine learning strategy: to maximize the profit.
+These algorithms are not 
+precise instructions and programmers do not know what is going to happen.
+The only certainty is Artifical Intelligence is going to maximize 
+cost function or the profit by learning online and by modifying the 
+way of interactions with human beings. 
+In that sense, we don't have the control. 
+  
+% You are playing with AI. 
+% It knows everything about you and you don't know anything about him.  
+% It's not a fair fight. 
+  
+There are two time scenarios:  
+\begin{enumerate} 
+\setlength\itemsep{0cm}
+\item AI will be smarter than human. Superintelligence will surpass human beings. 
+\item Right now . The root of addiction.
+Polarization, radicalization, outrage-ification, vanity-ification. 
+This is checkmate on humanity. 
+\end{enumerate}  
+  
+  
+%Example. Imagine wikipedia saying different definitions for different people. If wikipedia could know your profile and it was paid to 
+%change 
+%a little bit your idea, it would change your information to conquer its objectives. 
+  
+%Each person has its own reality with its own story based on his profile. 
+%You think what they don't realize what is going on. Your question. 
+%Because they are not seeing the same information than others. 
+  
+Fake news makes companies to earn more money than true news. 
+Social media amplifies gossips and rumors not allowing us 
+to distinguish between true and fake. 
+Conspiracy theories. Very easy. 
+Technology is the existential threat.   
+%Whether it is to be utopia or oblivion will be a touch-and-go relay race right up to the final moment. Humanity is in his final exam as to 
+%whether or not it qualifies for continuance in universe. 
+%  Buckminster Fuller. 
+%  
+%  
+%Technology is Simultaneously utopia and distopia. 
+%  
+%The business model has a problem. 
+%  
+%These markets undermine democracy and undermine freedom. 
+%  
+%Based on religion: profits at all costs. Corrosive business model.  
+%  
+%Not everyone recognize that we have a problem. 
+%  
+%Reform facebook and Google. 
+%Qwant in instead of google. Block notifications. 
+
+%  Delete your social media accounts. To have more people to have a conversation. 
+  
+%  
+%  Check mate on humanity 
+%  
+%  1) drug addict to social media 
+%  2) when superintelligence will surpass human beings. 
+%  3) these markets undermine democracy. 
+%  
+%  Bunkminster Fuller 
+% 
+
+  
+   
+Three rules to combat social media:
+\begin{enumerate} 
+\setlength\itemsep{0cm}
+\item Avoid phone in your bedroom
+\item Don't allow kids to enter in social media until they are at least in high school. 
+\item Discuss the time you devote to social media. 
+\end{enumerate} 
+
