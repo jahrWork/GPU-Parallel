@@ -31,8 +31,7 @@ function figure()
     y = zeros(length(x₀))
 
     u = @lift x₀ .+ $x
-    u_last = @lift [0.0, x₀[end] .+ $x_last]
-    @show u_last
+    u_last = @lift [0.0, x₀[end] + $x_last]
 
     lines!(ax, u_last, [0.0, 0.0], color = :black, linewidth = 2)
     lines!(ax, [0, 0], [-0.15, 0.15], color = :black, linewidth = 2)
