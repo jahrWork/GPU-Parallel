@@ -1,7 +1,7 @@
 using DifferentialEquations, GLMakie, GPUParallel
 
 # Parameter Definition
-p = (m = 0.1, k = 50.0, ξ = 0.5)
+p = (m = 0.1, k = 50.0, ξ = 0.005)
 N = 100
 
 # Initial Condition
@@ -34,6 +34,7 @@ function figure()
 
     # lines!(ax, u_last, [0.0, 0.0], color = :black, linewidth = 2)
     lines!(ax, [0, 0], [-1, 1], color = :black, linewidth = 2)
+    lines!(ax, [x[end] + 2, x[end] + 2], [-1, 1], color = :black, linewidth = 2)
     scatter!(ax, x, y, color = :coral, markersize = 10)
 
     hidedecorations!(ax)
