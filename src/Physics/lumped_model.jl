@@ -89,7 +89,7 @@ end
 # Record the actual animation
 fig = figure()
 frames = 1:(tspan[end] * FPS)
-dir = (@__DIR__) * "/videos/one_d_lumped_model.gif"
+dir = (@__DIR__) * "./one_d_lumped_model.gif"
 
 record(fig, dir, frames; framerate = FPS) do i
     step!(t)
