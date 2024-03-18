@@ -1,5 +1,9 @@
 module graphs
 
+using GLMakie
+using DifferentialEquations
+
+
 
 function plot(U)
 
@@ -8,15 +12,9 @@ function plot(U)
 
 end 
 
-end 
-
-#= 
-
-function figure()
 
 
-
-
+function figure(x, N)
 
     fig = Figure(size = (1000, 200))
     ax = Axis(fig[1, 1])
@@ -25,9 +23,9 @@ function figure()
     y = zeros(length(x₀))
 
     u = @lift x₀ .+ $x
-    u_last = @lift [0.0, x₀[end] + $x_last]
+   # u_last = @lift [0.0, x₀[end] + $x_last]
 
-    lines!(ax, u_last, [0.0, 0.0], color = :black, linewidth = 2)
+  #  lines!(ax, u_last, [0.0, 0.0], color = :black, linewidth = 2)
     lines!(ax, [0, 0], [-0.15, 0.15], color = :black, linewidth = 2)
     scatter!(ax, u, y, color = :coral, markersize = 60)
 
@@ -36,49 +34,53 @@ function figure()
 
     ylims!(ax, -0.25, 0.25)
     xlims!(ax, -0.05, 2N + 2)
-
-    fig
+    
+    return fig
 end
 
 
-function draw()
-
-# Plot and make an animation
-t = Observable(0.0)
-x = @lift sol($t)[1:N]
-x_last = @lift sol($t)[N]
-
-#const 
-FPS = 40
-dt = 1 / FPS
-step!(t) = t[] += dt
 
 
+function movie(sol, N)
 
+  
+    # Plot and make an animation
+    t = Observable(0.0)
+    x = @lift sol($t)[1:N]
+    x_last = @lift sol($t)[N]
+    
+    #const 
+    FPS = 40
+    dt = 1 / FPS
+    step!(t) = t[] += dt
+    
+    tspan= (0., 1.)
+    
+    fig = figure(x, N)
+    
+    # Test the animation before recording
+    for i in 1:(tspan[end] * FPS)
+        step!(t)
+        sleep(dt)
+    end
+    
+    # # Record the actual animation
+    # fig = figure(x)
+    # frames = 1:(tspan[end] * FPS)
+    # dir = (@__DIR__) * "./one_d_lumped_model.gif"
+    
+    # record(fig, dir, frames; framerate = FPS) do i
+    #     step!(t)
+    # end
 
-fig = figure()
-
-# Test the animation before recording
-for i in 1:(tspan[end] * FPS)
-    step!(t)
-    sleep(dt)
-end
-
-# Record the actual animation
-fig = figure()
-frames = 1:(tspan[end] * FPS)
-dir = (@__DIR__) * "./one_d_lumped_model.gif"
-
-record(fig, dir, frames; framerate = FPS) do i
-    step!(t)
-end
-
-
-end  =#
-
-
-
+end 
 
 
 
-#end # module
+
+
+end 
+
+
+
+

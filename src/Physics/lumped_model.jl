@@ -5,7 +5,7 @@ using DifferentialEquations
 
 function one_d_model(u, p, t)
     m, k, ξ = p
-
+    
     N = length(u) ÷ 2
     F = zeros(N)
 
@@ -26,12 +26,12 @@ function one_d_model(u, p, t)
     return [ẋ; F ./ m]
 end
 
-function simulation2(N, p) 
+function simulation(N, p) 
 
 
   # Initial Condition
   u0 = zeros(2 * N)
-  u0[N] = 1.5
+  u0[N] = 1.4
 
   # Solve the ODE
   T = 2π / sqrt(p.k / p.m)
