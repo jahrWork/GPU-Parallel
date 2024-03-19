@@ -43,8 +43,9 @@ graphs.movie(sol, N)
 
 
 
-# import Pkg
-# Pkg.add( "Plots" ) # It does not work 
+import Pkg
+Pkg.add( "Plots" ) 
+
 using Plots
 x = range(0, 10, length=100)
 y = sin.(x)
