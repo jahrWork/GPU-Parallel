@@ -1,9 +1,11 @@
 import Pkg
+Pkg.activate(".")  # environment in this folder
 Pkg.add( "Plots" ) 
 Pkg.add( "CPUTime" ) 
 #Pkg.add( "BLIS" )
 Pkg.add( "MKL" )
 #Pkg.precompile()
+
 
 using CPUTime
 using Plots
@@ -25,7 +27,7 @@ function matrix_multiplication(A,B)
   
 end
 
-function matrix_multiplication_row_by_column(A,B)
+function my_matrix_multiplication(A,B)
 
   (N, M) = size(A)
   (M, L) = size(B) 
@@ -33,36 +35,56 @@ function matrix_multiplication_row_by_column(A,B)
   C = zeros(Float32,  (N, L) )
 
   
-  for i in 1:N
-    for j in 1:L 
+  for i in 1:N, j in 1:L
       for k in 1:M
         C[i,j] = C[i,j] + A[i,k]*B[k,j]
       end  
-    end
   end
 
   return C 
 
 end
 
-function matrix_multiplication_column_by_row(A,B)
+function my_efficient_matrix_multiplication(A,B)
 
   (N, M) = size(A)
   (M, L) = size(B) 
+  BT = transpose(B) 
 
   C = zeros(Float32,  (N, L) )
 
-  for j in 1:L 
-    for i in 1:N
-      for k in 1:M
-        C[i,j] = C[i,j] + A[i,k]*B[k,j]
-      end  
-    end
+  for k in 1:M
+    for j in 1:L, i in 1:N
+      
+        C[i,j] = C[i,j] + A[i,k]*BT[j,k]
+
+    end  
   end
 
   return C 
 
 end
+
+function my_efficient_matrix_multiplication2(A,B)
+
+  (N, M) = size(A)
+  (M, L) = size(B) 
+  BT = transpose(B) 
+
+  C = zeros(Float32,  (N, L) )
+
+  Threads.@threads for k in 1:M
+    for j in 1:L, i in 1:N
+      
+        C[i,j] = C[i,j] + A[i,k]*BT[j,k]
+        
+    end  
+  end
+
+  return C 
+
+end
+
 
 
 
@@ -95,24 +117,23 @@ end
 
 N_cores = 1 
 time_for_different_N(2000, N_cores, matrix_multiplication) # precompilation
-time_for_different_N(2000, N_cores, matrix_multiplication_row_by_column) 
-time_for_different_N(2000, N_cores, matrix_multiplication_row_by_column) 
+time_for_different_N(2000, N_cores, my_efficient_matrix_multiplication) 
+time_for_different_N(2000, N_cores, my_efficient_matrix_multiplication2) 
+time_for_different_N(2000, N_cores, my_matrix_multiplication) 
 
 
 
 
+# #using LinearAlgebra, BLIS
+# using LinearAlgebra, MKL
 
-
-#using LinearAlgebra, BLIS
-using LinearAlgebra, MKL
-
-N = Vector([10:10:2500; 2500:100:6000])
-N_cores = 4 
-BLAS.set_num_threads(2*N_cores)
-println(" threads = ", BLAS.get_num_threads() )
-Time, Theoretical_time = time_for_different_N(N, N_cores, matrix_multiplication)
-display( plot(N, Time, ylims=(0., 0.05) ) )
-display( plot!(N, Theoretical_time*ones( length(N) ) ) )
+# N = Vector([10:10:2500; 2500:100:6000])
+# N_cores = 4 
+# BLAS.set_num_threads(2*N_cores)
+# println(" threads = ", BLAS.get_num_threads() )
+# Time, Theoretical_time = time_for_different_N(N, N_cores, matrix_multiplication)
+# display( plot(N, Time, ylims=(0., 0.05) ) )
+# display( plot!(N, Theoretical_time*ones( length(N) ) ) )
 
 
 
