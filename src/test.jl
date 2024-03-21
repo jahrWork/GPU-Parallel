@@ -88,7 +88,7 @@ end
 
 
 
-function time_for_different_N(N, N_cores, matmul)
+function time_matrix_multilication(N, N_cores, matmul)
 
   Time = zeros( length(N) )
   Theoretical_time = 4e9/(4e9 * 512/32 * 4 * N_cores)
@@ -114,43 +114,26 @@ function time_for_different_N(N, N_cores, matmul)
 
 end 
 
-
-N_cores = 1 
-time_for_different_N(2000, N_cores, matrix_multiplication) # precompilation
-time_for_different_N(2000, N_cores, my_efficient_matrix_multiplication) 
-time_for_different_N(2000, N_cores, my_efficient_matrix_multiplication2) 
-time_for_different_N(2000, N_cores, my_matrix_multiplication) 
+# settings "julia.NumThreads": "auto"
+N_threads = Threads.nthreads()
+N_cores =  div(N_threads, 2)
+println("Threads =", N_threads ) 
 
 
+time_matrix_multilication(2000, N_cores, matrix_multiplication) # precompilation
+time_matrix_multilication(2000, N_cores, my_efficient_matrix_multiplication) 
+time_matrix_multilication(2000, N_cores, my_efficient_matrix_multiplication2) 
+time_matrix_multilication(2000, N_cores, my_matrix_multiplication) 
 
 
-# #using LinearAlgebra, BLIS
-# using LinearAlgebra, MKL
+#using LinearAlgebra, BLIS
+using LinearAlgebra, MKL
 
-# N = Vector([10:10:2500; 2500:100:6000])
-# N_cores = 4 
-# BLAS.set_num_threads(2*N_cores)
-# println(" threads = ", BLAS.get_num_threads() )
-# Time, Theoretical_time = time_for_different_N(N, N_cores, matrix_multiplication)
-# display( plot(N, Time, ylims=(0., 0.05) ) )
-# display( plot!(N, Theoretical_time*ones( length(N) ) ) )
+N = Vector([10:10:2500; 2500:100:6000])
+BLAS.set_num_threads(2*N_cores)
+println(" threads = ", BLAS.get_num_threads() )
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication)
+display( plot(N, Time, ylims=(0., 0.05) ) )
+display( plot!(N, Theoretical_time*ones( length(N) ) ) )
 
-
-
-# BLAS.set_num_threads(Sys.CPU_THREADS)
-# println(" threads = ", BLAS.get_num_threads() )
-# Time = time_for_different_N(N)
-# plot(N, Time)    
-
-
-# begin 
-# BLAS.set_num_threads(4)
-# println(" threads = ", BLAS.get_num_threads() )
-# Time, Theoretical_time = time_for_different_N(N)
-# plot(N, Time, ylims=(0., 0.05) )
-# plot!(N, Theoretical_time*ones( length(N) ) ) 
-# end
-
-
-# ENV["JULIA_NUM_THREADS"] = "4"
 
