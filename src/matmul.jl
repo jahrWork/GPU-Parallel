@@ -10,6 +10,11 @@ Pkg.add( "MKL" )
 using CPUTime
 using Plots
 
+
+#using LinearAlgebra, BLIS
+using LinearAlgebra, MKL
+
+
 function matrix_initialization(N)
 
   
@@ -126,8 +131,6 @@ time_matrix_multilication(2000, N_cores, my_efficient_matrix_multiplication2)
 time_matrix_multilication(2000, N_cores, my_matrix_multiplication) 
 
 
-#using LinearAlgebra, BLIS
-using LinearAlgebra, MKL
 
 N = Vector([10:10:2500; 2500:100:6000])
 BLAS.set_num_threads(2*N_cores)
