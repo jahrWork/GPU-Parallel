@@ -136,7 +136,13 @@ N = Vector([10:10:2500; 2500:100:10000])
 BLAS.set_num_threads(2*N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication)
+GFLOPS = 1 ./ Time
+GFLOPS_max = 1 / Theoretical_time
+
+
 display( plot(N, Time, ylims=(1e-4, 1e-2), yaxis=:log, minorgrid=true  ) )
 display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
 
-
+xlabel!("N")
+display( plot(N, GFLOPS, ylims=(0, 3000), title="GFLOPS",  minorgrid=true  ) )
+display( plot!(N, GFLOPS_max *ones( length(N) ), minorgrid=true ) )
