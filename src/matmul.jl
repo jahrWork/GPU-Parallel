@@ -123,7 +123,7 @@ end
 N_threads = Threads.nthreads()
 N_cores =  div(N_threads, 2)
 println("Threads =", N_threads ) 
-
+println("Cores =", N_cores ) 
 
 time_matrix_multilication(2000, N_cores, matrix_multiplication) # precompilation
 time_matrix_multilication(2000, N_cores, my_efficient_matrix_multiplication) 
@@ -136,7 +136,7 @@ N = Vector([10:10:2500; 2500:100:8000])
 BLAS.set_num_threads(2*N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication)
-display( plot(N, Time, ylims=(0., 0.05) ) )
-display( plot!(N, Theoretical_time*ones( length(N) ) ) )
+display( plot(N, Time, ylims=(1e-3, 5e-1), yaxis=:log, minorgrid=true  ) )
+display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
 
 
