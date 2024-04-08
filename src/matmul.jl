@@ -96,7 +96,8 @@ end
 function time_matrix_multilication(N, N_cores, matmul)
 
   Time = zeros( length(N) )
-  Theoretical_time = 4e9/(4e9 * 512/32 * 4 * N_cores)
+  #Theoretical_time = 4e9/(4e9 * 512/32 * 4 * N_cores)
+  Theoretical_time = 1e9/(4e9 * 512/32 * 2 * N_cores) # jahr
 
   for (i,n) in enumerate(N)  # variables inside loop have local scope 
  
@@ -132,7 +133,7 @@ time_matrix_multilication(2000, N_cores, my_matrix_multiplication)
 
 
 
-N = Vector([10:10:2500; 2500:10:10000])
+N = Vector([10:10:2500; 2500:100:10000])
 BLAS.set_num_threads(2*N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication)
@@ -144,5 +145,5 @@ display( plot(N, Time, ylims=(1e-4, 1e-2), yaxis=:log, minorgrid=true  ) )
 display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
 
 xlabel!("N")
-display( plot(N, GFLOPS, ylims=(0, 3000), title="GFLOPS",  minorgrid=true  ) )
+display( plot(N, GFLOPS, ylims=(0, 5000), title="GFLOPS",  minorgrid=true  ) )
 display( plot!(N, GFLOPS_max *ones( length(N) ), minorgrid=true ) )
