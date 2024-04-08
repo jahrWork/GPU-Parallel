@@ -132,7 +132,7 @@ time_matrix_multilication(2000, N_cores, my_matrix_multiplication)
 
 
 
-N = Vector([10:10:2500; 2500:100:10000])
+N = Vector([10:10:2500; 2500:10:10000])
 BLAS.set_num_threads(2*N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication)
