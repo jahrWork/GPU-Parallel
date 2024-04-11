@@ -1,3 +1,0 @@
-module GUI
-
-end # module

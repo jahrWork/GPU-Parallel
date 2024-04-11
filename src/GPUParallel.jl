@@ -1,15 +1,55 @@
+
 module GPUParallel
 
-include("GPUMulticore/GPUMulticore.jl")
 
-import .GPUMulticore: hello
+#push!(LOAD_PATH, "./Physics/")
+#push!(LOAD_PATH, "./GUI/")
 
-export hello
 
-include("Physics/Physics.jl")
+#using ..lumped_model # ..module_name when module is not installed ???
+#using ..graphs
 
-import .Physics: one_d_model
 
-export one_d_model
+# import Pkg
+# Pkg.add( "DifferentialEquations" )
+# Pkg.add("Interpolations")
 
-end # module
+
+
+#Pkg.add( path = joinpath(@__DIR__, "/Physics/lumped_model.jl"))
+#Pkg.add( path = "./Physics/lumped_model.jl")
+#Pkg.add( path = "./GUI/graphs.jl")
+
+#using lumped_model, graphs
+
+
+include("./Physics/lumped_model.jl")
+include("./GUI/graphs.jl")
+
+
+using .lumped_model 
+using .graphs
+
+
+# Parameter Definition
+p = (m = 1.0, k = 4.0, ξ = 0.0)
+N = 10
+
+sol = lumped_model.simulation(N, p)
+
+graphs.plot(sol)
+
+graphs.movie(sol, N)
+
+
+
+import Pkg
+Pkg.add( "Plots" ) 
+
+using Plots
+x = range(0, 10, length=100)
+y = sin.(x)
+plot(x, y)
+
+
+end 
