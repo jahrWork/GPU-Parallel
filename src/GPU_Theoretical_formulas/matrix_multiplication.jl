@@ -51,17 +51,45 @@ function benchmark_matrix_multiplication_variable_ops(filename, n, N_ops)
     write(filename, "$n, $(TIMES * 2 * n^3), $t\n")
 end
 
+function benchmark_matrix_multiplication_fixed_runs(filename, n, num_runs)
+    Time_GPU = zeros(num_runs)
+    
+    open(filename, "a") do file
+        for i = 1:num_runs
+            A = rand(Float32, n, n)
+            B = rand(Float32, n, n)
+
+            d_A = CUDA.CuArray(A)
+            d_B = CUDA.CuArray(B)
+            
+            # Ensure the operation is compiled by running it once before timing
+            gpu_matrix_multiply(d_A, d_B)
+
+            # Benchmark the matrix multiplication function
+            total_time_GPU = @belapsed gpu_matrix_multiply($d_A, $d_B) evals=1
+            
+            write(file, "$n, $(2 * n^3), $(vendor()), $total_time_GPU\n")
+            
+            Time_GPU[i] = total_time_GPU
+        end
+    end
+    
+    println("Fixed runs benchmarking for n = $n completed.")
+    return Time_GPU
+end
+
+
 # Main function to perform benchmarks
 function main()
     println("Starting benchmarking process...")
     filename = "benchmark_results_cuda.csv"
     N = 50:50:1450
     num_runs = 10
-    Time_GPU = zeros(length(N), num_runs)
+    Time_GPU_matrix_multiplication = zeros(length(N), num_runs)
 
     for (i, n) in enumerate(N)
         println("Benchmarking matrix multiplication for n = $n...")
-        Time_GPU[i, :] = benchmark_matrix_multiplication(filename, n, num_runs)
+        Time_GPU_matrix_multiplication[i, :] = benchmark_matrix_multiplication(filename, n, num_runs)
     end
 
     filename_fixed = "benchmark_results_cuda_fixed.csv"
@@ -80,7 +108,7 @@ function main()
 
     for n in N_fixed
         println("Benchmarking fixed runs for n = $n...")
-        Time_GPU = benchmark_matrix_multiplication_fixed_runs(filename_fixed, n, num_runs)
+        Time_GPU_fixed_runs = benchmark_matrix_multiplication_fixed_runs(filename_fixed, n, num_runs)
     end
 
     for n in N_variable
@@ -88,7 +116,7 @@ function main()
         benchmark_matrix_multiplication_variable_ops(filename_variable, n, N_ops_constant)
     end
 
-    plot(N, mean(Time_GPU, dims=2), ribbon = std(Time_GPU, dims=2), 
+    plot(N, mean(Time_GPU_matrix_multiplication, dims=2), ribbon = std(Time_GPU_matrix_multiplication, dims=2), 
         xlabel="Matrix Size", ylabel="Duration (s)", title="Benchmark Matrix Multiplication (Fixed Runs)", legend=false)
     savefig("benchmark_results_fixed_runs.png")
     println("Benchmarking process completed.")
