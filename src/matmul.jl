@@ -93,7 +93,7 @@ end
 
 
 
-function matrix_initilization_CUDA(N)
+function matrix_initialization_GPU(N)
 
   N = 10000
 
@@ -191,14 +191,14 @@ N = Vector([10:10:2500; 2500:100:10000])
 BLAS.set_num_threads(2*N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization, matrix_multiplication)
-GFLOPS = 1 ./ Time
+GFLOPS_CPU = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS, GFLOPS_max, "GFLOPS CPU")
+plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU")
 
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
 GFLOPS_GPU = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS CPU")
+plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU")
 
