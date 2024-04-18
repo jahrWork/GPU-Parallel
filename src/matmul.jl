@@ -4,6 +4,8 @@ Pkg.add( "Plots" )
 Pkg.add( "CPUTime" ) 
 #Pkg.add( "BLIS" )
 Pkg.add( "MKL" )
+Pkg.add("CUDA")
+
 #Pkg.precompile()
 
 
@@ -13,24 +15,11 @@ using Plots
 
 #using LinearAlgebra, BLIS
 using LinearAlgebra, MKL
+using CUDA
 
 
-function matrix_initialization(N)
-
-  
-    A = rand(Float32, N, N )
-    B = rand(Float32, N, N )
-
-    return A, B 
-
-end 
 
 
-function matrix_multiplication(A,B)
-
-     return A * B  
-  
-end
 
 function my_matrix_multiplication(A,B)
 
@@ -77,6 +66,7 @@ function my_efficient_matrix_multiplication2(A,B)
   BT = transpose(B) 
 
   C = zeros(Float32,  (N, L) )
+  
 
   Threads.@threads for k in 1:M
     for j in 1:L, i in 1:N
@@ -93,15 +83,64 @@ end
 
 
 
-function time_matrix_multilication(N, N_cores, matmul)
+
+
+
+
+
+
+
+
+
+
+function matrix_initilization_CUDA(N)
+
+  N = 10000
+
+  A = rand(Float32, N, N)
+  B = rand(Float32, N, N)
+
+  d_A = CUDA.CuArray(A)
+  d_B = CUDA.CuArray(B)
+  
+  return d_A, d_B 
+ 
+end 
+
+function matrix_initialization(N)
+
+
+  A = rand(Float32, N, N )
+  B = rand(Float32, N, N )
+
+  return A, B 
+
+end 
+
+
+function matrix_multiplication(A,B)
+
+   return A * B  
+
+end
+
+function matrix_multiplication_GPU(A,B)
+
+return CUDA.@sync A * B  
+
+end
+
+
+
+function time_matrix_multilication(N, N_cores, matinit, matmul)
 
   Time = zeros( length(N) )
   #Theoretical_time = 4e9/(4e9 * 512/32 * 4 * N_cores)
-  Theoretical_time = 1e9/(4e9 * 512/32 * 2 * N_cores) # jahr
+  Theoretical_time = 1e9/(4e9 * 512/32 *  N_cores) # jahr
 
   for (i,n) in enumerate(N)  # variables inside loop have local scope 
  
-   A,B = matrix_initialization(n)
+   A,B = matinit(n)
 
    t1= time_ns()
 
@@ -120,30 +159,46 @@ function time_matrix_multilication(N, N_cores, matmul)
 
 end 
 
+
+function plot_results(GFLOPS, GFLOPS_max, title)
+
+  # display( plot(N, Time, ylims=(1e-4, 1e-2), yaxis=:log, minorgrid=true  ) )
+  # display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
+ 
+   xlabel!("N")
+   display( plot(N, GFLOPS, ylims=(0, 5000), title= title,  minorgrid=true  ) )
+   display( plot!(N, GFLOPS_max *ones( length(N) ), minorgrid=true ) )
+ 
+ end 
+
+
+
 # settings "julia.NumThreads": "auto"
 N_threads = Threads.nthreads()
 N_cores =  div(N_threads, 2)
+
 println("Threads =", N_threads ) 
 println("Cores =", N_cores ) 
 
-time_matrix_multilication(2000, N_cores, matrix_multiplication) # precompilation
-time_matrix_multilication(2000, N_cores, my_efficient_matrix_multiplication) 
-time_matrix_multilication(2000, N_cores, my_efficient_matrix_multiplication2) 
-time_matrix_multilication(2000, N_cores, my_matrix_multiplication) 
+# time_matrix_multilication(2000, N_cores, matrix_initilization, matrix_multiplication) # precompilation
+# time_matrix_multilication(2000, N_cores, matrix_initilization, my_efficient_matrix_multiplication) 
+# time_matrix_multilication(2000, N_cores, matrix_initilization, my_efficient_matrix_multiplication2) 
+# time_matrix_multilication(2000, N_cores, matrix_initilization, my_matrix_multiplication) 
 
 
 
 N = Vector([10:10:2500; 2500:100:10000])
 BLAS.set_num_threads(2*N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
-Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication)
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization, matrix_multiplication)
 GFLOPS = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
+plot_results(GFLOPS, GFLOPS_max, "GFLOPS CPU")
 
-display( plot(N, Time, ylims=(1e-4, 1e-2), yaxis=:log, minorgrid=true  ) )
-display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
+GFLOPS_GPU = 1 ./ Time
+GFLOPS_max = 1 / Theoretical_time
 
-xlabel!("N")
-display( plot(N, GFLOPS, ylims=(0, 5000), title="GFLOPS",  minorgrid=true  ) )
-display( plot!(N, GFLOPS_max *ones( length(N) ), minorgrid=true ) )
+plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS CPU")
+
