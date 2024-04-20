@@ -97,7 +97,7 @@ function time_matrix_multilication(N, N_cores, matmul)
 
   Time = zeros( length(N) )
   #Theoretical_time = 4e9/(4e9 * 512/32 * 4 * N_cores)
-  Theoretical_time = 1e9/(4e9 * 512/32 * 2 * N_cores) # jahr
+  Theoretical_time = 1e9/(4e9 * 512/32 * N_cores) # jahr
 
   for (i,n) in enumerate(N)  # variables inside loop have local scope 
  
@@ -121,8 +121,9 @@ function time_matrix_multilication(N, N_cores, matmul)
 end 
 
 # settings "julia.NumThreads": "auto"
-N_threads = Threads.nthreads()
-N_cores =  div(N_threads, 2)
+N_threads = 6
+#N_cores =  div(N_threads, 2)
+N_cores =  N_threads
 println("Threads =", N_threads ) 
 println("Cores =", N_cores ) 
 
@@ -145,5 +146,41 @@ display( plot(N, Time, ylims=(1e-4, 1e-2), yaxis=:log, minorgrid=true  ) )
 display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
 
 xlabel!("N")
-display( plot(N, GFLOPS, ylims=(0, 5000), title="GFLOPS",  minorgrid=true  ) )
+display( plot(N, GFLOPS, ylims=(0, 1000), title="GFLOPS",  minorgrid=true  ) )
 display( plot!(N, GFLOPS_max *ones( length(N) ), minorgrid=true ) )
+
+using BenchmarkTools
+
+function time_matrix_multilication_threads(N, N_cores, matmul)
+    Time = zeros(length(N))
+    Speedup = zeros(length(N))
+
+    for (i, n) in enumerate(N)
+        A, B = matrix_initialization(n)
+        
+        t_serial = @belapsed $matmul($A, $B)
+        
+        BLAS.set_num_threads(N_cores)
+        t_parallel = @belapsed $matmul($A, $B)
+        
+        Time[i] = t_parallel
+        Speedup[i] = t_serial / t_parallel
+    end
+
+    return Speedup
+end
+
+N_threads_range = 1:6
+Speedups = []
+
+for n_threads in N_threads_range
+  s = time_matrix_multilication_threads(2000, n_threads, my_efficient_matrix_multiplication)
+  push!(Speedups, s)
+end
+
+display(plot(N_threads_range, Time, xlabel="Number of Threads", ylabel="Time (s)", legend=:topright, 
+  title="Time vs Number of Threads", label=["N=2000" for i in 1:length(N_threads_range)], marker=true))
+
+
+display(plot(N_threads_range, Speedups, xlabel="Number of Threads", ylabel="Speedup", legend=:topright, 
+    title="Speedup vs Number of Threads", marker=true))

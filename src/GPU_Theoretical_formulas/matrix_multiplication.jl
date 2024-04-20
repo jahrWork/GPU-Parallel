@@ -1,7 +1,7 @@
 using CUDA
 using BenchmarkTools
 using Statistics
-import LinearAlgebra.BLAS: vendor
+# import LinearAlgebra.BLAS: vendor
 using Plots
 
 # Function that performs the matrix multiplication using CUDA
@@ -9,7 +9,8 @@ function gpu_matrix_multiply(A, B)
     CUDA.@sync A * B
 end
 
-function benchmark_matrix_multiplication(filename, n, num_runs)
+# Function to benchmark matrix multiplication for a fixed number of operations
+function benchmark_matrix_multiplication(filename, n, num_runs, num_ops)
     Time_GPU = zeros(num_runs)
     
     open(filename, "a") do file
@@ -26,7 +27,7 @@ function benchmark_matrix_multiplication(filename, n, num_runs)
             # Benchmark the matrix multiplication function
             total_time_GPU = @belapsed gpu_matrix_multiply($d_A, $d_B) evals=1
             
-            write(file, "$n, $(2 * n^3), $(vendor()), $total_time_GPU\n")
+            write(file, "$n, $num_ops, $(vendor()), $total_time_GPU\n")
             
             Time_GPU[i] = total_time_GPU
         end
@@ -37,8 +38,8 @@ function benchmark_matrix_multiplication(filename, n, num_runs)
 end
 
 # Function to benchmark matrix multiplication for variable number of operations
-function benchmark_matrix_multiplication_variable_ops(filename, n, N_ops)
-    TIMES = max(1, div(N_ops, 2 * n^3))
+function benchmark_matrix_multiplication_variable_ops(filename, n, num_ops)
+    TIMES = max(1, div(num_ops, 2 * n^3))
 
     A = CUDA.rand(Float32, n, n)
     B = CUDA.rand(Float32, n, n)
@@ -47,11 +48,12 @@ function benchmark_matrix_multiplication_variable_ops(filename, n, N_ops)
         CUDA.@sync A * B
     end
     println("Variable operations benchmarking for n = $n completed.")
-    println("$n, $TIMES operations completed in $t seconds.")
-    write(filename, "$n, $(TIMES * 2 * n^3), $t\n")
+    println("$n, $num_ops operations completed in $t seconds.")
+    write(filename, "$n, $num_ops, $t\n")
 end
 
-function benchmark_matrix_multiplication_fixed_runs(filename, n, num_runs)
+# Function to benchmark matrix multiplication for a fixed number of runs
+function benchmark_matrix_multiplication_fixed_runs(filename, n, num_runs, num_ops)
     Time_GPU = zeros(num_runs)
     
     open(filename, "a") do file
@@ -68,7 +70,7 @@ function benchmark_matrix_multiplication_fixed_runs(filename, n, num_runs)
             # Benchmark the matrix multiplication function
             total_time_GPU = @belapsed gpu_matrix_multiply($d_A, $d_B) evals=1
             
-            write(file, "$n, $(2 * n^3), $(vendor()), $total_time_GPU\n")
+            write(file, "$n, $num_ops, $(vendor()), $total_time_GPU\n")
             
             Time_GPU[i] = total_time_GPU
         end
@@ -78,18 +80,19 @@ function benchmark_matrix_multiplication_fixed_runs(filename, n, num_runs)
     return Time_GPU
 end
 
-
 # Main function to perform benchmarks
 function main()
     println("Starting benchmarking process...")
     filename = "benchmark_results_cuda.csv"
-    N = 50:50:1450
+    #N = 50:50:1450
+    N = 10000
     num_runs = 10
     Time_GPU_matrix_multiplication = zeros(length(N), num_runs)
+    num_ops = 2 * 10000.0^3  # Set the desired number of operations
 
     for (i, n) in enumerate(N)
         println("Benchmarking matrix multiplication for n = $n...")
-        Time_GPU_matrix_multiplication[i, :] = benchmark_matrix_multiplication(filename, n, num_runs)
+        Time_GPU_matrix_multiplication[i, :] = benchmark_matrix_multiplication(filename, n, num_runs, num_ops)
     end
 
     filename_fixed = "benchmark_results_cuda_fixed.csv"
@@ -101,19 +104,20 @@ function main()
         write(file, "Matrix Size, Operations, Duration (s)\n")
     end
 
-    N_fixed = 50:50:1450
+    # N_fixed = 50:50:1450
+    N_fixed = 10000
     num_runs = 10
-    N_variable = 50:25:2499
-    N_ops_constant = 2 * 10000.0^3
+    #N_variable = 50:25:2499
+    N_variable = 10000
 
     for n in N_fixed
         println("Benchmarking fixed runs for n = $n...")
-        Time_GPU_fixed_runs = benchmark_matrix_multiplication_fixed_runs(filename_fixed, n, num_runs)
+        Time_GPU_fixed_runs = benchmark_matrix_multiplication_fixed_runs(filename_fixed, n, num_runs, num_ops)
     end
 
     for n in N_variable
         println("Benchmarking variable operations for n = $n...")
-        benchmark_matrix_multiplication_variable_ops(filename_variable, n, N_ops_constant)
+        benchmark_matrix_multiplication_variable_ops(filename_variable, n, num_ops)
     end
 
     plot(N, mean(Time_GPU_matrix_multiplication, dims=2), ribbon = std(Time_GPU_matrix_multiplication, dims=2), 
@@ -122,4 +126,48 @@ function main()
     println("Benchmarking process completed.")
 end
 
-main()
+function main2()
+    N = 10000
+
+    A = rand(Float32, N, N)
+    B = rand(Float32, N, N)
+
+    d_A = CUDA.CuArray(A)
+    d_B = CUDA.CuArray(B)
+
+    t1 = time_ns()
+
+    CUDA.@sync d_A * d_B 
+
+    t2 = time_ns()
+    GFLOPS = 2 * N^3 / (t2 -t1)
+    println("GFLOPS main 2 = ", GFLOPS)
+
+    
+    
+    
+end
+
+function main3()
+    N = 10000
+
+    A = rand(Float32, N, N)
+    B = rand(Float32, N, N)
+
+    t1 = time_ns()
+
+    A * B 
+
+    t2 = time_ns()
+
+    GFLOPS = 2 * N^3 / (t2 -t1)
+    println("GFLOPS main 3 = ", GFLOPS)
+
+
+    
+    
+end
+
+#main()
+main2()
+main3()
