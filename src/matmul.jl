@@ -120,15 +120,17 @@ end
 
 function matrix_multiplication(A,B)
 
-   return A * B  
+   return @elapsed A * B  
 
 end
+
 
 function matrix_multiplication_GPU(A,B)
 
-return CUDA.@sync A * B  
-
-end
+  
+  return CUDA.@elapsed A * B  
+  
+  end
 
 
 
@@ -142,12 +144,10 @@ function time_matrix_multilication(N, N_cores, matinit, matmul)
  
    A,B = matinit(n)
 
-   t1= time_ns()
+   dt = matmul(A,B)
 
-   matmul(A,B)
    
-   t2 = time_ns()
-   Time[i] = (t2-t1)/(2*n^3)
+   Time[i] = 1e9 * dt/(2*n^3)
    
 
    println("N=", n, " Time per operation =", Time[i] , " nsec")
@@ -160,13 +160,13 @@ function time_matrix_multilication(N, N_cores, matinit, matmul)
 end 
 
 
-function plot_results(GFLOPS, GFLOPS_max, title)
+function plot_results(GFLOPS, GFLOPS_max, title, ymax)
 
   # display( plot(N, Time, ylims=(1e-4, 1e-2), yaxis=:log, minorgrid=true  ) )
   # display( plot!(N, Theoretical_time*ones( length(N) ), yaxis=:log, minorgrid=true ) )
  
    xlabel!("N")
-   display( plot(N, GFLOPS, ylims=(0, 5000), title= title,  minorgrid=true  ) )
+   display( plot(N, GFLOPS, ylims=(0, ymax), title= title,  minorgrid=true  ) )
    display( plot!(N, GFLOPS_max *ones( length(N) ), minorgrid=true ) )
  
  end 
@@ -194,11 +194,30 @@ Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initializa
 GFLOPS_CPU = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU")
+plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 5000)
+
+
+N = Vector(10:10:2500)
+N_cores = 1
+BLAS.set_num_threads(N_cores)
+println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization, matrix_multiplication)
+GFLOPS_CPU = 1 ./ Time
+GFLOPS_max = 1 / Theoretical_time
+
+plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 200)
+
+
+
 
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
 GFLOPS_GPU = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU")
+plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU", 5000)
+
+
+
+
+
 
