@@ -125,6 +125,18 @@ function matrix_multiplication(A,B)
 end
 
 
+
+function matrix_initialization_Av(N)
+
+
+  A = rand(Float32, N, N )
+  v = rand(Float32, N )
+
+  return A, v 
+
+end 
+
+
 function matrix_multiplication_GPU(A,B)
 
   
@@ -143,11 +155,12 @@ function time_matrix_multilication(N, N_cores, matinit, matmul)
   for (i,n) in enumerate(N)  # variables inside loop have local scope 
  
    A,B = matinit(n)
+   m = length(B)
 
    dt = matmul(A,B)
 
    
-   Time[i] = 1e9 * dt/(2*n^3)
+   Time[i] = 1e9 * dt/(2*n*m)
    
 
    println("N=", n, " Time per operation =", Time[i] , " nsec")
@@ -191,6 +204,17 @@ N = Vector([10:10:2500; 2500:100:10000])
 BLAS.set_num_threads(N_cores)
 println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
 Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization, matrix_multiplication)
+GFLOPS_CPU = 1 ./ Time
+GFLOPS_max = 1 / Theoretical_time
+
+plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 5000)
+
+
+
+N = Vector([10:10:2500; 2500:100:10000])
+BLAS.set_num_threads(N_cores)
+println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_Av, matrix_multiplication)
 GFLOPS_CPU = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
