@@ -57,7 +57,7 @@ for (i, n) in enumerate(N)
     @show n, time_parallel[i], time_serial[i]
 end
 
-display(plot(N, time_parallel, title = "Time", minorgrid = true))
-display(plot!(N, time_serial, minorgrid = true))
+display(plot(N, time_parallel, yaxis = :log, title = "Time", minorgrid = true))
+display(plot!(N, time_serial, minorgrid = true, legend = :topleft))
 
 xlabel!("N")
