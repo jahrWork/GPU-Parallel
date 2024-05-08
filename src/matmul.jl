@@ -96,7 +96,7 @@ end
 
 function matrix_initialization_GPU(N)
 
-  N = 10000
+  # N = 10000
 
   A = rand(Float32, N, N)
   B = rand(Float32, N, N)
@@ -221,7 +221,7 @@ function plot_results(GFLOPS, GFLOPS_max, title, ymax)
   display(combined_plot)
 end
 
-plot_combined(1:4)
+#plot_combined(1:4)
 
 
 
@@ -241,27 +241,27 @@ plot_combined(1:4)
 # # time_matrix_multilication(2000, N_cores, matrix_initilization, my_matrix_multiplication) 
 
 
- N_cores = 4 
- N = Vector([10:10:2500; 2500:100:5000])
- BLAS.set_num_threads(N_cores)
- println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
- Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization, matrix_multiplication)
- GFLOPS_CPU = 1 ./ Time
- GFLOPS_max = 1 / Theoretical_time
+#  N_cores = 4 
+#  N = Vector([10:10:2500; 2500:100:5000])
+#  BLAS.set_num_threads(N_cores)
+#  println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
+#  Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization, matrix_multiplication)
+#  GFLOPS_CPU = 1 ./ Time
+#  GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 2000)
+# plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 2000)
 
 
 
-N = Vector([10:10:2500; 2500:1000:5000])
-BLAS.set_num_threads(N_cores)
-println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
-Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_Av, matrix_multiplication)
+# N = Vector([10:10:2500; 2500:1000:5000])
+# BLAS.set_num_threads(N_cores)
+# println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
+# Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_Av, matrix_multiplication)
 
-GFLOPS_CPU = 1 ./ Time
-GFLOPS_max = 1 / Theoretical_time
+# GFLOPS_CPU = 1 ./ Time
+# GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS Av CPU", 2000)
+# plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS Av CPU", 2000)
 
 
 # N = Vector(10:10:2500)
@@ -277,11 +277,14 @@ plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS Av CPU", 2000)
 
 
 
-# Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
-# GFLOPS_GPU = 1 ./ Time
-# GFLOPS_max = 1 / Theoretical_time
+N_cores = 1
 
-# plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU", 5000)
+N = Vector(10:10:10000)
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
+GFLOPS_GPU = 1 ./ Time
+GFLOPS_max = 1 / Theoretical_time
+
+plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU", 30000)
 
 
 
