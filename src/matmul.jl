@@ -138,11 +138,28 @@ function matrix_initialization_Av(N)
 
 
   A = rand(Float32, N, N )
-  v = rand(Float32, N, 4 )
+  v = rand(Float32, N, N )
 
   return A, v 
 
 end 
+
+function matrix_multiplication_Av(A, v)
+
+  
+  Time = zeros( Float32, length(v)  )
+
+  for i in 1:length(v)
+    
+    b[i] = dot( A[i, :], v )
+
+  end 
+
+  return b 
+
+end 
+
+
 
 
 function matrix_multiplication_GPU(A,B)
@@ -165,11 +182,15 @@ function time_matrix_multilication(N, N_cores, matinit, matmul)
    A,B = matinit(n)
    m = length(B)
 
+   
+
+  #  dt = 1e9 * matmul(A,B)
+   
+  #  CUDA.unsafe_free!(A)
+  #  CUDA.unsafe_free!(B)
+
    t1 = time_ns()
-
-   #dt = 1e9 * matmul(A,B)
    matmul(A,B)
-
    t2 = time_ns()
    dt = t2-t1
    
@@ -291,14 +312,26 @@ end
 
 
 
-N_cores = 1
+N_cores = 8
 
-N = Vector(10:10:10000)
-Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
-GFLOPS_GPU = 1 ./ Time
+N = Vector(10:1000:10000)
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_Av, matrix_multiplication)
+GFLOPS_CPU = 1 ./ Time
 GFLOPS_max = 1 / Theoretical_time
 
-plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU", 30000)
+plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 1000)
+
+
+
+
+# N_cores = 1
+
+# N = Vector(10:10:10000)
+# Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
+# GFLOPS_GPU = 1 ./ Time
+# GFLOPS_max = 1 / Theoretical_time
+
+# plot_results(GFLOPS_GPU, GFLOPS_max, "GFLOPS GPU", 40000)
 
 
 
