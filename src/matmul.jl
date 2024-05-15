@@ -206,6 +206,97 @@ function time_matrix_multilication(N, N_cores, matinit, matmul)
 
 end 
 
+function scalar_sum(a, b)
+
+  return a + b
+
+end
+
+function scalar_sum_GPU(a, b)
+
+  return CUDA.@elapsed a + b
+
+end
+
+function vector_components_sum(A)
+
+  N = length(A)
+  b = zeros(Float32, N)
+
+  for i in 1:N
+    b[i] = scalar_sum(A[i], A[i])
+  end
+
+  return b
+  
+end
+
+function vector_components_sum_GPU(A)
+
+  N = length(A)
+  b = zeros(Float32, N)
+
+  for i in 1:N
+    b[i] = scalar_sum_GPU(A[i], A[i])
+  end
+
+  return b
+  
+end
+
+function vector_sum(A)
+
+  N = length(A)
+  b = 0.0
+
+  for i in 1:N
+    b = scalar_sum(b, A[i])
+  end
+
+  return b
+  
+end
+
+function vector_sum_GPU(A)
+
+  N = length(A)
+  b = 0.0
+
+  for i in 1:N
+    b = scalar_sum_GPU(b, A[i])
+  end
+
+  return b
+  
+end
+
+function time_sum(N, N_cores, sum)
+
+  Time = zeros( length(N) )
+  Theoretical_time = 1e9/(4e9 * 512/32 *  N_cores) # j
+
+  for (i,n) in enumerate(N)  # variables inside loop have local scope 
+ 
+   A = rand(Float32, n)
+   m = length(A)
+
+   t1 = time_ns()
+   sum(A)
+   t2 = time_ns()
+   dt = t2-t1
+   
+   Time[i] = dt/(2*n*m)
+   
+
+   println("N=", n, " Time per operation =", Time[i] , " nsec")
+   println("N=", n, " Theoretical time per operation =", Theoretical_time, " nsec")
+    
+  end 
+  
+  return Time, Theoretical_time
+  
+end
+
 
 function plot_results(GFLOPS, GFLOPS_max, title, ymax)
 
@@ -322,7 +413,13 @@ GFLOPS_max = 1 / Theoretical_time
 plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 1000)
 
 
+N_cores = 6
+N = Vector(10:1000:10000)
+Time, Theorical_time = time_sum(N, N_cores, vector_sum)
+GFLOPS_CPU = 1 ./ Time
+GFLOPS_max = 1 / Theorical_time
 
+plot_results(GFLOPS_CPU, GFLOPS_max, "GFLOPS CPU", 1000)
 
 # N_cores = 1
 
