@@ -22,3 +22,4 @@ gflops_results = [measure_gflops(size) for size in sizes]
 
 
 plot(sizes, gflops_results, xlab="Vector Size", ylab="GFLOPS", title="GFLOPS vs Vector Size (suma)", lw=2, marker=:o)
+

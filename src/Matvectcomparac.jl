@@ -6,7 +6,7 @@ function matvec_mul_perf(n)
     A = rand(n, n)
     x = rand(n)
     
-    # Benchmarking the matrix-vector multiplication
+
     result = @benchmark mul!($x, $A, $x)
     
     # Obtaining the time from the benchmark result
