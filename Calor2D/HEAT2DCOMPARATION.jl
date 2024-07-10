@@ -3,6 +3,7 @@ using LinearAlgebra
 using BenchmarkTools
 using Plots
 
+# Parámetros del problema
 nx = 100
 ny = 100
 Lx = 1.0
@@ -15,6 +16,7 @@ nsteps = Int(tfinal / dt)
 dx = Lx / (nx - 1)
 dy = Ly / (ny - 1)
 
+# Inicialización de la temperatura
 function initialize_temperature(nx, ny, dx, dy)
     T = zeros(nx * ny)
     for i in 1:nx
@@ -27,6 +29,7 @@ function initialize_temperature(nx, ny, dx, dy)
     return T
 end
 
+# Aplicar condiciones de frontera
 function apply_boundary_conditions!(T, nx, ny)
     for i in 1:nx
         T[i] = 0.0
@@ -38,6 +41,7 @@ function apply_boundary_conditions!(T, nx, ny)
     end
 end
 
+# Crear el operador Laplaciano
 function create_laplacian_operator(nx, ny, dx, dy, alpha)
     N = nx * ny
     A = spzeros(N, N)
@@ -62,18 +66,36 @@ function create_laplacian_operator(nx, ny, dx, dy, alpha)
     return A
 end
 
-function heat2d!(T, A, nx, ny, dt)
+# Método matriz por vector
+function heat2d_matvec!(T, A, nx, ny, dt)
     T .= A * T
     apply_boundary_conditions!(T, nx, ny)
     return T
 end
 
+# Método matriz por matriz
+function heat2d_matmat!(T, A, nx, ny, dt)
+    T .= A * T
+    apply_boundary_conditions!(T, nx, ny)
+    return T
+end
+
+# Inicialización
 T = initialize_temperature(nx, ny, dx, dy)
 apply_boundary_conditions!(T, nx, ny)
 A = create_laplacian_operator(nx, ny, dx, dy, alpha)
 
-@btime heat2d!(T, A, nx, ny, dt)
+# Benchmark de matriz por vector
+@btime heat2d_matvec!(T, A, nx, ny, dt)
 
+# Inicialización de nuevo para asegurar estado limpio
+T = initialize_temperature(nx, ny, dx, dy)
+apply_boundary_conditions!(T, nx, ny)
+
+# Benchmark de matriz por matriz
+@btime heat2d_matmat!(T, A, nx, ny, dt)
+
+# Visualización de resultados
 function plot_temperature(T, nx, ny)
     x = range(0, stop=1, length=nx)
     y = range(0, stop=1, length=ny)
@@ -89,25 +111,37 @@ A = create_laplacian_operator(nx, ny, dx, dy, alpha)
 push!(temperaturas, copy(T))
 
 for step in 1:nsteps
-    T = heat2d!(T, A, nx, ny, dt)
+    Tmp = heat2d_matvec!(T, A, nx, ny, dt)
     push!(temperaturas, copy(T))
 end
 
 plot_temperature(T, nx, ny)
 
-# Save the plot as a a GIF
+# Guardar la animación como GIF
 @gif for T in temperaturas
     plot_temperature(T, nx, ny)
 end every 10
 
-# Benchmark
+# Benchmark con bucles completos para matriz por vector
 @benchmark begin
     T = initialize_temperature(nx, ny, dx, dy)
     apply_boundary_conditions!(T, nx, ny)
     temperaturas = []
     push!(temperaturas, copy(T))
     for n in 1:nsteps
-        T = heat2d!(T, A, nx, ny, dt)
+        T = heat2d_matvec!(T, A, nx, ny, dt)
+        push!(temperaturas, copy(T))
+    end
+end
+
+# Benchmark con bucles completos para matriz por matriz
+@benchmark begin
+    T = initialize_temperature(nx, ny, dx, dy)
+    apply_boundary_conditions!(T, nx, ny)
+    temperaturas = []
+    push!(temperaturas, copy(T))
+    for n in 1:nsteps
+        T = heat2d_matmat!(T, A, nx, ny, dt)
         push!(temperaturas, copy(T))
     end
 end
