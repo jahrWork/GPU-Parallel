@@ -1,0 +1,300 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\title{Introduction to Julia: A Comprehensive Guide}
+\author{Author: Mario Alonso Cuero}
+\date{September 2024}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Installing Julia}
+
+\subsection{Download and Installation}
+Julia can be downloaded from its official website \href{https://julialang.org/downloads/}{here}. Select the appropriate version for your operating system and follow the installation instructions.
+
+\subsection{Setting Up the Environment}
+We recommend using Julia with Visual Studio Code, which can be downloaded from \href{https://code.visualstudio.com/}{Visual Studio Code}. Install the Julia extension for a better development experience.
+
+\section{Julia Language: Basic Concepts}
+
+\subsection{Basic Syntax}
+Julia is a dynamic, high-performance programming language. Here's a basic example of how to define a variable and a function:
+
+\begin{lstlisting}[language=Python]
+# Variable definition
+x = 10
+
+# Function definition
+function sum(a, b)
+    return a + b
+end
+
+# Calling the function
+result = sum(3, 4)
+println(result)  # Prints 7
+\end{lstlisting}
+
+\subsection{Basic Packages and Libraries}
+
+Julia uses a package manager called \texttt{Pkg}. To install a package, use the following command in the REPL:
+
+\begin{lstlisting}[language=Python]
+using Pkg
+Pkg.add("PackageName")
+\end{lstlisting}
+
+Some recommended packages are:
+
+\begin{itemize}
+    \item \texttt{Plots.jl} for plotting.
+    \item \texttt{Distributions.jl} for working with statistical distributions.
+    \item \texttt{DataFrames.jl} for handling tabular data.
+    \item \texttt{BenchmarkTools.jl} for performance benchmarking.
+\end{itemize}
+
+\section{Mini Tutorial of Julia with Examples}
+
+\subsection{Basic Operations}
+
+\begin{lstlisting}[language=Python]
+# Basic mathematical operations
+a = 10
+b = 5
+c = a * b  # Multiplication
+d = a / b  # Division
+println(c)  # 50
+println(d)  # 2.0
+\end{lstlisting}
+
+\subsection{Vectors and Matrices}
+
+\begin{lstlisting}[language=Python]
+# Defining a vector
+v = [1, 2, 3, 4]
+
+# Defining a matrix
+m = [1 2; 3 4]
+
+# Tensor product
+t = v * v'
+println(t)
+\end{lstlisting}
+
+\section{Plotting Graphs and Contour Maps}
+
+\subsection{2D Plots}
+
+\begin{lstlisting}[language=Python]
+using Plots
+
+# Plotting y = f(x)
+x = 0:0.1:10
+y = sin.(x)
+plot(x, y, label="sin(x)")
+\end{lstlisting}
+
+\subsection{Contour Maps}
+
+\begin{lstlisting}[language=Python]
+using Plots
+
+# Defining the function
+f(x, y) = sin(x) * cos(y)
+
+# Range of values
+x = y = 0:0.1:10
+
+# Contour map
+contour(x, y, (x, y) -> f(x, y))
+\end{lstlisting}
+
+\section{2D Animations}
+
+\begin{lstlisting}[language=Python]
+using Plots
+
+# Setting up the backend
+gr()
+
+# Initial data
+x = 0:0.1:10
+y = sin.(x)
+
+# Create the animation
+anim = @animate for i in 1:100
+    plot(x, sin.(x .+ 0.1*i), ylim=(-1,1))
+end
+
+# Save the animation
+gif(anim, "sine_wave.gif", fps=10)
+\end{lstlisting}
+
+\section{Encapsulating Functions for Plotting}
+
+\begin{lstlisting}[language=Python]
+function plot_function(f, x_range)
+    y = f.(x_range)
+    plot(x_range, y, label="f(x)")
+end
+
+# Usage example
+plot_function(x -> x^2, -10:0.1:10)
+\end{lstlisting}
+
+\section{Functions, Vectors, Matrices, and Tensor Product}
+
+\subsection{Functions}
+
+\begin{lstlisting}[language=Python]
+# Basic function
+f(x) = 2x + 3
+println(f(5))  # Prints 13
+\end{lstlisting}
+
+\subsection{Vectors and Matrices}
+
+\begin{lstlisting}[language=Python]
+# Defining a vector
+v = [1, 2, 3]
+
+# Defining a matrix
+m = [1 2 3; 4 5 6; 7 8 9]
+\end{lstlisting}
+
+\subsection{Tensor Product}
+
+\begin{lstlisting}[language=Python]
+using LinearAlgebra
+
+# Tensor product of vectors
+v = [1, 2]
+t = kron(v, v)
+println(t)
+\end{lstlisting}
+
+\section{Benchmarking and Measuring Time in Julia}
+
+\subsection{Basic Timing with @time}
+Julia provides the `@time` macro to measure the execution time of code blocks. Here's an example:
+
+\begin{lstlisting}[language=Python]
+# Basic timing
+@time begin
+    sum = 0
+    for i in 1:1000000
+        sum += i
+    end
+    println(sum)
+end
+\end{lstlisting}
+
+\subsection{Accurate Timing with @btime from BenchmarkTools}
+
+For more accurate benchmarking, use the `@btime` macro from the `BenchmarkTools.jl` package:
+
+\begin{lstlisting}[language=Python]
+using BenchmarkTools
+
+# Accurate timing
+@btime sum(1:1000000)
+\end{lstlisting}
+
+\subsection{Benchmarking Functions}
+You can also benchmark custom functions:
+
+\begin{lstlisting}[language=Python]
+function my_function(n)
+    sum = 0
+    for i in 1:n
+        sum += i
+    end
+    return sum
+end
+
+@btime my_function(1000000)
+\end{lstlisting}
+
+\section{Modules and Inclusion Methodology}
+
+\begin{lstlisting}[language=Python]
+module MyModule
+
+export my_function
+
+my_function(x) = x^2
+
+end
+
+# Using the module
+using .MyModule
+
+println(my_function(4))  # Prints 16
+\end{lstlisting}
+
+\section{GitHub Integration with Visual Studio Code}
+
+\subsection{Initial Setup}
+
+First, install Git on your system and clone your GitHub repository in Visual Studio Code:
+
+\begin{lstlisting}
+# Cloning a repository
+git clone https://github.com/username/repository.git
+\end{lstlisting}
+
+\subsection{Basic Usage}
+
+Within Visual Studio Code, you can commit, push, and pull changes either from the graphical interface or the integrated terminal:
+
+\begin{lstlisting}
+# Add changes and commit
+git add .
+git commit -m "Commit message"
+git push origin main
+\end{lstlisting}
+
+\section{Best Practices in Julia}
+
+\begin{itemize}
+    \item Use descriptive names for variables and functions.
+    \item Write clear and concise comments.
+    \item Prefer vectorization over loops for operations on arrays.
+    \item Organize your code into modules to improve maintainability.
+    \item Use \texttt{Revise.jl} for more efficient interactive development.
+\end{itemize}
+
+\section{GPU-Parallel}
+
+To use the package `GPU-Parallel`, first, you need to install Julia using `juliaup`. For Windows users, this can be done via the Microsoft Store.
+
+After installing Julia, it is highly advisable to install the following packages in the global environment:
+
+\begin{lstlisting}[language=Python]
+using Pkg
+Pkg.add("Revise")
+Pkg.add("BenchmarkTools")
+Pkg.add("ProfileView")
+\end{lstlisting}
+
+Then, to activate the local environment and install the necessary packages, run the following commands in a Julia REPL:
+
+\begin{lstlisting}[language=Python]
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+\end{lstlisting}
+
+With this setup, you'll be ready to develop and run GPU-accelerated parallel code in Julia.
+
+\end{document}
