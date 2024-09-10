@@ -1,0 +1,17 @@
+% Recommended preamble:
+\begin{tikzpicture}
+\begin{axis}[xlabel={Number of threads in use}, ylabel={Speedup factor}, title={Speedup}]
+    \addplot[no marks, blue]
+        table[row sep={\\}]
+        {
+            \\
+            1.0  1.0436587518312022  \\
+            2.0  1.5321710544393923  \\
+            3.0  2.276699075208266  \\
+            4.0  2.536789153620059  \\
+            5.0  2.602390829533416  \\
+            6.0  2.3630888576592275  \\
+        }
+        ;
+\end{axis}
+\end{tikzpicture}

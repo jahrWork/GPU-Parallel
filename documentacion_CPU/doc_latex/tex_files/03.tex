@@ -1,0 +1,38 @@
+\section{Theoretical time}
+% \addcontentsline{toc}{section}{Theoretical time}
+
+    \paragraph*{}
+    In this section, we discuss the concept of the "theoretical time of a CPU", which refers to the 
+    estimated time required for a CPU to complete a given task under ideal conditions. This measure 
+    assumes an optimal scenario, free from common real-world limitations such as memory latency, 
+    system bottlenecks, or the complexities introduced by parallel execution. By focusing on theoretical 
+    performance, we gain insights into the maximum potential of a CPU, providing a useful benchmark 
+    for evaluating its capabilities across various workloads.
+    \par
+
+    \paragraph*{}
+    Theoretical time allows us to break down CPU performance into fundamental parameters, helping us 
+    understand how different architectural features influence the speed of computation. This model is 
+    particularly valuable for comparing CPUs across generations or architectures, as it highlights 
+    the efficiency of vectorization, micro-operations, and core usage, among other factors. While 
+    real-world performance is often constrained by a variety of external factors, theoretical models 
+    like this one offer a clear, baseline perspective on the CPU's potential.
+    \par
+
+    The following equation provides a framework for estimating the theoretical time a CPU would need 
+    to complete a specific set of operations:
+        \[
+            t_{CPU}=\frac{N_{ops} \times S_{ops}}{V_{vectorization} \times GH_{z_{CPU}} \times M_{micro-ops} \times C_{CPU}}
+        \] 
+
+    Where the parameters are: 
+    \begin{enumerate}
+        \item \(V_{vectorization}\): Vectorization factor: 16 (512-bit)
+        \item \(M_{micro-ops}\): Micro-operations factor: 4, 6 (AMD Zen 3) or even 8 (Apple Silicon)
+        \item \(GH_{z_{CPU}}\): Clock speed of the CPU
+        \item \(C_{CPU}\): Number of cores in the CPU
+        \item \(S_{ops}\): Sequence of operations. For example, in the case of matrix multiplication, it would have a value of 4.
+        \item \(N_{ops}\): Number of operations
+    \end{enumerate}
+
+\newpage

@@ -1,0 +1,69 @@
+\section{Benchmark operation}
+% \addcontentsline{toc}{section}{Benchmark operation}
+
+     \paragraph*{}
+     In this section, we will discuss the operator used in the benchmarks: General Matrix 
+     Multiplication (GEMM) operation.
+     \par
+
+     \paragraph*{}
+     General Matrix Multiplication (GEMM) is the operation $C = AB + C$, where $A$ and $B$ are input matrices, 
+     and $C$ is a pre-existing matrix overwritten by the result. For matrices of sizes 
+     $M \times K$ (A), $K \times N$ (B), and $M \times N$ (C), the product of $A$ and $B$ results in 
+     $M \times N$ values, each derived from a dot product of $K$ elements. The total number of fused 
+     multiply-add operations (FMAs) required is $M \times N \times K$, and since each FMA consists of 
+     both a multiplication and an addition, the total number of floating-point operations (FLOPs) is 
+     $2 \times M \times N \times K$.
+     \par
+
+     \paragraph*{}
+     To particularize the expression for theoretical time, we substitute the sequence of operations factor $S$ with 4, 
+     which corresponds to the four sequences of operations required for matrix multiplication:
+     \begin{enumerate} 
+          \item Accessing values in matrix A. 
+          \item Accessing values in matrix B. 
+          \item Performing the multiplication. 
+          \item Storing the results in matrix C. 
+     \end{enumerate}
+     \par
+
+
+
+\subsection{Dot product function}
+% \addcontentsline{toc}{subsection}{Dot product function}
+The first step toward evaluating the speed of our CPU is to ensure that we are using optimized operators: this means that the 
+operator, in this case the dot product, is able to utilize all available hardware resources and does not waste them. To achieve 
+this, the dot product operator included by Julia (\texttt{matrix\_multiplication}) is compared with a function that would perform the dot 
+product in the most basic way (\texttt{my\_matrix\_multiplication}):
+
+\vspace*{0.5cm}
+
+\lstinputlisting[language=Julia]{code/1-efficiency_dot_product/dot_func_comparison-v2.jl}
+
+\vspace*{1cm}
+
+\begin{figure}[h]
+    \begin{center}
+        \input{code/1-efficiency_dot_product/grafico_dot_func_comparison.tex}
+   \end{center}
+   \caption{Eficiencia del producto de matrices, probado en una CPU 1,7 GHz Intel Core i7 de 4 núcleos}
+   \label{}
+\end{figure}
+
+
+
+%!!! NOTE !!! For including .tex files that makes some graphics from a .jl file, use this:
+% \begin{tikzpicture}
+% \begin{axis}[xlabel={x}, ylabel={y}, title={Gráfico de ejemplo}]
+%    \addplot[no marks]
+%       table[row sep={\\}]
+%       {
+%           .
+%           .
+%           .
+%        }
+%       ;
+% \end{axis}
+% \end{tikzpicture}
+\clearpage
+\newpage
