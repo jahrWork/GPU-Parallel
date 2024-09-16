@@ -83,7 +83,7 @@ for step in 1:nsteps
 
     # Visualization
     if step % 10 == 0
-        heatmap(T', c=:viridis, clim=(T_inf, T_rect), title=@sprintf("Time: %.3f s", step*dt))
+        heatmap(T', c=:inferno, clim=(T_inf, T_rect), title=@sprintf("Time: %.3f s", step*dt))
         frame(anim)
     end
 end

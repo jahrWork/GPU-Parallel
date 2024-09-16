@@ -2,98 +2,108 @@ using Plots
 using Printf
 
 # Parameters
-nx, ny = 100, 100       # Number of grid points in x and y directions
-Lx, Ly = 1.0, 1.0       # Physical dimensions of the domain
-dx, dy = Lx/nx, Ly/ny   # Grid spacing
-alpha = 0.01            # Thermal diffusivity
-T_inf = 20.0            # Temperature of the inflow air
-T_rect = 100.0          # Temperature of the rectangle
-u = 0.1                 # Flow velocity (left to right)
+nx, ny = 100, 100       # número de puntos en x e y
+Lx, Ly = 1.0, 1.0       # dimensiones del dominio
+dx, dy = Lx/nx, Ly/ny   # espaciado de la malla
+alpha = 0.01        # difusividad térmica
+T_inf = 20.0            # temperatura del aire entrante
+T_rect = 100.0          # temperatura del rectángulo
+u = 0.1            # velocidad del flujo de aire (izquierda a derecha)
 
-# Stability check
-dt_max = min(0.5 * (dx^2 * dy^2) / (alpha * (dx^2 + dy^2)), dx / u)
-dt = min(dt_max, 0.0001)  # Choose a dt smaller or equal to the stable dt_max
+# Esabilidad usando CFL 
+dt_diff = (dx^2) / (2 * alpha)
+dt_conv = dx / u
+dt_max = min(dt_diff, dt_conv)
+dt = min(dt_max, 0.0001)  # elegir dt estable
 
-println("Time step chosen: $dt")
-println("Maximum stable time step: $dt_max")
+println("Paso temporal: $dt")
+println("Maximo paso estable: $dt_max")
 
-# Calculate number of time steps
-t_end = 1.0          # End time
+# Número de pasos
+t_end = 1.0             # tiempo final
 nsteps = Int(t_end / dt)
 
-# Initialize temperature field
+# Inicialización del campo de temperatura
 T = fill(T_inf, nx+1, ny+1)
 
-# Indices of the rectangle
+# Índices del rectángulo
 rect_x = Int(floor(nx/8)):Int(floor(3*nx/8))
 rect_y = Int(floor(ny/8)):Int(floor(3*ny/8))
 T[rect_x, rect_y] .= T_rect
 
-# Function to apply boundary conditions
+# Condiciones de contorno
 function apply_boundary_conditions!(T, T_inf, u, dt, dx)
     nx, ny = size(T)
     
-    # Inflow boundary (left side)
+    # Inflow (left side)
     T[1, :] .= T_inf
     
-    # Outflow boundary (right side) - Convective outflow boundary condition
-    for j in 1:ny
-        T[end, j] = T[end, j] - u * dt / dx * (T[end, j] - T[end-1, j])
-    end
+    # Outflow (right side) - COND CONT Convectiva outflow 
+   # for j in 1:ny
+   #     T[end, j] = T[end, j] - u * dt / dx * (T[end, j] - T[end-1, j])
+    #end
     
-    # Top boundary - Neumann boundary condition
-    T[:, end] .= T[:, end-1]
     
-    # Bottom boundary - Neumann boundary condition
-    T[:, 1] .= T[:, 2]
+
+
+
+    # Arriba 
+    T[:, end] .= T_inf
+    
+    # Abajo 
+    T[:, 1] .= T_inf
 end
 
-# Function to update the temperature field
+# Actualizar el campo de temperatura
 function update_temperature!(T, alpha, u, dx, dy, dt)
     nx, ny = size(T)
     T_new = copy(T)
     for i in 2:nx-1
         for j in 2:ny-1
-            # Convection term
+            # Convección
             convection = -u * (T[i,j] - T[i-1,j]) / dx
-            
-            # Diffusion term
+ #upwinding
+ 
+ # Tx = Dx T  Incluye todas las derivadas (cualquier orden) ver Matvect/ matmat// para ver comparación(tiempo y resultados) u*gradT
+            # Difusión
+
+            # Txx = Dxx T igual evaluar que implementación va más rápido Dxx la calculas una vez 
+
             diffusion = alpha * (
                 (T[i+1,j] - 2*T[i,j] + T[i-1,j]) / dx^2 +
                 (T[i,j+1] - 2*T[i,j] + T[i,j-1]) / dy^2 )
             
-            # Update temperature
             T_new[i,j] = T[i,j] + dt * (convection + diffusion)
         end
     end
     return T_new
 end
 
-# Function to set the rectangle temperature
+# Temperatura del rectángulo
 function set_rectangle_temperature!(T, rect_x, rect_y, T_rect)
     T[rect_x, rect_y] .= T_rect
 end
 
-# Visualization setup
+# Configuración de la visualización
 anim = Animation()
 
-# Time integration loop
+# Bucle de integración en el tiempo
 for step in 1:nsteps
-    # Apply boundary conditions
+    # Aplicar condiciones de contorno
     apply_boundary_conditions!(T, T_inf, u, dt, dx)
 
-    # Update temperature field
-  global  T = update_temperature!(T, alpha, u, dx, dy, dt)
+    # Actualizar el campo de temperatura
+    global T = update_temperature!(T, alpha, u, dx, dy, dt)
 
-    # Set rectangle temperature
+    # Fijar la temperatura del rectángulo
     set_rectangle_temperature!(T, rect_x, rect_y, T_rect)
 
-    # Visualization
+    # Visualización
     if step % 10 == 0
-        heatmap(T', c=:viridis, clim=(T_inf, T_rect), title=@sprintf("Time: %.3f s", step*dt))
+        heatmap(T', c=:inferno, clim=(T_inf, T_rect), title=@sprintf("Time: %.3f s", step*dt))
         frame(anim)
     end
 end
 
-# Save the animation as a gif
+# Guardar la animación como GIF
 gif(anim, "heat_transfer_simulation1.gif", fps=10)

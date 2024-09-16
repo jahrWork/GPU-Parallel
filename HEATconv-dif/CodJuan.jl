@@ -111,7 +111,7 @@ temperaturas = []
     for step in 1:nsteps
 
         T_new = T .+ dt .* (alpha * (Laplacian * T) - (Gradient * T))
-       global T = T_new
+        T = T_new
         T = reshape(T, nx, ny)
         apply_boundary_conditions!(T)
         apply_constant_circle_temperature!(T, nx, ny, dx, dy)  # Aplicamos la temperatura constante en el círculo
