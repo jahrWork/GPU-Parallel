@@ -1,8 +1,8 @@
-# Required packages for profiling
+#using Pkg
+#Pkg.add("Plots")
+#Pkg.add("Kronecker")
 using LinearAlgebra, SparseArrays, Kronecker, BenchmarkTools
 using Plots
-using Profile
-using ProfileView  # To view the profiler data graphically
 
 function print_matrix(m)
     for row in 1:size(m, 1)
@@ -41,13 +41,39 @@ function initialize_temperature(nx, ny, dx, dy)
     return T
 end
 
+
+
 # Función para aplicar las condiciones de frontera y mantener la fuente térmica fija
 function apply_boundary_conditions!(T, nx, ny, dx, dy)
+    # Mantener la temperatura fija en los bordes
     T[1, :] .= exp(-(25*(-0.5)^2))
     T[end, :] .= exp(-(25*(0.5)^2))
     T[:, 1] .= exp(-(25*(-0.5)^2))
     T[:, end] .= exp(-(25*(0.5)^2))
+
+    # Mantener la fuente térmica fija en el centro con la condición inicial
+    # for i in 1:nx
+    #     for j in 1:ny
+    #         x = (i-1) * dx
+    #         y = (j-1) * dy
+    #         distance = sqrt((x - 0.5)^2 + (y - 0.5)^2)
+    #         if distance <= 0.05
+    #             #T[i,j] = exp(-(25*(x-0.5)^2 + 25*(y-0.5)^2))
+    #             T[i,j] = 1
+    #         end
+    #     end
+    # end
 end
+
+
+
+# Definimos los nodos en x e y
+nodes_x = range(0, stop=Lx, length=nx)
+nodes_y = range(0, stop=Ly, length=ny)
+
+
+
+# ======================================================================================================
 
 # Cálculo de los polinomios de Lagrange para los x
 function lagrange_basis(x_nodes, i, x)
@@ -89,6 +115,7 @@ function lagrange_derivative_matrix(x_nodes)
     return D
 end
 
+
 # Definimos los nodos en x e y
 nodes_x = range(0, stop=Lx, length=nx)
 nodes_y = range(0, stop=Ly, length=ny)
@@ -101,6 +128,11 @@ D_y = lagrange_derivative_matrix(nodes_y)
 D2_x = D_x * D_x
 D2_y = D_y * D_y
 
+# ============================================================================================================
+
+
+
+
 # Inicializamos el campo de temperatura
 T = initialize_temperature(nx, ny, dx, dy)  # Convertimos T a un vector columna
 T_new = similar(T)
@@ -108,24 +140,24 @@ T_new = similar(T)
 # Lista para almacenar los estados de la temperatura
 temperaturas = []
 
-# Start profiling
-Profile.clear()  # Clear any previous profiling data
 
+# Medir el tiempo del bucle
 elapsed_time = @elapsed begin
-    @profile begin  # Start profiling for the simulation loop
-        for step in 1:nsteps
-            # difusion = alpha * (Laplacian * T)
-            # adveccion = -(Gradient * T)
+    for step in 1:nsteps
 
-            T_new = T .+ dt .* (alpha * (D2_x * T + T * D2_y') - (v[1] * (D_x * T) + v[2] * (T * D_y')))
-            global T = T_new
-            apply_boundary_conditions!(T, nx, ny, dx, dy)
-            push!(temperaturas, copy(T))  # Guardamos el estado actual de la temperatura
-        end
+        # difusion = alpha * (Laplacian * T)
+        # adveccion = -(Gradient * T)
+
+        T_new = T .+ dt .* (alpha * (D2_x * T + T * D2_y') - (v[1] * (D_x * T) + v[2] * (T * D_y')))
+        
+        global T = T_new
+        apply_boundary_conditions!(T, nx, ny, dx, dy)
+        push!(temperaturas, copy(T))  # Guardamos el estado actual de la temperatura
     end
 end
 
-# === REPRESENTACIÓN GRÁFICA === #
+
+## === REPRESENTACIÓN GRÁFICA === ##
 
 # Convertimos el resultado a una matriz para mostrarlo
 T = reshape(T, nx, ny)
@@ -134,6 +166,17 @@ T = reshape(T, nx, ny)
 x = range(0, stop=Lx, length=nx)
 y = range(0, stop=Ly, length=ny)
 z_min, z_max = 0, 1.0  # Límites del eje z (temperatura)
+
+# # Creamos la animación 3D
+# intervalo_animacion = 30
+# animation = @animate for i in 1:intervalo_animacion:length(temperaturas)
+#     t = temperaturas[i]
+#     surface(x, y, reshape(t, nx, ny), title="Distribución de temperatura [M][M]", xlabel="x", ylabel="y", zlabel="Temperatura", c=:inferno, xlims=(0, Lx), ylims=(0, Ly), zlims=(z_min, z_max))
+# end
+
+# # Guardamos la animación como un gif
+# gif(animation, "adveccion_difusion_diferencias_finitas_matxmat_3d.gif", fps=30)
+
 
 # Creamos la animación 2D con líneas de contorno sin letras
 intervalo_animacion = 30
@@ -144,8 +187,4 @@ end
 
 # Guardamos la animación como un gif
 gif(animation, "adveccion_difusion_contornos2d.gif", fps=10)
-
 println("Elapsed time for the simulation loop: ", elapsed_time, " seconds")
-
-# Visualize profiling results using ProfileView
-ProfileView.view()
