@@ -1,0 +1,3 @@
+Los tiempos medidos son para códigos que usan interpolante global de lagrange
+para la resolución del problema espacial asociado a la expresión que se estudie
+en cuestión.
