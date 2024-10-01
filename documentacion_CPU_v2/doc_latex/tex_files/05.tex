@@ -1,0 +1,67 @@
+\section{Benchmarks}
+% \addcontentsline{toc}{section}{Benchmarks}
+
+\subsection{Single-core, multi-core}
+% \addcontentsline{toc}{subsection}{Single-core, multi-core}
+
+    \paragraph*{}
+    In this section, we will explore the results of restricting CPU usage to a defined number of threads, comparing 
+    the performance of single-core versus multi-core execution. Ideally, one might expect a near doubling in performance 
+    when the number of threads is doubled, as the workload is theoretically spread across more processing units. However, 
+    in practice, the scaling is far from perfect. Various factors such as overhead from managing threads, memory access 
+    bottlenecks, or CPU architecture limitations can prevent the linear scaling we might anticipate. This experiment 
+    demonstrates these real-world constraints by showing the actual performance improvement as the number of threads increases.
+    \par
+
+    \vspace*{0.5cm}
+
+    \lstinputlisting[language=Julia]{code/2-singlecore_vs_multicore/n_threads.jl}
+
+    \begin{figure}[h]
+        \begin{center}
+            \input{code/2-singlecore_vs_multicore/n_threads.tex}
+        \end{center}
+        \caption{}
+        \label{}
+    \end{figure}
+
+
+    \paragraph*{Speed-up} The following code investigates how performance scales as more threads are added, 
+    referred to as "speed-up." The goal here is to observe how performance increases with parallelism, plotted as 
+    a curve representing the speed-up as more cores are utilized. The expected behavior is not a linear speed-up—where the 
+    slope of the curve remains constant—but rather a diminishing rate of performance gain. This is because of the law of 
+    diminishing returns in parallel computing: as the number of threads increases, factors such as communication between 
+    threads, memory access contention, and overheads from parallelization begin to outweigh the benefits of adding more 
+    threads. Hence, while performance improves, the slope of the curve flattens, though it should never turn negative.
+    \par
+
+    \vspace*{0.5cm}
+
+    \lstinputlisting[language=Julia]{code/3-speed-up/speedup.jl}
+
+    \begin{figure}[h]
+        \begin{center}
+            \input{code/3-speed-up/speed-up.tex}
+        \end{center}
+        \caption{}
+        \label{}
+    \end{figure}
+
+
+\subsection{Theoretical time}
+% \addcontentsline{toc}{subsection}{Theoretical time}
+
+    \paragraph*{}
+    In this part, we display the trend towards the theoretically expected execution time as the size of the matrices increases. 
+    This code shows how, as the dimensions of the matrices grow, the observed execution times begin to approach these theoretical 
+    predictions.
+    \par
+
+    \vspace*{0.5cm}
+
+    \lstinputlisting[language=Julia]{code/4-matmul_vs_theoretical-time/matmul_vs_theoretical-time.jl}
+
+    \begin{center}
+        \input{code/4-matmul_vs_theoretical-time/matmul_vs_theoretical-time.tex}
+    \end{center}
+\newpage

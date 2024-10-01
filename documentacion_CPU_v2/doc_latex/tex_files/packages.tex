@@ -1,0 +1,58 @@
+% Paquetes adicionales
+\usepackage[utf8]{inputenc} % Codificación de caracteres
+\usepackage[english]{babel}
+\usepackage{amsmath} % Paquete para matemáticas
+
+
+% Paquetes para gráficos
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+
+\usepackage{fancyhdr}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{afterpage}
+\usepackage{titlesec} % O sectsty para modificar títulos y secciones.
+
+
+
+\usepackage{hyperref} % Paquete para enlaces y referencias
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{verbatim}
+
+
+
+\usepackage{listings}
+\usepackage{listingsutf8}
+
+\lstdefinelanguage{Julia}{
+  morekeywords={
+    abstract, break, case, catch, const, continue, do, else, elseif, end, export, false, for, function, immutable, import, in, macro, module, true, try, using, while, struct, mutable, return
+  },
+  sensitive=true,
+  morecomment=[l]\#,
+  morestring=[b]",
+  morestring=[b]',
+}
+
+\lstset{
+  language=Julia,
+  backgroundcolor=\color{gray!0},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue},
+  commentstyle=\color{black!30},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  numbersep=10pt,
+  showstringspaces=false,
+  tabsize=4,
+  breaklines=true,
+  breakatwhitespace=false,
+  frame=single,
+  columns=fullflexible
+}

@@ -1,0 +1,15 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}About the Hardware}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}How CPU works}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Micro-operations and pipelining}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Vectorization: AVX}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Memory: RAM}{4}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Memory: Cache}{5}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Theoretical time}{6}{section.3}%
+\contentsline {section}{\numberline {4}Benchmark operation}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Different Matrix-Multiplication functions}{8}{subsection.4.1}%
+\contentsline {paragraph}{}{8}{paragraph*.1}%
+\contentsline {paragraph}{}{11}{paragraph*.2}%
+\contentsline {paragraph}{}{11}{paragraph*.3}%
+\contentsline {subsection}{\numberline {4.2}Comparison of BLAS Operations Across Different Levels}{14}{subsection.4.2}%
