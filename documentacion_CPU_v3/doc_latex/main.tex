@@ -1,0 +1,36 @@
+\documentclass[a4paper,12pt]{article}
+
+\newcommand{\TitleFormat}[1]{\scshape\huge #1}
+\newcommand{\Project}{CPU Performance}
+\newcommand{\ProjectTitle}{CPU Performance: Benchmark Analysis and Theoretical Limits}
+\newcommand{\ProjectSubject}{Centro de Cálculo Numérico}
+\newcommand{\ProjectAutor}{Juan Román Bermejo}
+\newcommand{\ProjectTutor}{}
+\newcommand{\ProjectLocation}{Madrid}
+\newcommand{\ProjectDate}{Septiembre de 2024}
+
+% --------- ARCHIVOS .tex DE CONFIGURACIÓN DE DOCUMENTO --------- %
+
+\input{tex_files/packages.tex}
+\input{tex_files/header_footer.tex}
+
+
+\begin{document}
+
+% Crear título
+\input{tex_files/portada.tex}
+\newpage
+
+
+% Crear índice
+\tableofcontents
+\newpage
+
+
+\input{./tex_files/01.tex}
+\input{./tex_files/02.tex}
+\input{./tex_files/03.tex}
+\input{./tex_files/04.tex}
+%\input{./tex_files/05.tex}
+
+\end{document}
