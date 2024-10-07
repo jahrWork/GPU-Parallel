@@ -1,0 +1,29 @@
+\clearpage
+
+
+\subsection{ Computational Implementation}
+All the code is written in Julia in the IDE Visual Studio Code. Julia is a language designed for numerical analysis and high-performance computing(HPC). Its ease of use, combined with its ability to execute code at speeds comparable to low-level languages like C or Fortran, makes it an interesting choice for scientific computing and large-scale simulations.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Figures/jvs.png}
+    \caption{Julia and VScode logos}
+    \label{fig:etiqueta_figure}
+\end{figure}
+
+
+
+CPU Implementation:
+The CPU implementation was carried out using BLAS (Basic Linear Algebra Subprograms), which is a highly optimized library for performing common linear algebra operations such as matrix multiplication, vector addition, and matrix factorizations. BLAS is widely used in numerical computing for its efficiency and reliability, and its optimized routines are specifically tailored for performance on modern processors. By leveraging BLAS, the CPU implementation benefits from both multi-threading and memory optimizations, ensuring that the computations are performed as efficiently as possible.
+
+GPU Implementation:
+For the GPU implementation, CUDA (Compute Unified Device Architecture) will be used, which allows for the parallel execution of tasks on NVIDIA GPUs. CUDA is well-suited for highly parallelizable workloads, such as matrix operations, where thousands of cores on the GPU can work simultaneously to accelerate computations. In the context of this project, CUDA might enable performance gains by offloading the computationally intensive parts of the code, such as matrix-matrix multiplications and vector operations, to the GPU. The use of CUDA could allow the simulation to run faster and handle larger datasets more efficiently compared to a CPU-only implementation.
+
+By utilizing both BLAS on the CPU and CUDA on the GPU, we can compare the performance of each architecture and analyze the trade-offs in terms of speed, and computational efficiency. This approach demonstrates how Julia can seamlessly integrate with these powerful computing libraries to optimize numerical algorithms on both CPUs and GPUs.
+
+
+
+
+
+

@@ -1,0 +1,119 @@
+
+
+%  Borra todo antes de esta línea
+
+\newpage
+
+\section{Solving the Convective-Diffusive Heat Equation with Numerical Methods}
+
+\subsection{Introduction and Theoretical framework} \label{s:subsection_1}
+
+
+
+The heat equation is a PDE that describes the heat distribution in a region over time. In its most general form,  diffusion and convection effects appear, making it a complex problem to simulate numerically. This document aims to address the solution of the heat equation with convective and diffusive terms using different numerical techniques to determine which one achieves greater speed.
+
+In particular, two approaches will be employed: the three-point finite difference method and global interpolation, the latter in two forms, using matrix-vector and matrix-matrix operations. These methods will be implemented  on CPU and GPU, evaluating their computational performance in execution times and floating-point operations (flops). The comparative analysis will allow for an evaluation of the speed of each method.
+
+The two-dimensional heat equation, with convection and diffusion terms, is expressed as:
+\[
+\frac{\partial T}{\partial t} + u \frac{\partial T}{\partial x} = \alpha \left( \frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2} \right)
+\]
+where \( T(x,y,t) \) is the Temperature at point\( (x,y) \) at time \( t \), \( u \) is the flow velocity in the \( x \)-direction, and \( \alpha \) is the thermal diffusivity.
+
+A hypothesis was thought about the expected results in performance between writing a code that performs matrix-matrix operations vs matrix-vector operations.
+\begin{quote}
+At first glance, one might expect that matrix-vector multiplication would behave similarly
+to matrix-matrix multiplication in terms of performance trends, given that both involve the
+multiplication of matrix elements. However, the relationship between input data and the
+number of operations is more significant in the matrix-vector case. The ratio of memory
+accesses to computational operations is higher for matrix-vector multiplication compared
+to matrix-matrix multiplication. This means that more memory accesses are
+required for the same amount of CPU work, leading to longer computation times and a
+decrease in FLOPS (floating-point operations per second). This subsection delves into why this
+disparity occurs, explaining the memory bandwidth limitations and their impact on overall
+computational performance.
+\end{quote}
+
+\newpage
+
+
+
+\subsubsection{Numerical Methods used}
+
+\subsubsubsection{ Three-Point Finite Differences}
+
+The three-point finite differences are based on the discretization of the heat equation on a rectangular grid. The second-order approximation for the second derivative is expressed as follows:
+\[
+\frac{\partial^2 T}{\partial x^2} \approx \frac{T_{i+1,j} - 2T_{i,j} + T_{i-1,j}}{\Delta x^2}
+\]
+\[
+\frac{\partial^2 T}{\partial y^2} \approx \frac{T_{i,j+1} - 2T_{i,j} + T_{i,j-1}}{\Delta y^2}
+\]
+This approach is simpler to implement. El código empleado para irá a continuación.
+
+
+
+\subsubsubsection{ Global Interpolantion}
+
+
+
+
+
+Global interpolation using Lagrange polynomials is a method used to find a polynomial that passes through a set of points. Given \( n+1 \) distinct points \( (x_0, y_0), (x_1, y_1), \dots, (x_n, y_n) \), where \( y_i = f(x_i) \), the goal is to construct a polynomial \( P(x) \) of degree \( n \) such that:
+
+\[
+P(x_i) = y_i \quad \text{for} \quad i = 0, 1, \dots, n.
+\]
+
+\subsection*{Lagrange Interpolating Polynomial}
+The Lagrange interpolating polynomial \( P(x) \) is given by:
+
+\[
+P(x) = \sum_{i=0}^{n} y_i \ell_i(x),
+\]
+
+where \( \ell_i(x) \) are the Lagrange basis polynomials, defined as:
+
+\[
+\ell_i(x) = \prod_{\substack{j=0 \\ j \neq i}}^{n} \frac{x - x_j}{x_i - x_j}.
+\]
+
+These basis polynomials satisfy two important properties:
+\begin{itemize}
+    \item \( \ell_i(x_j) = 0 \) for \( j \neq i \),
+    \item \( \ell_i(x_i) = 1 \).
+\end{itemize}
+
+Thus, the interpolating polynomial \( P(x) \) passes through all the points \( (x_i, y_i) \).
+
+\subsubsection*{Error of Interpolation}
+The error of the Lagrange interpolating polynomial is given by:
+
+\[
+f(x) - P(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!} \prod_{i=0}^{n}(x - x_i),
+\]
+
+where \( \xi \in [x_0, x_n] \) is some point in the interval. This shows that the interpolation's accuracy depends on the function's smoothness and the placement of the points \( x_i \).
+
+
+\subsubsection*{Example}
+For three points \( (x_0, y_0), (x_1, y_1), (x_2, y_2) \), the Lagrange interpolating polynomial is:
+
+\[
+P(x) = y_0 \frac{(x - x_1)(x - x_2)}{(x_0 - x_1)(x_0 - x_2)} + y_1 \frac{(x - x_0)(x - x_2)}{(x_1 - x_0)(x_1 - x_2)} + y_2 \frac{(x - x_0)(x - x_1)}{(x_2 - x_0)(x_2 - x_1)}.
+\]
+
+This is the polynomial of second degree that passes through \( (x_0, y_0), (x_1, y_1), (x_2, y_2) \).
+
+
+
+
+ 
+
+
+
+
+
+
+
+
