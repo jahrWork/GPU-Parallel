@@ -1,0 +1,109 @@
+\documentclass[11pt,a4paper,titlepage]{article}
+
+
+%   ---   DEFINICION DEL TRABAJO   ---   %
+
+\newcommand{\Project}{Parallel processing on CPU \& GPU}
+\newcommand{\ProjectTitle}{Parallel Processing}
+\newcommand{\ProjectSubject}{Grado en Ingeniería Aeroespacial}
+\newcommand{\ProjectAutor}{Pedro Rodríguez Jiménez}
+
+\newcommand{\ProjectLocation}{Madrid}
+\newcommand{\ProjectDate}{1 de mayo de 2023}
+% Descomentar si se tiene un repositorio del trabajo
+% \newcommand{\ProjectGitHub}{url}
+
+
+
+%   ---   INCLUIR ARCHIVOS DE CONFIGURACION   ---   %
+
+\input{./Tex_Files/packages.tex}
+\input{./Tex_Files/header_footer.tex}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{spverbatim}
+\usepackage{multirow}
+\usepackage{listings}
+
+%   ---   COMIENZO DEL DOCUMENTO   ---   %
+
+\begin{document}
+
+%   ---   INCLUIR PORTADA   ---   %
+
+\input{./Tex_Files/portada.tex}
+
+%   ---   INDICE Y LISTAS   ---   %
+
+% Indice y numeración
+\tableofcontents
+\newpage
+\raggedbottom
+\setcounter{page}{0}
+\pagenumbering{arabic}
+
+
+% Trozos de código
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  basewidth=0.5em,
+  lineskip=-2pt
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+}
+
+
+%   ---   ARCHIVOS DEL DOCUMENTO   ---   %
+% Es recomendable escribir el trabajo en documentos separados y luego importarlos al main.
+\setcounter{section}{-1}
+\input{./Tex_Files/mario.tex}
+\input{./Tex_Files/juan1.tex}
+\input{./Tex_Files/juan2.tex}
+\input{./Tex_Files/juan3.tex}
+\input{./Tex_Files/juan4.tex}
+\input{./Tex_Files/alvaro1.tex}
+\input{./Tex_Files/alvaro2.tex}
+\input{./Tex_Files/alvaro3.tex}
+\input{./Tex_Files/alvaro4.tex}
+\input{./Tex_Files/alvaro5.tex}
+
+
+
+
+
+\clearpage
+
+
+%   ---   BIBLIOGRAFÍA/REFERENCIAS   ---   %
+
+%\phantomsection
+%\addcontentsline{toc}{section}{Referencias}
+%\renewcommand{\refname}{Referencias}
+%\bibliographystyle{elsarticle-num}
+%\bibliography{references.bib}
+%\clearpage
+
+
+
+%   ---   ANEXOS   ---   %
+
+%\appendix
+%\renewcommand{\appendixname}{Anexos}
+%\addcontentsline{toc}{section}{\appendixname}
+%\clearpage % or \cleardoublepage
+%\appendixpage
+%\addappheadtotoc
+%\renewcommand{\appendixname}{Anexo}
+
+
+%\input{./Tex_Files/A_01.tex}
+%\clearpage
+
+\end{document}

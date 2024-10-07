@@ -1,0 +1,44 @@
+\section{GPU Performance: Benchmark Analysis}
+
+\subsection{Understanding the GPU}
+
+(Before starting, it is important to mention that during the study of this project, an NVIDIA GeForce RTX 3050 was used as the base graphics card. Therefore, unless explicitly mentioned in specific subsections, this graphics card will be assumed as the default.)
+
+\subsubsection{Introduction to GPUs}
+
+A GPU is a specialized electronic circuit designed to accelerate the creation and rendering of images, animations, and videos for display output. GPUs are highly efficient at performing parallel calculations on large blocks of data, making them essential not only for graphics tasks but also for computational workloads like machine learning and scientific simulations.
+
+\begin{center}
+\textbf{How is a GPU different from a CPU?}
+\end{center}
+GPUs differ from CPUs in their architecture and processing capabilities. GPUs have many small, simple cores designed for parallel processing, making them highly effective for tasks like image processing and deep learning, which require handling many operations simultaneously. In contrast, CPUs have fewer, more complex cores optimized for general-purpose tasks, including complex decision-making and single-threaded applications.
+
+\begin{center}
+\textbf{How is a GPU similar to a CPU?} 
+\end{center}
+Despite their differences, GPUs and CPUs both execute instructions and process data using semiconductor technology. They share fundamental principles of binary logic and data management. Additionally, both have evolved to handle a broader range of tasks: GPUs now support general-purpose computing, and CPUs include more cores and specialized instructions for parallel processing.
+
+\subsubsection{Vectorization and parallelism}
+
+As previously mentioned, GPUs support both vectorization and parallelization, though differently from CPUs. While CPUs have a few powerful cores optimized for sequential processing and use vectorization, GPUs consist of thousands of smaller cores designed for massive parallelism. This makes GPUs exceptionally efficient for tasks like matrix multiplication, where many operations can be performed concurrently.
+
+\begin{center}
+    \textbf{Vectorization:}    
+\end{center}
+GPUs achieve vectorization by executing the same instruction across multiple cores organized in grids and blocks (or threads in CUDA). Each core processes a different data set simultaneously, enabling efficient large-scale data processing.
+
+\begin{center}
+    \textbf{Parallelization:}    
+\end{center}
+GPUs excel in parallelization by leveraging their many cores to handle thousands of threads concurrently, making them ideal for tasks that can be divided into numerous parallel operations.
+ 
+\subsubsection{Memory Access}
+
+Memory access in GPUs is optimized for high throughput and parallel processing. GPUs use several types of memory with different characteristics:
+\begin{itemize}
+    \item \textbf{Global Memory:} This is the largest and slowest memory on the GPU, accessible by all cores. It's used for storing large datasets and is suitable for tasks that involve significant data exchange between the CPU and GPU. However, access to global memory can be slow if not managed efficiently.
+    \item \textbf{Shared Memory:} Shared memory is much faster than global memory and is used for communication between threads within the same block. It allows for efficient data sharing and reduces the need to repeatedly access global memory, improving performance for tasks with high inter-thread communication.
+    \item \textbf{Local Memory:} Each thread has its own local memory, which is private and used for storing data specific to that thread. Local memory helps in storing intermediate results and temporary data.
+    \item \textbf{Texture and Constant Memory:} These are specialized types of memory. Texture memory is optimized for spatial locality and is used for image and graphical data, while constant memory is used for read-only data that remains constant across all threads during a kernel execution.
+\end{itemize}
+    Efficient memory access is crucial for performance, and optimizing memory use involves minimizing global memory accesses, maximizing shared memory usage, and ensuring coalesced memory accesses to reduce latency and improve throughput.

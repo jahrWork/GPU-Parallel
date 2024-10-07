@@ -1,0 +1,16 @@
+% Recommended preamble:
+\begin{tikzpicture}
+\begin{axis}[xlabel={Matrix dimension [N]}, ylabel={time [t]}, title={Matrix Multiplication Performance Using Times}]
+    \addplot[no marks, blue]
+        table[row sep={\\}]
+        {
+            \\
+            2000.0  0.0251821  \\
+            2100.0  26.065924  \\
+            2200.0  27.701773  \\
+            2300.0  25.231264  \\
+            2400.0  16.692413  \\
+        }
+        ;
+\end{axis}
+\end{tikzpicture}

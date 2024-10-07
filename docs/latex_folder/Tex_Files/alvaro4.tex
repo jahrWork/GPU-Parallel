@@ -1,0 +1,38 @@
+\subsection{Operators Used in Benchmark.}
+    \subsubsection{CUDA}
+    Compute Unified Device Architecture (CUDA) is a parallel computing platform and programming model developed by NVIDIA. It enables developers to leverage NVIDIA GPUs for general-purpose computing tasks beyond traditional graphics rendering. CUDA provides a set of extensions to standard programming languages such as C, C++, and Fortran, allowing developers to write programs that execute on the GPU. CUDA facilitates efficient parallel processing by exposing low-level GPU architecture features, including fine-grained control over memory and execution.
+
+    \paragraph{Key Features of CUDA:}
+    \begin{itemize}
+        \item \textbf{Parallel Computing Model:} CUDA allows for the execution of multiple threads in parallel on the GPU. Threads are organized into blocks, and blocks are organized into grids, providing a flexible and scalable way to manage parallelism.
+        \item \textbf{Memory Hierarchy:} CUDA provides access to different types of memory, including global, shared, and local memory, enabling optimization of memory access patterns and efficient data management.
+        \item \textbf{Kernel Functions:} In CUDA, functions executed on the GPU are called kernels. Kernels are written in CUDA C/C++ and are launched from the host (CPU) to run on the device (GPU).
+        \item \textbf{Thrust Library:} CUDA includes the Thrust library, which provides high-level abstractions for common parallel algorithms, such as sorting and reduction, simplifying development.
+    \end{itemize}
+
+    To use CUDA with Julia, you need to install the CUDA toolkit and the necessary Julia packages. 
+    
+    Once the CUDA toolkit and Julia packages are installed, you can start utilizing CUDA features in your Julia code. Here are some common tasks:
+
+    \begin{itemize}
+        \item \textbf{Checking GPU Availability:} Use the `CUDA` package to check if your GPU is available and properly configured:
+        \begin{verbatim}
+            using CUDA
+            println(CUDA.has_cuda())
+        \end{verbatim}
+        \item \textbf{Allocating and Transferring Data:} Allocate memory on the GPU and transfer data between the host and device:
+        \begin{verbatim}
+            a = CUDA.rand(10)  # Allocate an array on the GPU
+            b = CUDA.fill(2.0, 10)  # Fill an array with a constant value on the GPU
+            c = a .+ b  # Perform element-wise addition on the GPU
+        \end{verbatim}
+    \end{itemize}
+
+    \paragraph{CUDA Utilities:} In addition to core CUDA functionalities, several utilities and tools are available to help with development and performance optimization:
+    \begin{itemize}
+        \item \textbf{NVIDIA Nsight:} A suite of tools for debugging and profiling CUDA applications, providing insights into performance and helping identify bottlenecks.
+        \item \textbf{CUDA Profiler:} Built into the CUDA toolkit, this tool allows for detailed performance analysis of GPU applications, including memory usage and execution time.
+        \item \textbf{CUDA Samples:} The CUDA toolkit includes sample code and examples that demonstrate various features and best practices for CUDA programming.
+    \end{itemize}
+
+    Understanding and utilizing CUDA effectively can significantly enhance the performance of computational tasks by leveraging the parallel processing power of NVIDIA GPUs.

@@ -1,0 +1,10 @@
+\subsection{GPU Hardware}
+    The hardware architecture of GPUs is designed to facilitate massive parallel processing, making them ideal for tasks that can be parallelized. Key components include:
+
+\begin{itemize}
+    \item \textbf{Cores:} GPUs are equipped with thousands of small, simple cores designed for parallel execution. Unlike CPU cores, which are few in number but powerful, GPU cores are numerous and less complex. These cores work together to perform many operations simultaneously, which is crucial for tasks like rendering images and processing large datasets.
+    \item  \textbf{Streaming Multiprocessors (SMs):} The GPU cores are organized into Streaming Multiprocessors (SMs). Each SM contains multiple cores, a portion of shared memory, and scheduling hardware. SMs manage the execution of threads within a block, handling the scheduling and synchronization necessary for efficient parallel processing.
+    \item \textbf{Memory Hierarchy:} The GPU has a complex memory hierarchy designed to balance speed and capacity.
+    \item  \textbf{Interconnects:} High-speed interconnects, such as NVIDIA’s NVLink and AMD's Infinity Fabric, are used to connect multiple GPUs or to facilitate rapid communication between different parts of a GPU. These interconnects enhance performance by allowing for efficient data transfer and coordination among multiple GPUs in a system.
+\end{itemize}
+

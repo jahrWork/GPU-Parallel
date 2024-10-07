@@ -1,0 +1,356 @@
+\subsection{Benchmark operation}
+% \addcontentsline{toc}{subsection}{Benchmark operation}
+\subsubsection{Different Matrix-Multiplication functions}
+
+     \paragraph*{}
+     In order to achieve theoretical times (those associated with the previous expression), we need to 
+     choose which mathematical operator will be used in the benchmarks. To begin, a common operator 
+     will be used: matrix multiplication.
+
+     \paragraph{}
+     The next point to address is which matrix multiplication function we will use; the options are 
+     either Julia's native function, associated with the \textbf{*} operator (\texttt{matrix\_multiplication}), or manually 
+     constructing a custom matrix multiplication function (\texttt{my\_matrix\_multiplication}, \texttt{my\_efficient\_matrix\_multiplication}). To compare which of these options performs better, the number 
+     of GFLOPS (y-axis) will be plotted for different values of N, the dimension of the matrices to 
+     be multiplied (x-axis).
+
+\vspace*{0.5cm}
+
+\begin{comment}
+ \lstinputlisting[language=Julia]{./Code/cpu/dot_func_comparison-v2.jl}   
+\end{comment}
+
+\begin{lstlisting}[language=Julia]
+import Pkg
+Pkg.activate(".")
+Pkg.add(["PGFPlotsX", "CPUTime", "Plots", "LinearAlgebra", "MKL"])
+using CPUTime
+using Plots
+using LinearAlgebra, MKL
+using PGFPlotsX
+using CpuId
+
+# CPU info
+cpuid = cpuinfo()
+string_cpuid = string(cpuid)
+
+println("AVX support: ", occursin("256", string_cpuid))
+println("AVX-512 support: ", occursin("512 bit", string_cpuid))
+
+# Function to initialize random matrices
+function matrix_initialization(N)
+    A = rand(Float32, N, N)
+    B = rand(Float32, N, N)
+    return A, B
+end
+
+# Function to multiply matrices using the built-in Julia method
+function matrix_multiplication(A, B)
+   return A * B  
+end
+
+# Function to multiply matrices using a custom method (manual loop)
+function my_matrix_multiplication(A, B)
+  (N, M) = size(A)
+  (M, L) = size(B)
+  C = zeros(Float32, (N, L))
+
+  for i in 1:N, j in 1:L
+      for k in 1:M
+        C[i, j] = C[i, j] + A[i, k] * B[k, j]
+      end
+  end
+  return C
+end
+
+# Transposing B for efficient memory access
+function my_efficient_matrix_multiplication(A, B)
+  (N, M) = size(A)
+  (M, L) = size(B)
+  BT = transpose(B) 
+  C = zeros(Float32, (N, L))
+
+  for k in 1:M
+      for j in 1:L, i in 1:N
+          C[i, j] = C[i, j] + A[i, k] * BT[j, k]
+      end
+  end
+  return C
+end
+
+# Function to time matrix multiplication and calculate performance
+function time_matrix_multilication(N, N_cores, matmul, AVX_value)
+  Theoretical_time = 1e9 / (4.5e9 * AVX_value * 2 * N_cores)
+  Time = zeros(length(N))
+
+  for (i, n) in enumerate(N)
+   A, B = matrix_initialization(n)
+   t1 = time_ns()
+   matmul(A, B)
+   t2 = time_ns()
+   Time[i] = (t2 - t1) / (2 * n^3)
+  end 
+  return Time, Theoretical_time
+end
+
+function get_avx_value(string_cpuid)
+  AVX_value = 0
+  if occursin("256 bit", string_cpuid)
+      AVX_value = 8
+  elseif occursin("512 bit", string_cpuid)
+      AVX_value = 16
+  end
+  return AVX_value
+end
+
+AVX_value = get_avx_value(string_cpuid)
+BLAS.set_num_threads(8)
+N_threads = BLAS.get_num_threads()
+N_cores = div(N_threads, 2)
+println("Threads =", N_threads) 
+println("Cores =", N_cores)
+
+# Precompilation: Run matrix multiplication once to warm up
+time_matrix_multilication(2000, N_cores, matrix_multiplication, AVX_value)
+
+# Set range for matrix dimensions
+N = 10:100:2500
+BLAS.set_num_threads(2 * N_cores)
+
+# Time the built-in matrix multiplication and custom multiplication
+Time, Theoretical_time = time_matrix_multilication(N, N_cores, matrix_multiplication, AVX_value)
+Time2, _ = time_matrix_multilication(N, N_cores, my_matrix_multiplication, AVX_value)
+Time3, _ = time_matrix_multilication(N, N_cores, my_efficient_matrix_multiplication, AVX_value)
+
+# Calculate GFLOPS for each method
+GFLOPS = 1 ./ Time
+GFLOPS2 = 1 ./ Time2
+GFLOPS3 = 1 ./ Time3
+
+# Plotting code here (omitted for brevity)
+\end{lstlisting}
+
+\vspace*{1cm}
+
+\paragraph{} The results of running this code are shown in the following two figures; in the first one (Figure \ref{fig:1-dotproductcomparison}) you can see the difference between the functions \texttt{my\_matrix\_multiplication} and 
+\texttt{my\_efficient\_matrix\_multiplication}. This difference lies in the transpose of the B matrix. 
+This is because in Julia matrices are stored in column order, that is, consecutive columns are stored 
+contiguously in memory. Therefore, when iterating over the elements of a matrix, it is more efficient 
+to traverse it by columns than by rows.
+
+\begin{figure}[h]
+     \begin{center}
+         \input{Figures/manual_vs_optimized_vs_julia_dot_1.tex}
+     \end{center}
+     \caption{Matrix product efficiency, tested on a Intel(R) Core(TM) i7-8557U CPU @ 1.70GHz (1)}
+     \label{fig:1-dotproductcomparison}
+ \end{figure}
+ 
+
+\paragraph{} Now, by changing the dimension of the y-axis, we can see the comparison with the function \texttt{matrix\_multiplication} 
+in Figure \ref{fig:2-dotproductcomparison}. This clearly shows the level of optimization that Julia's built-in dot product has. 
+The theoretical GFLOPS value is also represented in this graph, and the convergence of the \texttt{matrix\_multiplication} function to 
+this value can be observed. It can therefore be said that, seemingly quickly, we have achieved our objective: to observe 
+convergence to theoretical values in experimental tests.
+
+\begin{figure}[h]
+     \begin{center}
+        \input{Figures/manual_vs_optimized_vs_julia_dot_2.tex}
+     \end{center}
+     \caption{Matrix product efficiency, tested on a Intel(R) Core(TM) i7-8557U CPU @ 1.70GHz (2)}
+     \label{fig:2-dotproductcomparison}
+ \end{figure}
+
+\clearpage
+\newpage
+
+
+\subsubsection{Comparison of BLAS Operations Across Different Levels}
+But what about matrix-vector multiplications? It is logical to consider the optimal shape and dimensions of these matrices. 
+One might intuitively assume that a matrix-vector multiplication is faster than a matrix-matrix multiplication.
+To visualize the load that the CPU experiences in both cases, the following code is used to plot the figures.
+
+\vspace*{0.5cm}
+
+\begin{comment}
+\lstinputlisting[language=Julia]{../code/cpu/BLAS_levels.jl}  
+\end{comment}
+
+\begin{lstlisting}[language=Julia]
+import Pkg
+Pkg.activate(".")
+Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
+
+cpuid = cpuinfo() # CPU Features
+string_cpuid = string(cpuid)
+println("AVX support: ", occursin("256", string_cpuid))
+println("AVX-512 support: ", occursin("512 bit", string_cpuid))
+
+function matrix_initialization(N) 
+  A = rand(Float32, N, N )
+  B = rand(Float32, N, N )
+  return A, B 
+end 
+
+function matrix_vector_initialization(N)
+    A = rand(Float32, N, N )
+    B = rand(Float32, N, 1 )
+    return A, B 
+end 
+
+function vector_vector_initialization(N)
+    A = rand(Float32, N, 1 )
+    B = rand(Float32, N, 1 )
+    return A, B 
+end 
+
+function vector_multiplication(A, B)
+    return dot(A, B)  
+end
+
+function matrix_multiplication(A, B)
+    return A * B  
+end
+
+function time_matrix_multiplication(N, N_cores, matinit, matmul, AVX_value)
+    Time = zeros(length(N))
+    Theoretical_time = 1e9 / (4.5e9 * AVX_value * 2 * N_cores)
+
+    for (i, n) in enumerate(N)  
+     A, B = matinit(n)
+     t1 = time_ns()
+     matmul(A, B)
+     t2 = time_ns()
+     dt = t2 - t1
+     Time[i] = dt / (2 * n^3)
+     println("N=", n, " Time per operation =", Time[i], " nsec")
+     println("N=", n, " Theoretical time per operation =", Theoretical_time, " nsec")
+    end 
+
+    return Time, Theoretical_time
+end
+
+function get_avx_value(string_cpuid)
+    AVX_value = 0
+    if occursin("256 bit", string_cpuid)
+        AVX_value = 8
+    elseif occursin("512 bit", string_cpuid)
+        AVX_value = 16
+    else
+        AVX_value = 0
+    end
+    return AVX_value
+end
+
+AVX_value = get_avx_value(string_cpuid)
+
+N_cores = 4
+N = Vector([10:25:2500; 2500:100:5000])
+BLAS.set_num_threads(2 * N_cores)
+println("Threads = ", BLAS.get_num_threads(), " N_cores =", N_cores)
+
+Time, Theoretical_time = time_matrix_multiplication(N, N_cores, matrix_initialization, matrix_multiplication, AVX_value)
+\end{lstlisting}
+
+\vspace*{0.5cm}
+
+\begin{figure}[h]
+\begin{center}
+    \input{Figures/IMSL_levels}
+\end{center}
+    \caption{Representation of GFLOPS for the different levels of BLAS: matrix multiplication (Level 3 BLAS), 
+    matrix-vector multiplication (Level 2 BLAS), and vector multiplication (dot product, Level 1 BLAS).}
+    \label{fig:matvec_vs_matmul}
+\end{figure}
+
+\newpage
+
+\paragraph*{} Figure \ref{fig:matvec_vs_matmul} illustrates the inherent limitation in matrix-vector multiplication 
+(which is not due to CPU capacity but rather a bottleneck issue). This limitation arises because the ``usability'' of data in a matrix-matrix operation is higher than in a matrix-vector operation. 
+Consider the following example with $N$:
+
+\begin{equation}
+    \begin{bmatrix}
+        a_{11} & \hdots & a_{1N} \\
+        \vdots & \ddots & \vdots \\
+        a_{N1} & \hdots & a_{NN} 
+    \end{bmatrix}
+    \begin{bmatrix}
+        b_{11} & \hdots & b_{1N} \\
+        \vdots & \ddots & \vdots \\
+        b_{N1} & \hdots & b_{NN} 
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        c_{11} & \hdots & c_{1N} \\
+        \vdots & \ddots & \vdots \\
+        c_{N1} & \hdots & c_{NN} 
+    \end{bmatrix}
+    \label{eq_matrix1}
+\end{equation}
+
+\vspace{0.5cm}
+
+\begin{equation}
+    \begin{bmatrix}
+        \alpha_{11} & \hdots & \alpha_{1N} \\
+        \vdots & \ddots & \vdots \\
+        \alpha_{N1} & \hdots & \alpha_{NN} 
+    \end{bmatrix}
+    \begin{bmatrix}
+        \beta_{1} \\
+        \vdots \\
+        \beta_{N}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \gamma_{1} \\
+        \vdots \\
+        \gamma_{N}
+    \end{bmatrix}
+    \label{eq_matrix2}
+\end{equation}
+
+\vspace{0.5cm}
+
+\paragraph*{} In this example, vector $\vec{a}_1 = \sum_{i=1}^{N} a_{1i} \vec{e}_i$ is used $N$ times to compute $N$ values ($\sum_{i=1}^{N} c_{i1} \vec{e}_i$). 
+In contrast, the vector of elements $\vec{\alpha}_1 = \sum_{i=1}^{N} \alpha_{1i} \vec{e}_i$ is only used once (to compute $\gamma_{1}$).
+
+\paragraph*{} We can define the term "usability" as the ratio between the number of operations performed by the CPU and the number 
+of data elements (in this case, Float32) used during the process. This can be expressed as:
+
+\begin{equation}
+    U = \frac{N_{ops}}{N_{data}}
+\end{equation}
+
+where $N_{ops}$ represents the number of operations executed by the CPU, and $N_{data}$ denotes the number of data elements 
+involved in the process.
+
+\paragraph*{} For matrix multiplication of dimension $N$, considering the use of Fused Multiply-Add (FMA), we have $N_{ops} = N^3$ 
+and $N_{data} = 2N^2$. This yields a usability value greater than 1.
+
+\paragraph*{} In the case of matrix-vector multiplication, again with dimension $N$ (as shown in expression \ref{eq_matrix2}),
+$N_{ops} = N^2$ and $N_{data} = N^2 + N$. Here, the usability value is approximately 1.
+
+\paragraph*{Scalar product} It is worth noting that the graph \ref{fig:matvec_vs_matmul} also includes the vector-vector product.
+As expected, the results are even worse. The value of \textbf{U} is less than 1 ($N_{ops} = N$ and $N_{data} = 2N$)
+
+\paragraph*{} In conclusion, \textbf{as the usability value tends towards infinity, and with sufficiently large values of N, the CPU's 
+performance approaches its theoretical maximum.}
+
+%!!! NOTE !!! For including .tex files that makes some graphics from a .jl file, use this:
+% \begin{tikzpicture}
+% \begin{axis}[xlabel={x}, ylabel={y}, title={Gráfico de ejemplo}]
+%    \addplot[no marks]
+%       table[row sep={\\}]
+%       {
+%           .
+%           .
+%           .
+%        }
+%       ;
+% \end{axis}
+% \end{tikzpicture}
+\clearpage
+\newpage

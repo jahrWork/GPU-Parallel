@@ -1,0 +1,373 @@
+\subsection{Benchmarks}
+
+In this subsection, we present benchmarks with the GPU that compare the performance of various computational tasks. The goal is to provide a detailed analysis of the time processes involved and to draw meaningful conclusions about the performance characteristics of the GPU.
+
+\begin{center}
+   \textbf{Benchmark Methodology}
+\end{center}
+
+The benchmarks conducted are designed to evaluate the performance of GPU computations to see the differences against the CPU performance. To ensure a fair comparison, the same set of algorithms and operations are executed on both types of hardware, so in this subsection it's going to be analyzed similar benchmarks to the CPU ones. The benchmarks focus on evaluating:
+
+\begin{itemize}
+    \item \textbf{Execution Time:} The time taken to complete the computations on each platform.
+    \item \textbf{Scalability:} How performance scales with increasing problem size and complexity.
+    \item \textbf{Efficiency:} The computational efficiency of the operations, including memory usage and processing power.
+\end{itemize}
+
+% \subsubsection{Benchmark Configuration}
+
+% To accurately assess performance, the following steps were taken:
+
+% \begin{itemize}
+%     \item \textbf{Code Consistency:} The same algorithms were implemented for both CPU and GPU. This included tasks such as matrix multiplications, vector operations, and other common benchmarks.
+%     \item \textbf{Optimization:} Both the CPU and GPU code were optimized according to their respective best practices. For CPU, this involved tuning compiler flags and utilizing multi-threading capabilities. For GPU, this included optimizing memory access patterns and utilizing parallel processing effectively.
+%     \item \textbf{Environment:} Benchmarks were conducted in a controlled environment to minimize variability. The hardware specifications, such as CPU model and GPU model, were kept consistent across tests.
+% \end{itemize}
+
+\subsubsection{Simply GPU Matrix Multiplication}
+
+This subsection presents a simple benchmark for evaluating the performance of matrix multiplication on the GPU. The objective is to measure the time taken for matrix multiplication using GFlops with varying matrix sizes. The benchmark uses the Julia programming language and the CUDA library.
+
+The code below performs matrix multiplications for matrices of different sizes and records the time taken for each operation. The results are printed to the console, providing an overview of how the execution time scales with matrix size.
+
+\begin{center}
+   \textbf{Description of the Benchmark}   
+\end{center}
+
+\begin{enumerate}
+   \item \textbf{Matrix Size Variation:} The benchmark tests matrix sizes ranging from 100 to 10,000 in increments of 100.
+   \item \textbf{Matrix Initialization:} For each size \(N\), two matrices \(A\) and \(B\) are initialized with random floating-point values using the `CUDA.rand` function.
+   \item  \textbf{Timing Measurement:} The time required for matrix multiplication \(A \times B\) is measured using the `CUDA.@elapsed` macro. This provides the duration of the multiplication operation.
+   \item  \textbf{Results Output:} The matrix size \(N\) and the corresponding duration \(t\) are printed to the console. The results can be saved to a CSV file, although the line for writing to the file is commented out in this example.
+\end{enumerate}
+
+\begin{figure}[h]
+    \begin{center}
+        \input{Figures/grafico_matrix_mult}
+   \end{center}
+   \caption{GPU efficiency with matrix multiplications.}
+   \label{}
+\end{figure}
+
+\subsubsubsection{Code}
+
+Here is the Julia code used for this benchmark:
+
+\begin{comment}
+\lstinputlisting[language=Julia]{code/1/matrix_mult.jl}
+\end{comment}
+
+\begin{lstlisting}[language=Julia]
+using LinearAlgebra
+
+# Function to initialize random matrices
+function matrix_initialization(N)
+    A = rand(Float32, N, N)
+    B = rand(Float32, N, N)
+    return A, B
+end
+
+# Function to perform matrix multiplication using the built-in Julia method
+function matrix_multiplication(A, B)
+    return A * B
+end
+
+# Custom matrix multiplication method with a manual loop
+function custom_matrix_multiplication(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32, (N, L))
+
+    for i in 1:N, j in 1:L
+        for k in 1:M
+            C[i, j] += A[i, k] * B[k, j]
+        end
+    end
+    return C
+end
+
+# Transpose optimization for more efficient memory access
+function optimized_matrix_multiplication(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    BT = transpose(B)
+    C = zeros(Float32, (N, L))
+
+    for k in 1:M
+        for j in 1:L, i in 1:N
+            C[i, j] += A[i, k] * BT[j, k]
+        end
+    end
+    return C
+end
+
+# Example usage
+N = 500
+A, B = matrix_initialization(N)
+
+# Built-in matrix multiplication
+C_builtin = matrix_multiplication(A, B)
+
+# Custom matrix multiplication
+C_custom = custom_matrix_multiplication(A, B)
+
+# Optimized matrix multiplication
+C_optimized = optimized_matrix_multiplication(A, B)
+
+println("Matrix multiplication complete.")
+\end{lstlisting}
+
+
+
+\subsubsection{Matrix Multiplication Modifying N using Times}
+
+In this subsection, we present a benchmark that measures the performance of matrix multiplication on the GPU. Specifically, we analyze the duration required for matrix multiplication as the size of the matrices varies. The benchmark is conducted using the Julia programming language with the CUDA library.
+
+The benchmark procedure involves varying the size of the matrices and recording the time taken for a series of matrix multiplications. The results are then saved to a CSV file for further analysis.
+
+\begin{center}
+   \textbf{Description of the Benchmark}   
+\end{center}
+
+\begin{enumerate}
+   \item \textbf{Matrix Size Variation:} The benchmark varies the size of the matrices from 300 to 2499 with a step size of 25.
+   \item \textbf{Number of Operations:} For each matrix size \(N\), the number of operations `TIMES` is calculated to ensure that the total number of operations is constant for different matrix sizes. The formula used is:
+   \[
+   \text{TIMES} = \frac{N_{\text{ops}}}{2 \times N^3}
+   \]
+ where \(N_{\text{ops}}\) is set to \(2 \times 10000^3\).
+   \item \textbf{Timing Measurement:} The time taken to perform the matrix multiplications is measured using the `@elapsed` macro. The benchmark performs `TIMES` multiplications and records the total duration.
+   \item \textbf{Data Recording:} The results, including matrix size, number of operations, and duration, are written to a CSV file for analysis.
+\end{enumerate}
+
+\begin{figure}[h]
+   \begin{center}
+       \input{Figures/grafico_matrix_mult_times}
+  \end{center}
+  \caption{GPU efficiency with matrix multiplications.}
+  \label{}
+\end{figure}
+\newpage
+
+\subsubsubsection{Code}
+
+Below is the Julia code used to perform this benchmark:
+
+\begin{comment}
+\lstinputlisting[language=Julia]{code/2/matrix_mult_times.jl}
+\end{comment}
+
+\begin{lstlisting}[language=Julia]
+using LinearAlgebra, CPUTime
+
+# Function to initialize random matrices
+function matrix_initialization(N)
+    A = rand(Float32, N, N)
+    B = rand(Float32, N, N)
+    return A, B
+end
+
+# Function to perform matrix multiplication using the built-in Julia method
+function matrix_multiplication(A, B)
+    return A * B
+end
+
+# Custom matrix multiplication method with a manual loop
+function custom_matrix_multiplication(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32, (N, L))
+
+    for i in 1:N, j in 1:L
+        for k in 1:M
+            C[i, j] += A[i, k] * B[k, j]
+        end
+    end
+    return C
+end
+
+# Function to measure execution time of matrix multiplication
+function measure_execution_time(N, matmul_func)
+    A, B = matrix_initialization(N)
+    start_time = time_ns()
+    matmul_func(A, B)
+    elapsed_time = (time_ns() - start_time) / 1e9  # Convert from nanoseconds to seconds
+    return elapsed_time
+end
+
+# Example usage
+N = 500
+time_builtin = measure_execution_time(N, matrix_multiplication)
+time_custom = measure_execution_time(N, custom_matrix_multiplication)
+
+println("Execution time for built-in matrix multiplication: ", time_builtin, " seconds")
+println("Execution time for custom matrix multiplication: ", time_custom, " seconds")
+\end{lstlisting}
+
+
+\newpage
+
+\subsubsection{GPU Matrix Multiplication Performance GFLOPS}
+
+This subsection describes a benchmark that measures the performance of matrix multiplication on the GPU using an NVIDIA GeForce GTX 1060 6GB. The objective is to evaluate the time taken for matrix multiplication across various matrix sizes and compare it to theoretical performance estimates. The benchmark uses the Julia programming language along with the CUDA and Plots libraries.
+
+The following Julia code performs the matrix multiplication and measures the execution time. It also plots the performance results in GFLOPS (Giga Floating Point Operations per Second) to visualize how the GPU handles different matrix sizes.
+
+\begin{center}
+   \textbf{Description of the Benchmark}   
+\end{center}
+
+\begin{enumerate}
+   \item \textbf{Matrix Initialization:} The matrix initialization GPU function initializes matrices \(A\) and \(B\) with random floating-point values and transfers them to the GPU as `CuArray`.
+   \item \textbf{Matrix Multiplication:} The matrix multiplication function performs matrix multiplication on the CPU, while the matrix multiplication GPU function measures the time required for GPU-based matrix multiplication using the `CUDA.@elapsed` macro.
+   \item \textbf{Timing Measurement:} The time matrix multilication function measures the duration of matrix multiplications for different matrix sizes \(N\). It calculates the time per operation and compares it to theoretical performance estimates.
+   \item \textbf{Results Plotting:} The plot results function generates a plot of the GPU performance in GFLOPS versus matrix size \(N\). It also includes a label indicating the maximum GFLOPS achieved.
+   \item \textbf{Data Analysis:} The benchmark results are printed to the console and visualized using the `Plots` library. The maximum GFLOPS achieved is highlighted in the plot for comparison with theoretical performance.
+\end{enumerate}
+
+\begin{figure}[h]
+   \begin{center}
+      \input{Figures/grafico_GFLOPS_GPU}
+\end{center}
+\caption{GPU efficiency with matrix multiplications.}
+\label{}
+\end{figure}
+\newpage
+
+\subsubsubsection{Code}
+
+Here is the Julia code used for this benchmark:
+
+\begin{comment}
+\lstinputlisting[language=Julia]{code/3/GFLOPS_GPU.jl} 
+\end{comment}
+
+\begin{lstlisting}[language=Julia]
+using LinearAlgebra, CUDA
+
+# Function to initialize random matrices on the GPU
+function gpu_matrix_initialization(N)
+    A = CUDA.rand(Float32, N, N)
+    B = CUDA.rand(Float32, N, N)
+    return A, B
+end
+
+# Function to perform matrix multiplication using the GPU
+function gpu_matrix_multiplication(A, B)
+    return A * B
+end
+
+# Function to measure the performance of GPU matrix multiplication in GFLOPS
+function measure_gflops_gpu(N)
+    A, B = gpu_matrix_initialization(N)
+    start_time = time_ns()
+    C = gpu_matrix_multiplication(A, B)
+    CUDA.synchronize()  # Ensure all operations are complete
+    elapsed_time = (time_ns() - start_time) / 1e9  # Convert from nanoseconds to seconds
+    gflops = (2 * N^3) / (elapsed_time * 1e9)  # Compute GFLOPS
+    return gflops
+end
+
+# Example usage
+N = 1024
+gflops_gpu = measure_gflops_gpu(N)
+println("GPU matrix multiplication performance: ", gflops_gpu, " GFLOPS")
+\end{lstlisting}
+
+
+\newpage
+
+\subsubsection{Performance GFLOPS NVIDIA GeForce GTX 1060 6GB}
+
+\textbf{LINK GTX 1060. https://www.techpowerup.com/gpu-specs/geforce-gtx-1060-6-gb.c2862}
+
+The NVIDIA GeForce GTX 1060 6GB is a graphics card from the GTX 10 series, released in 2016, offering significant performance for parallel processing and intensive computation tasks. To evaluate its processing capability, the GFLOPS (Giga Floating Point Operations Per Second) metric is used, which measures the number of floating-point operations the GPU can perform in one second.
+
+\subsubsubsection{Key Specifications}
+
+To calculate the GFLOPS performance of the GTX 1060 6GB, we consider the following specifications:
+
+\begin{itemize}
+    \item \textbf{Number of CUDA Cores:} 1,280
+    \item \textbf{Base GPU Clock:} 1,506 MHz
+    \item \textbf{Boost GPU Clock:} 1,708 MHz
+    \item \textbf{Number of Floating Point Operations per Cycle per Core:} 2 (each CUDA core can perform 2 floating-point operations per cycle)
+\end{itemize}
+
+\subsubsubsection{GFLOPS Calculation}
+
+GFLOPS performance is calculated using the formula:
+
+\[
+\text{GFLOPS} = \text{Number of CUDA Cores} \times \text{GPU Clock} \times \text{Operations per Cycle} \times \frac{1}{10^6}
+\]
+
+where the conversion factor changes the clock frequency from MHz to GHz. Using the boost clock frequency of 1,708 MHz for the calculation, we get:
+
+\[
+\text{GFLOPS} = 1,280 \times 1,708 \text{ MHz} \times 2 \times \frac{1}{10^3}
+\]
+
+\[
+\text{GFLOPS} = 1,280 \times 1.708 \times 2
+\]
+
+\[
+\text{GFLOPS} = 4,371.84 \text{ GFLOPS}
+\]
+
+\subsubsubsection{Summary}
+
+The theoretical maximum performance of the NVIDIA GeForce GTX 1060 6GB is approximately **4.37 TFLOPS** (teraflops) for single-precision (FP32) floating-point calculations. This figure provides an indication of the GPU's potential to handle floating-point operations in high-performance applications such as scientific simulations, machine learning, and graphics processing.
+
+It is important to note that actual performance may vary depending on the specific workload, software implementation efficiency, and operational conditions of the GPU.
+
+\subsubsection{Performance in GFLOPS of the NVIDIA GeForce RTX 2060 Laptop}
+
+\textbf{LINK GTX 1060. https://www.techpowerup.com/gpu-specs/geforce-rtx-2060.c3310}
+
+The NVIDIA GeForce RTX 2060 Laptop is a high-performance graphics card designed for laptops, offering significant computational power for various demanding tasks. To assess its performance, we use the GFLOPS (Giga Floating Point Operations Per Second) metric, which measures how many floating-point operations the GPU can perform in one second.
+
+\subsubsubsection{Key Specifications}
+
+For calculating the GFLOPS performance of the RTX 2060 Laptop, we consider the following specifications:
+
+\begin{itemize}
+    \item \textbf{Number of CUDA Cores:} 1,920
+    \item \textbf{Base GPU Clock:} 1,050 MHz
+    \item \textbf{Boost GPU Clock:} 1,440 MHz
+    \item \textbf{Number of Floating Point Operations per Cycle per Core:} 2 (each CUDA core can perform 2 floating-point operations per cycle)
+\end{itemize}
+
+\subsubsubsection{GFLOPS Calculation}
+
+The GFLOPS performance can be calculated using the formula:
+
+\[
+\text{GFLOPS} = \text{Number of CUDA Cores} \times \text{GPU Clock} \times \text{Operations per Cycle} \times \frac{1}{10^6}
+\]
+
+where the conversion factor adjusts the clock frequency from MHz to GHz. Using the boost clock frequency of 1,440 MHz for the calculation, we get:
+
+\[
+\text{GFLOPS} = 1,920 \times 1,440 \text{ MHz} \times 2 \times \frac{1}{10^3}
+\]
+
+\[
+\text{GFLOPS} = 1,920 \times 1.44 \times 2
+\]
+
+\[
+\text{GFLOPS} = 5,529.60 \text{ GFLOPS}
+\]
+
+\subsubsubsection{Summary}
+
+The theoretical maximum performance of the NVIDIA GeForce RTX 2060 Laptop is approximately **5.53 TFLOPS** (teraflops) for single-precision (FP32) floating-point calculations. This figure provides a measure of the GPU's capability to handle floating-point operations efficiently, which is crucial for tasks such as high-resolution gaming, complex simulations, and professional creative applications.
+
+It is important to note that the actual performance may vary based on the specific workload, the efficiency of the software implementation, and the operating conditions of the GPU.
+
+
+
+
+\newpage
