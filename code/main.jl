@@ -57,22 +57,27 @@ end
 function show_gpu_codes()
     while true
         println("GPU Performance Codes:")
-        println("1. GPU Code 1")
-        println("2. GPU Code 2")
-        println("3. Back to main menu")
+        println("1. GPU Code Matrix Multiplication")
+        println("2. GPU Code Matrix Multiplication Times")
+        println("3. GPU Code Matrix Multiplication Functions Comparison GFlops")
+        println("4. Back to main menu")
         print("Enter your choice: ")
 
         choice = readline()
 
         if choice == "1"
-            println("Running GPU Code 1...")
-            #include("")
+            println("Running Matrix Multiplication...")
+            include("gpu/matrix_mult.jl")
             break
         elseif choice == "2"
-            println("Running GPU Code 2...")
-            #include("")
+            println("Running Matrix Multiplication Times...")
+            include("gpu/matrix_mult_times.jl")
             break
         elseif choice == "3"
+            println("Running Matrix Multiplication Functions Comparison GFlops...")
+            include("gpu/GFLOPS_GPU.jl")
+            break
+        elseif choice == "4"
             return
         else
             println("Invalid choice, please try again.")
