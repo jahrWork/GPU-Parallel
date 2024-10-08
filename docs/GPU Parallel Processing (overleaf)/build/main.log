@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.9.23)  8 OCT 2024 11:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.9.23)  8 OCT 2024 11:30
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"c:/Users/pedro/Downloads/GPU Parallel Processing (overleaf) (1)/main.tex"
-(c:/Users/pedro/Downloads/GPU Parallel Processing (overleaf) (1)/main.tex
+**"c:/Users/pedro/Desktop/GPU-Parallel/docs/GPU Parallel Processing (overleaf)/main.tex"
+(c:/Users/pedro/Desktop/GPU-Parallel/docs/GPU Parallel Processing (overleaf)/main.tex
 LaTeX2e <2024-06-01> patch level 2
 L3 programming layer <2024-08-30>
 (c:/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -775,7 +775,7 @@ l.44 \newpage
 Package hyperref Warning: Option `colorlinks' has already been used,
 (hyperref)                setting the option has no effect on input line 63.
 
-(./Tex_Files/mario.tex
+(./Tex_Files/1/1_1.tex
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 15.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
@@ -813,7 +813,7 @@ File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
 Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 181.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
-[3]) (./Tex_Files/juan1.tex
+[3]) (./Tex_Files/2/2_1.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -824,7 +824,7 @@ Overfull \hbox (1.11697pt too wide) in paragraph at lines 3--3
 |[]\OT1/cmr/bx/n/14.4 CPU Per-for-mance: Bench-mark Anal-y-sis and The-o-ret-i-cal Lim-
  []
 
-) (./Tex_Files/juan2.tex
+) (./Tex_Files/2/2_2.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -857,7 +857,7 @@ File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
 Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 161.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
-[7]) (./Tex_Files/juan3.tex
+[7]) (./Tex_Files/2/2_3.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -868,7 +868,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.41 \newpage
-              <./Figures/herarchy.png>]) (./Tex_Files/juan4.tex
+              <./Figures/herarchy.png>]) (./Tex_Files/2/2_4.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -931,7 +931,7 @@ File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
 Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 355.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
-[15]) (./Tex_Files/alvaro1.tex
+[15]) (./Tex_Files/3/3_1.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -939,7 +939,7 @@ Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 39.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
 [16
 
-]) (./Tex_Files/alvaro2.tex) (./Tex_Files/alvaro3.tex
+]) (./Tex_Files/3/3_2.tex) (./Tex_Files/3/3_3.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -950,7 +950,7 @@ Overfull \hbox (0.4122pt too wide) in paragraph at lines 7--8
 \OT1/cmr/m/n/10.95 tions and ab-strac-tions for GPU pro-gram-ming, mak-ing it eas-ier to de-velop high-performance
  []
 
-) (./Tex_Files/alvaro4.tex
+) (./Tex_Files/3/3_4.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -961,7 +961,7 @@ Overfull \hbox (55.02072pt too wide) in paragraph at lines 26--26
  []            \OT1/cmtt/m/n/10.95 b = CUDA.fill(2.0, 10)  # Fill an array with a constant value on the GPU[] 
  []
 
-) (./Tex_Files/alvaro5.tex
+) (./Tex_Files/3/3_5.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1053,7 +1053,7 @@ File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
 Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 373.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
-[28]) (./Tex_Files/00.tex
+[28]) (./Tex_Files/4/4_1.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1070,7 +1070,7 @@ File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
 Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 104.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
-[30]) (./Tex_Files/a.tex
+[30]) (./Tex_Files/4/4_2.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1082,7 +1082,7 @@ File: Figures/jvs.png Graphic file (type png)
 <use Figures/jvs.png>
 Package pdftex.def Info: Figures/jvs.png  used on input line 10.
 (pdftex.def)             Requested size: 318.66948pt x 155.14865pt.
-) (./Tex_Files/b.tex
+) (./Tex_Files/4/4_3.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1181,7 +1181,7 @@ File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
 Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 125.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
-[35]) (./Tex_Files/c.tex
+[35]) (./Tex_Files/4/4_4.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1245,7 +1245,7 @@ File: Figures/CD3.png Graphic file (type png)
 <use Figures/CD3.png>
 Package pdftex.def Info: Figures/CD3.png  used on input line 282.
 (pdftex.def)             Requested size: 136.57462pt x 90.35988pt.
-) (./Tex_Files/d.tex
+) (./Tex_Files/4/4_5.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1274,7 +1274,7 @@ Package pdftex.def Info: Figures/Portada_HF/upm_logo.png  used on input line 72.
 (pdftex.def)             Requested size: 119.50148pt x 55.48685pt.
 [43
 
-]) (./Tex_Files/e.tex
+]) (./Tex_Files/4/4_6.tex
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1285,7 +1285,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has 
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.1 \clearpage
-              ]) (./Tex_Files/f.tex)
+              ]) (./Tex_Files/4/4_7.tex)
 
 File: Figures/Portada_HF/upm_logo.png Graphic file (type png)
 <use Figures/Portada_HF/upm_logo.png>
@@ -1309,15 +1309,15 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 974BBAB24B16C2B0CCADA30882E35C27;8653.
  ) 
 Here is how much of TeX's memory you used:
- 37639 strings out of 473579
- 857776 string characters out of 5732263
- 2142505 words of memory out of 5000000
+ 37643 strings out of 473579
+ 857936 string characters out of 5732263
+ 2143486 words of memory out of 5000000
  58969 multiletter control sequences out of 15000+600000
  568716 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 89i,19n,96p,824b,2246s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 89i,19n,96p,836b,2246s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on build/main.pdf (48 pages, 1721831 bytes).
+Output written on build/main.pdf (48 pages, 1721812 bytes).
 PDF statistics:
  1623 PDF objects out of 1728 (max. 8388607)
  1492 compressed objects within 15 object streams
