@@ -19,22 +19,22 @@ function print_matrix(m)
     end
 end
 
-# Parámetros del problema
-nx = 25  # Número de puntos en la dirección x
-ny = 25   # Número de puntos en la dirección y
-Lx = 1.0  # Longitud del dominio en la dirección x
-Ly = 1.0  # Longitud del dominio en la dirección y
-alpha = 0.001  # Difusividad térmica
+# Parametros del problema
+nx = 25  # Numero de puntos en la direccion x
+ny = 25   # Numero de puntos en la direccion y
+Lx = 1.0  # Longitud del dominio en la direccion x
+Ly = 1.0  # Longitud del dominio en la direccion y
+alpha = 0.001  # Difusividad termica
 v = [0, 0.01]  # Vector de velocidad (vx, vy)
 dt = 0.01  # Paso de tiempo
-tfinal = 15  # Tiempo final de la simulación
-nsteps = Int(tfinal / dt)  # Número de pasos de tiempo
+tfinal = 15  # Tiempo final de la simulacion
+nsteps = Int(tfinal / dt)  # Numero de pasos de tiempo
 
-# Definimos el tamaño de la malla
+# Definimos el tamano de la malla
 dx = Lx / (nx - 1)
 dy = Ly / (ny - 1)
 
-# Inicialización continua de temperaturas
+# Inicializacion continua de temperaturas
 function initialize_temperature(nx, ny, dx, dy)
     T = zeros(nx, ny)
     for i in 1:nx
@@ -52,7 +52,7 @@ end
 
 
 
-# Función para aplicar las condiciones de frontera y mantener la fuente térmica fija
+# Funcion para aplicar las condiciones de frontera y mantener la fuente termica fija
 function apply_boundary_conditions!(T, nx, ny, dx, dy)
     # Mantener la temperatura fija en los bordes
     T[1, :] .= exp(-(25*(-0.5)^2))
@@ -60,7 +60,7 @@ function apply_boundary_conditions!(T, nx, ny, dx, dy)
     T[:, 1] .= exp(-(25*(-0.5)^2))
     T[:, end] .= exp(-(25*(0.5)^2))
 
-    # Mantener la fuente térmica fija en el centro con la condición inicial
+    # Mantener la fuente termica fija en el centro con la condicion inicial
     # for i in 1:nx
     #     for j in 1:ny
     #         x = (i-1) * dx
@@ -84,7 +84,7 @@ nodes_y = range(0, stop=Ly, length=ny)
 
 # ======================================================================================================
 
-# Cálculo de los polinomios de Lagrange para los x
+# Calculo de los polinomios de Lagrange para los x
 function lagrange_basis(x_nodes, i, x)
     l_i = 1.0
     for j in 1:length(x_nodes)
@@ -95,7 +95,7 @@ function lagrange_basis(x_nodes, i, x)
     return l_i
 end
 
-# Función para calcular la derivada del polinomio de Lagrange
+# Funcion para calcular la derivada del polinomio de Lagrange
 function lagrange_derivative(x_nodes, i, x)
     dl_i = 0.0
     for m in 1:length(x_nodes)
@@ -112,7 +112,7 @@ function lagrange_derivative(x_nodes, i, x)
     return dl_i
 end
 
-# Función para calcular la matriz de derivadas usando polinomios de Lagrange
+# Funcion para calcular la matriz de derivadas usando polinomios de Lagrange
 function lagrange_derivative_matrix(x_nodes)
     n = length(x_nodes)
     D = zeros(n, n)
@@ -129,7 +129,7 @@ end
 nodes_x = range(0, stop=Lx, length=nx)
 nodes_y = range(0, stop=Ly, length=ny)
 
-# Construcción de las matrices de derivadas con POLINOMIOS DE LAGRANGE
+# Construccion de las matrices de derivadas con POLINOMIOS DE LAGRANGE
 D_x = lagrange_derivative_matrix(nodes_x)
 D_y = lagrange_derivative_matrix(nodes_y)
 
@@ -166,35 +166,35 @@ temperaturas = []
 end
 
 
-## === REPRESENTACIÓN GRÁFICA === ##
+## === REPRESENTACION GRAFICA === ##
 
 # Convertimos el resultado a una matriz para mostrarlo
 T = reshape(T, nx, ny)
 
-# Determinamos los límites de los ejes
+# Determinamos los limites de los ejes
 x = range(0, stop=Lx, length=nx)
 y = range(0, stop=Ly, length=ny)
-z_min, z_max = 0, 1.0  # Límites del eje z (temperatura)
+z_min, z_max = 0, 1.0  # Limites del eje z (temperatura)
 
-# # Creamos la animación 3D
+# # Creamos la animacion 3D
 # intervalo_animacion = 30
 # animation = @animate for i in 1:intervalo_animacion:length(temperaturas)
 #     t = temperaturas[i]
-#     surface(x, y, reshape(t, nx, ny), title="Distribución de temperatura [M][M]", xlabel="x", ylabel="y", zlabel="Temperatura", c=:inferno, xlims=(0, Lx), ylims=(0, Ly), zlims=(z_min, z_max))
+#     surface(x, y, reshape(t, nx, ny), title="Distribucion de temperatura [M][M]", xlabel="x", ylabel="y", zlabel="Temperatura", c=:inferno, xlims=(0, Lx), ylims=(0, Ly), zlims=(z_min, z_max))
 # end
 
-# # Guardamos la animación como un gif
+# # Guardamos la animacion como un gif
 # gif(animation, "adveccion_difusion_diferencias_finitas_matxmat_3d.gif", fps=30)
 
 
-# Creamos la animación 2D con líneas de contorno sin letras
+# Creamos la animacion 2D con lineas de contorno sin letras
 intervalo_animacion = 30
 animation = @animate for i in 1:intervalo_animacion:length(temperaturas)
     t = temperaturas[i]
     contourf(x, y, reshape(t, nx, ny), c=:inferno, xlims=(0, Lx), ylims=(0, Ly), zlims=(z_min, z_max), xlabel="", ylabel="", title="", clabels=false)
 end
 
-# Guardamos la animación como un gif
+# Guardamos la animacion como un gif
 gif(animation, "adveccion_difusion_contornos2d.gif", fps=10)
 \end{lstlisting}
 

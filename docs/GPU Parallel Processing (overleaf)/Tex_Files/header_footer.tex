@@ -1,0 +1,28 @@
+% DISEÑO DE CABECERA Y PIE DE PÁGINA
+\lstMakeShortInline"
+\newlength{\myoddoffset}
+\setlength{\myoddoffset}{0cm} % Ajuste directo del margen derecho
+\fancyheadoffset[rh]{\myoddoffset} % Aplicación del offset al header y footer
+\fancyfootoffset[rh]{\myoddoffset}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\hspace{10pt} \rightmark} % Ajuste de la separación
+\lhead{
+    \includegraphics[width=4.2cm]{Figures/Portada_HF/upm_logo.png}
+}
+\rhead{
+    \begin{Large}{\Project}\end{Large}
+}
+
+% Agregar contador de páginas al pie de página
+\cfoot{\thepage}
+
+\newgeometry{
+    top=1.7in, 
+    bottom=1.1in, 
+    left=2.5cm, 
+    right=2.5cm, 
+    headsep=2.5cm, 
+    ignoremp
+}

@@ -9,7 +9,7 @@
 \newcommand{\ProjectAutor}{Pedro Rodríguez Jiménez}
 
 \newcommand{\ProjectLocation}{Madrid}
-\newcommand{\ProjectDate}{1 de mayo de 2023}
+\newcommand{\ProjectDate}{1 de octubre de 2024}
 % Descomentar si se tiene un repositorio del trabajo
 % \newcommand{\ProjectGitHub}{url}
 
@@ -18,7 +18,7 @@
 %   ---   INCLUIR ARCHIVOS DE CONFIGURACION   ---   %
 
 \input{./Tex_Files/packages.tex}
-\input{./Tex_Files/header_footer.tex}
+
 
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -33,11 +33,14 @@
 %   ---   INCLUIR PORTADA   ---   %
 
 \input{./Tex_Files/portada.tex}
+\input{./Tex_Files/header_footer.tex}
 
 %   ---   INDICE Y LISTAS   ---   %
 
 % Indice y numeración
-\tableofcontents
+\hypersetup{hidelinks} % Desactiva los enlaces antes del índice
+\tableofcontents % Genera el índice
+\hypersetup{colorlinks=true, linkcolor=red, citecolor=blue, urlcolor=blue} % Reactiva los enlaces con colores después del índice
 \newpage
 \raggedbottom
 \setcounter{page}{0}
@@ -62,7 +65,7 @@
 
 %   ---   ARCHIVOS DEL DOCUMENTO   ---   %
 % Es recomendable escribir el trabajo en documentos separados y luego importarlos al main.
-\setcounter{section}{-1}
+\setcounter{section}{0}
 \input{./Tex_Files/mario.tex}
 \input{./Tex_Files/juan1.tex}
 \input{./Tex_Files/juan2.tex}

@@ -1,0 +1,72 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction to Julia: A Comprehensive Guide}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Installing Julia and Setting Up the Environment}{1}{subsection.1.1}%
+\contentsline {paragraph}{Download and Installation}{1}{paragraph*.1}%
+\contentsline {paragraph}{Setting Up the Development Environment}{1}{paragraph*.2}%
+\contentsline {paragraph}{Setting Up Julia Environment for Package Management}{1}{paragraph*.3}%
+\contentsline {subsection}{\numberline {1.2}Basic Concepts in Julia}{1}{subsection.1.2}%
+\contentsline {paragraph}{Basic Syntax and Functions}{1}{paragraph*.4}%
+\contentsline {paragraph}{The Use of \texttt {!} in Function Naming}{1}{paragraph*.5}%
+\contentsline {paragraph}{Matrix Multiplication: `*` vs. Element-wise Multiplication: `.*`}{2}{paragraph*.6}%
+\contentsline {paragraph}{In-place Matrix Multiplication with `mul!`}{2}{paragraph*.7}%
+\contentsline {subsection}{\numberline {1.3}Plotting, Animations, and Encapsulation}{2}{subsection.1.3}%
+\contentsline {paragraph}{2D Plots and Contour Maps}{2}{paragraph*.8}%
+\contentsline {paragraph}{2D Animations}{3}{paragraph*.9}%
+\contentsline {paragraph}{Encapsulating Plot Functions}{3}{paragraph*.10}%
+\contentsline {subsection}{\numberline {1.4}Functions, Lambda Expressions, and Advanced Operations}{4}{subsection.1.4}%
+\contentsline {paragraph}{Functions and Lambda Expressions}{4}{paragraph*.11}%
+\contentsline {paragraph}{Vector and Matrix Operations}{4}{paragraph*.12}%
+\contentsline {paragraph}{Tensor Product Revisited}{4}{paragraph*.13}%
+\contentsline {section}{\numberline {2}CPU Performance: Benchmark Analysis and Theoretical Limits}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Introduction}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}About the Hardware}{5}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}How CPU works}{5}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Micro-operations and pipelining}{6}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Vectorization: AVX}{6}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Memory: RAM}{7}{subsubsection.2.2.4}%
+\contentsline {subsubsection}{\numberline {2.2.5}Memory: Cache}{7}{subsubsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.3}Theoretical time}{8}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Benchmark operation}{9}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Different Matrix-Multiplication functions}{9}{subsubsection.2.4.1}%
+\contentsline {paragraph}{}{9}{paragraph*.14}%
+\contentsline {paragraph}{}{11}{paragraph*.15}%
+\contentsline {paragraph}{}{11}{paragraph*.16}%
+\contentsline {subsubsection}{\numberline {2.4.2}Comparison of BLAS Operations Across Different Levels}{13}{subsubsection.2.4.2}%
+\contentsline {section}{\numberline {3}GPU Performance: Benchmark Analysis}{16}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Understanding the GPU}{16}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Introduction to GPUs}{16}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Vectorization and parallelism}{16}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Memory Access}{17}{subsubsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.2}GPU Hardware}{17}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}GPU Software}{18}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Operators Used in Benchmark.}{18}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}CUDA}{18}{subsubsection.3.4.1}%
+\contentsline {paragraph}{Key Features of CUDA:}{19}{paragraph*.17}%
+\contentsline {paragraph}{CUDA Utilities:}{19}{paragraph*.18}%
+\contentsline {subsection}{\numberline {3.5}Benchmarks}{20}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Simply GPU Matrix Multiplication}{20}{subsubsection.3.5.1}%
+\contentsline {paragraph}{Code}{21}{paragraph*.19}%
+\contentsline {subsubsection}{\numberline {3.5.2}Matrix Multiplication Modifying N using Times}{22}{subsubsection.3.5.2}%
+\contentsline {paragraph}{Code}{23}{paragraph*.20}%
+\contentsline {subsubsection}{\numberline {3.5.3}GPU Matrix Multiplication Performance GFLOPS}{25}{subsubsection.3.5.3}%
+\contentsline {paragraph}{Code}{26}{paragraph*.21}%
+\contentsline {subsubsection}{\numberline {3.5.4}Performance GFLOPS NVIDIA GeForce GTX 1060 6GB}{27}{subsubsection.3.5.4}%
+\contentsline {paragraph}{Key Specifications}{27}{paragraph*.22}%
+\contentsline {paragraph}{GFLOPS Calculation}{27}{paragraph*.23}%
+\contentsline {paragraph}{Summary}{27}{paragraph*.24}%
+\contentsline {subsubsection}{\numberline {3.5.5}Performance in GFLOPS of the NVIDIA GeForce RTX 2060 Laptop}{28}{subsubsection.3.5.5}%
+\contentsline {paragraph}{Key Specifications}{28}{paragraph*.25}%
+\contentsline {paragraph}{GFLOPS Calculation}{28}{paragraph*.26}%
+\contentsline {paragraph}{Summary}{28}{paragraph*.27}%
+\contentsline {section}{\numberline {4}Solving the Convective-Diffusive Heat Equation with Numerical Methods}{29}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Introduction and Theoretical framework}{29}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Numerical Methods used}{30}{subsubsection.4.1.1}%
+\contentsline {paragraph}{ Three-Point Finite Differences}{30}{paragraph*.28}%
+\contentsline {paragraph}{ Global Interpolantion}{30}{paragraph*.29}%
+\contentsline {subsection}{\numberline {4.2} Computational Implementation}{32}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Results and Analysis}{33}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Global Interpolation solving}{37}{subsection.4.4}%
+\contentsline {paragraph}{Extra comparison}{43}{paragraph*.30}%
+\contentsline {subsubsection}{\numberline {4.4.1}Graphs and tables}{44}{subsubsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.5}Conclusions}{45}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Bibliografía}{45}{subsection.4.6}%

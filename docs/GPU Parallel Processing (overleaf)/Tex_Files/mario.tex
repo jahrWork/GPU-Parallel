@@ -123,8 +123,9 @@ using Plots
 # Defining the function
 f(x, y) = sin(x) * cos(y)
 
+
 # Range of values
-x = y = 0:0.1:2π
+x = y = 0:0.1:2*pi
 
 # Contour map
 contour(x, y, (x, y) -> f(x, y))

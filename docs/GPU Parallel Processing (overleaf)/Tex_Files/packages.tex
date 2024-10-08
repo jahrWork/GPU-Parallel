@@ -1,0 +1,62 @@
+% Paquetes adicionales
+\usepackage[utf8]{inputenc}  
+\usepackage[english]{babel}
+\usepackage{amsmath} % Paquete para matemáticas
+
+
+% Paquetes para gráficos
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{59.56688pt}
+\addtolength{\topmargin}{-47.56688pt}
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{afterpage}
+\usepackage{titlesec} % O sectsty para modificar títulos y secciones.
+
+\usepackage{afterpage}
+
+
+\usepackage{hyperref} % Paquete para enlaces y referencias
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{verbatim}
+\usepackage{float}
+
+
+\usepackage{listings}
+\usepackage{listingsutf8}
+
+\lstdefinelanguage{Julia}{
+  morekeywords={
+    abstract, break, case, catch, const, continue, do, else, elseif, end, export, false, for, function, immutable, import, in, macro, module, true, try, using, while, struct, mutable, return
+  },
+  sensitive=true,
+  morecomment=[l]\#,
+  morestring=[b]",
+  morestring=[b]',
+}
+
+\lstset{
+    language=Julia,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    identifierstyle=\color{black},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible,
+    literate={∇}{{$\nabla$}}1 {²}{{$^2$}}1 {α}{{$\alpha$}}1 {Δ}{{$\Delta$}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {⁻}{{$^{-}$}}1
+}
