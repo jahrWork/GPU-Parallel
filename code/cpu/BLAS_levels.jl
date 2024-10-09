@@ -1,7 +1,8 @@
 import Pkg
 Pkg.activate(".")
-Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
-using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
+#Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+#using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
+using CPUTime, Plots, LinearAlgebra, MKL, CpuId
 
 cpuid = cpuinfo() # CPU Features
 string_cpuid = string(cpuid)
@@ -161,35 +162,44 @@ GFLOPS3 = 1 ./ Time3
 GFLOPS_max = 1 / Theoretical_time
 
 # Data for plotting
-x = N
+x = float(N)
 y1 = GFLOPS
 y2 = GFLOPS2
 y3 = GFLOPS3
 y4 = fill(GFLOPS_max, length(y1))
 
 
-plot = @pgf Axis(
-    {
-        width = "15cm",  
-        height = "10cm", 
-        xlabel="Matrix dimension",
-        ylabel="FLOPS [GFLOPS]",
-        title="[M]x[M] vs [M]x[v]",
-        legend="north east",
-        ymax=500,
-        
-    },
-    Plot({no_marks, "blue"}, Table(x, y1)),
-    Plot({no_marks, "red"}, Table(x, y2)),
-    Plot({no_marks, "green"}, Table(x, y3)),
-    Plot({no_marks, "orange"}, Table(x, y4)),
-    LegendEntry("Matmul"),
-    LegendEntry("MatVec"),
-    LegendEntry("VecVec"),
-    LegendEntry("Theoretical"),
-)
 
-display(plot)
+println(x)
+println(y1)
+
+plot(x, y1)
+plot!(x, y2)
+plot!(x, y3)
+plot!(x, y4)
+
+# plot = @pgf Axis(
+#     {
+#         width = "15cm",  
+#         height = "10cm", 
+#         xlabel="Matrix dimension",
+#         ylabel="FLOPS [GFLOPS]",
+#         title="[M]x[M] vs [M]x[v]",
+#         legend="north east",
+#         ymax=500,
+        
+#     },
+#     Plot({no_marks, "blue"}, Table(x, y1)),
+#     Plot({no_marks, "red"}, Table(x, y2)),
+#     Plot({no_marks, "green"}, Table(x, y3)),
+#     Plot({no_marks, "orange"}, Table(x, y4)),
+#     LegendEntry("Matmul"),
+#     LegendEntry("MatVec"),
+#     LegendEntry("VecVec"),
+#     LegendEntry("Theoretical"),
+# )
+
+# display(plot)
 #PGFPlotsX.save("code/BLAS_levels_dyn.tex", plot, include_preamble=false)
 
 
