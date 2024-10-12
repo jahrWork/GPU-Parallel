@@ -55,9 +55,10 @@ function gpu_info()
   println("Device Information ")
   println(" ")
   println("GPU Name: ", CUDA.name(device))
-  println("GPU Compute Capability: ", capability.major, ".", capability.minor, ": ", get_architecture_name(capability))
+  println("GPU Compute Capability: ", capability.major, ".", capability.minor, " (", get_architecture_name(capability), ")")
   println(" ")
   println("GPU Memory: ", CUDA.totalmem(device) / 1e9, " GB")
+  println("GPU Memory: ", CUDA.totalmem(device) / 2^30, " GiB") # Conversion to GiB
   println(" ")
   println("GPU Streaming Multiprocessor (SM) Count: ", sm_count)
   println("CUDA Cores per SM: ", cores_per_sm)
@@ -126,7 +127,7 @@ gpu_info()
 
 # Test parameters
 N_cores = 1
-N = Vector(10:10:100)  # Define matrix sizes
+N = Vector(10:10:10000)  # Define matrix sizes
 Time, Theoretical_time = time_matrix_multiplication(N, N_cores, matrix_initialization_GPU, matrix_multiplication_GPU)
 GFLOPS_GPU = 1 ./ Time  # Compute GFLOPS
 GFLOPS_max = 1 / Theoretical_time  # Compute maximum theoretical GFLOPS

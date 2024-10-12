@@ -47,16 +47,17 @@ function gpu_info()
     sm_count = CUDA.attribute(device, CUDA.DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT)
     cores_per_sm = cuda_cores_per_sm(capability)  # Get cores per SM based on compute capability
     total_cuda_cores = sm_count * cores_per_sm
-
+  
     println(" ")
     println("---------------------------------")
     println(" ")
     println("Device Information ")
     println(" ")
     println("GPU Name: ", CUDA.name(device))
-    println("GPU Compute Capability: ", capability.major, ".", capability.minor, ": ", get_architecture_name(capability))
+    println("GPU Compute Capability: ", capability.major, ".", capability.minor, " (", get_architecture_name(capability), ")")
     println(" ")
     println("GPU Memory: ", CUDA.totalmem(device) / 1e9, " GB")
+    println("GPU Memory: ", CUDA.totalmem(device) / 2^30, " GiB") # Conversion to GiB
     println(" ")
     println("GPU Streaming Multiprocessor (SM) Count: ", sm_count)
     println("CUDA Cores per SM: ", cores_per_sm)
@@ -66,7 +67,7 @@ function gpu_info()
     println(" ")
     println("---------------------------------")
     println(" ")
-end
+  end
 
 # Display GPU information
 gpu_info()
