@@ -58,7 +58,7 @@ end
 # Function to time matrix multiplication and calculate performance
 function time_matrix_multilication(N, N_cores, matmul, AVX_value)
 
-    Theoretical_time = 1e9 / (4.5e9 * AVX_value * 2 * N_cores)
+    Theoretical_time = 1e9 / (3.9e9 * AVX_value * 2 * N_cores)
     Time = zeros(length(N))
 
     for (i, n) in enumerate(N)
