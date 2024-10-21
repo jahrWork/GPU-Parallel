@@ -1,9 +1,10 @@
 using LinearAlgebra, BenchmarkTools, Plots, Base.Threads
 
 # Función personalizada de multiplicación de matrices
-function custom_matmul(A::Array{Float32,2}, B::Array{Float32,2})
+function custom_matmul(A::Array{Float64,2}, B::Array{Float64,2})
     N = size(A, 1)
-    C = Array{Float32}(undef, N, N)
+    C = Array{Float64
+}(undef, N, N)
     
     @inbounds @threads for i = 1:N
         for j = 1:N
@@ -21,8 +22,8 @@ end
 function time_custom_matmul(N_range)
     GFLOPS = zeros(length(N_range))
     for (i, N) in enumerate(N_range)
-        A = rand(Float32, N, N)
-        B = rand(Float32, N, N)
+        A = rand(Float64, N, N)
+        B = rand(Float64, N, N)
         Nop = 2 * N^3  # Operaciones necesarias para la multiplicación
 
         # Definir el número de repeticiones
@@ -51,10 +52,10 @@ function plot_GFLOPS_custom()
     # Calcular GFLOPS teóricos
     CPU_frequency_GHz = 3.9
     CPU_frequency = CPU_frequency_GHz * 1e9
-    N_logical_cores = 12
+    N_cores = 6
     AVX_value = 8
 
-    Theoretical_GFLOPS = (CPU_frequency * AVX_value * 2 * N_logical_cores) / 1e9
+    Theoretical_GFLOPS = (CPU_frequency * AVX_value * 2 * N_cores) / 1e9
     println("GFLOPS teóricos = $Theoretical_GFLOPS")
 
     # Graficar los resultados
