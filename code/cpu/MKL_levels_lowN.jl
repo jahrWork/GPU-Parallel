@@ -54,7 +54,7 @@ end
 function plot_GFLOPS_MxM()
     # Configurar BLAS para usar todos los hilos lógicos
     num_threads = Sys.CPU_THREADS
-    BLAS.set_num_threads(8)
+    BLAS.set_num_threads(12)
     println("Hilos BLAS establecidos en ", BLAS.get_num_threads())
 
     # Obtener el valor AVX
@@ -94,6 +94,8 @@ function plot_GFLOPS_MxM()
     println("Frecuencia de CPU utilizada: ", CPU_frequency_GHz, " GHz")
     println("GFLOPS teóricos (incluyendo hilos lógicos) = ", Theoretical_GFLOPS)
 
+    ylims_upper = ceil(Theoretical_GFLOPS / 100) * 100
+
     # Graficar los resultados
     plot(N_range, GFLOPS;
          title = "GFLOPS vs N (MKL @threads)",
@@ -101,7 +103,7 @@ function plot_GFLOPS_MxM()
          ylabel = "GFLOPS",
          label = "GFLOPS Medidos",
          lw = 3,
-         ylims = (0, 800),
+         ylims = (0, ylims_upper),
          xlims = (50, 200),
          legend=:bottomright)
     hline!([Theoretical_GFLOPS], label = "GFLOPS Teóricos", linestyle=:dash)

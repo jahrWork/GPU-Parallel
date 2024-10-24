@@ -67,7 +67,7 @@ function plot_GFLOPS_MxM()
     end
 
     # Rango de N aumentado para generar más carga de trabajo
-    N_range = collect(10:10:200)  # Incrementa los valores de N para forzar mayor carga
+    N_range = collect(50:10:200)  # Incrementa los valores de N para forzar mayor carga
 
     # Imprimir información sobre el proveedor de BLAS
     println("Proveedor BLAS: ", BLAS.vendor())
@@ -94,6 +94,8 @@ function plot_GFLOPS_MxM()
     println("Frecuencia de CPU utilizada: ", CPU_frequency_GHz, " GHz")
     println("GFLOPS teóricos (incluyendo hilos lógicos) = ", Theoretical_GFLOPS)
 
+    ylims_upper = ceil(Theoretical_GFLOPS / 100) * 100
+
     # Graficar los resultados
     plot(N_range, GFLOPS;
          title = "GFLOPS vs N (BLAS @threads)",
@@ -101,6 +103,8 @@ function plot_GFLOPS_MxM()
          ylabel = "GFLOPS",
          label = "GFLOPS Medidos",
          lw = 3,
+         ylims = (0, ylims_upper),
+         xlims = (50, 200),
          legend=:bottomright)
     hline!([Theoretical_GFLOPS], label = "GFLOPS Teóricos", linestyle=:dash)
     display(current())
