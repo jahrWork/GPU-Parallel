@@ -67,7 +67,7 @@ function plot_GFLOPS_MxM()
     end
 
     # Rango de N aumentado para generar más carga de trabajo
-    N_range = collect(30:10:200)  # Incrementa los valores de N para forzar mayor carga
+    N_range = collect(10:10:200)  # Incrementa los valores de N para forzar mayor carga
 
     # Imprimir información sobre el proveedor de BLAS
     println("Proveedor BLAS: ", BLAS.vendor())
@@ -96,7 +96,7 @@ function plot_GFLOPS_MxM()
 
     # Graficar los resultados
     plot(N_range, GFLOPS;
-         title = "GFLOPS vs N (Usando 100% de la CPU)",
+         title = "GFLOPS vs N (BLAS @threads)",
          xlabel = "N",
          ylabel = "GFLOPS",
          label = "GFLOPS Medidos",
