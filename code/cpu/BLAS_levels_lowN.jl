@@ -30,10 +30,13 @@ function time_MxM_benchmark(N_range, num_iterations)
         # Realizar múltiples multiplicaciones y calcular el tiempo promedio
         times = []
         for _ in 1:num_iterations
+            GC.gc()  # Limpia la memoria antes de empezar
             t = @benchmarkable $A * $B
             result = run(t)
             push!(times, minimum(result.times))
         end
+        GC.gc()  # Limpia la memoria después de la operación
+
 
         # Calcular el tiempo promedio
         avg_time_ns = mean(times)
@@ -64,7 +67,7 @@ function plot_GFLOPS_MxM()
     end
 
     # Rango de N aumentado para generar más carga de trabajo
-    N_range = collect(100:10:200)  # Incrementa los valores de N para forzar mayor carga
+    N_range = collect(30:10:200)  # Incrementa los valores de N para forzar mayor carga
 
     # Imprimir información sobre el proveedor de BLAS
     println("Proveedor BLAS: ", BLAS.vendor())

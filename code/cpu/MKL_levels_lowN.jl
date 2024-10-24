@@ -1,109 +1,137 @@
-# Importar paquetes necesarios
+using Base.Threads
 using CPUTime, Plots, LinearAlgebra, MKL, CpuId, Statistics
-gr()  # Asegurarse de usar el backend GR
 
-# Función para obtener el valor de AVX
 function get_avx_value(string_cpuid)
+    # Inicializar la variable AVX_Value
+    AVX_value = 0
+
+    # Buscar el tamaño del vector SIMD en la cadena y asignar el valor correspondiente
     if occursin("256 bit", string_cpuid)
-        return 8
+        AVX_value = 8
     elseif occursin("512 bit", string_cpuid)
-        return 16
+        AVX_value = 16
     else
-        return 0
-    end
-end
-
-# Función para inicializar matrices para MxM
-function init_MxM(N)
-    A = rand(Float32, N, N)
-    B = rand(Float32, N, N)
-    Nop = 2 * N^3
-    return A, B, Nop
-end
-
-# Función para multiplicar matrices (MxM)
-function mult_MxM(A, B)
-    return A * B
-end
-
-# Función para medir el tiempo de multiplicación MxM con repeticiones
-function time_multiplication_MxM(N, repetitions)
-    A, B, Nop = init_MxM(N)
-    
-    times = Float64[]
-    
-    @inbounds @simd for _ in 1:repetitions
-        t1 = time_ns()
-        mult_MxM(A, B)
-        t2 = time_ns()
-        dt = t2 - t1
-        push!(times, dt / Nop)  # Guardar el tiempo por operación
+        AVX_value = 0
     end
     
-    return mean(times)  # Devolver el promedio de las repeticiones
+    return AVX_value
 end
 
-# Función principal para plotear GFLOPS para MxM con repeticiones
-function plot_GFLOPS_MxM(repetitions = 5)
-    # Obtener información de la CPU
+function init(problem, N) 
+    if problem == "MxM" 
+        A = rand(Float32, N, N )
+        B = rand(Float32, N, N )
+        Nop = 2 * N^3 
+    elseif problem == "MxV"
+        A = rand(Float32, N, N )
+        B = rand(Float32, N, 1 )
+        Nop = 2 * N^2 
+    elseif problem == "VxV"
+        A = rand(Float32, N, 1 )
+        B = rand(Float32, N, 1 )
+        Nop = 2 * N 
+    end 
+
+    return A, B, Nop 
+end
+
+function mult(problem, A, B)
+    if problem == "MxM" 
+        return A * B  
+    elseif problem == "MxV"
+        return A * B
+    elseif problem == "VxV"
+        return transpose(A) * B
+    end 
+end
+
+function time_multiplication_parallel(problem, N, N_cores, repeats=100)
+    Time = zeros(length(N))
+    
+    for i in 1:length(N)
+        n = N[i]
+        times = zeros(repeats)
+
+        @threads for r in 1:repeats  # Distribuir las repeticiones entre los threads
+            A, B, Nop = init(problem, n)
+            t1 = time_ns()
+            mult(problem, A, B)
+            t2 = time_ns()
+            dt = t2 - t1
+            times[r] = dt / Nop
+        end
+
+        Time[i] = mean(times)  # Calcular el promedio de las repeticiones
+        println("N=", n, " Average Time per operation =", Time[i], " nsec over ", repeats, " repeats")
+    end
+    
+    return Time
+end
+
+function plot_GFLOPS_parallel()
+
+    # CPU Features
     cpuid = cpuinfo()
     string_cpuid = string(cpuid)
-    println("Soporte AVX: ", occursin("256", string_cpuid))
-    println("Soporte AVX-512: ", occursin("512 bit", string_cpuid))
-    
+    println("AVX support: ", occursin("256", string_cpuid))
+    println("AVX-512 support: ", occursin("512 bit", string_cpuid))
+
     AVX_value = get_avx_value(string_cpuid)
-    
-    # Configurar el número de hilos
-    N_threads = 12
-    BLAS.set_num_threads(12)
-    println("Número de hilos BLAS configurados: ", BLAS.get_num_threads())
-    
-    # Definir el rango de dimensiones de matrices a probar
-    N = 100:100:2000  # Puedes ajustar este rango según tus necesidades
-    
-    # Calcular el tiempo teórico por operación
-    # Suponiendo una frecuencia de 3.9 GHz y uso completo de AVX
-    Theoretical_time = 1e9 / (3.9e9 * AVX_value * 2 * N_threads)
-    println("Tiempo teórico por operación: ", Theoretical_time, " nsec")
-    
-    # Inicializar vector para almacenar los tiempos
-    Time = Float64[]
-    
-    # Medir el tiempo para cada N con repeticiones
-    for n in N
-        dt_per_op = time_multiplication_MxM(n, repetitions)
-        push!(Time, dt_per_op)
-        println("N = ", n, " | Tiempo por operación (promedio de $repetitions repeticiones) = ", dt_per_op, " nsec")
-    end
-    
-    # Calcular GFLOPS
-    GFLOPS = 1 ./ Time
+
+    # Number of cores
+    N_cores = 4
+
+    # Range of matrix dimensions to test
+    N = 10:10:200  # Ajustamos N de 10 a 200
+
+    # Set the number of BLAS threads based on the number of cores
+    BLAS.set_num_threads(2 * N_cores)
+    println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores)
+
+    # Repetir múltiples veces en rangos bajos de N para mejorar precisión
+    repeats = 1000  # Repetir muchas veces para promediar
+
+    # Time the matrix multiplication and matrix-vector multiplication operations
+    Theoretical_time = 1e9 / (4.5e9 * AVX_value * 2 * N_cores)
+    println(" Theoretical time per operation =", Theoretical_time, " nsec")
+
+    Time1 = time_multiplication_parallel("MxM", N, N_cores, repeats)
+    Time2 = time_multiplication_parallel("MxV", N, N_cores, repeats)
+    Time3 = time_multiplication_parallel("VxV", N, N_cores, repeats)
+
+    # Calculate GFLOPS (floating-point operations per second)
+    GFLOPS1 = 1 ./ Time1
+    GFLOPS2 = 1 ./ Time2
+    GFLOPS3 = 1 ./ Time3
     GFLOPS_max = 1 / Theoretical_time
-    
-    println("GFLOPS máximo teórico: ", GFLOPS_max)
-    
-    # Datos para graficar
-    x = Float64.(N)
-    y_theoretical = fill(GFLOPS_max, length(GFLOPS))
-    
-    # Graficar los resultados
-    plot(x, GFLOPS, 
-         title = "GFLOPS vs Dimensión de la Matriz (MxM) con MKL",
-         xlabel = "Dimensión N",
-         ylabel = "GFLOPS",
-         label = "MxM",
-         lw = 2,
-         xlim = (minimum(x), maximum(x)),
-         ylim = (0, max(GFLOPS_max, maximum(GFLOPS)) * 1.1))
-    
-    plot!(x, y_theoretical, 
-          label = "Teórico", 
-          lw = 2, 
-          linestyle = :dash)
-    
-    savefig("GFLOPS_vs_N.png")  # Guardar el gráfico como archivo de imagen
-    display(plot)  # Asegurar que el gráfico se muestre
+
+    # Data for plotting
+    x = float(N)
+    GFLOPS4 = fill(GFLOPS_max, length(GFLOPS1))
+
+    max1 = maximum(GFLOPS1)
+    max2 = maximum(GFLOPS2)
+    println("max GFLOPS Mat x Mat = ", max1)
+    println("max GFLOPS Mat x Vect = ", max2)
+    println("Ratio max1/ max2 = ", max1 / max2)
+
+    # Primer plot para Mat x Mat
+    plot(N, GFLOPS1,
+         title="GFLOPS versus number of operations",
+         xlabel="\$ N \$", ylabel="GFLOPS",
+         label="Mat x Mat", lw=3,
+         xlimits=(0, 200), ylimits=(0, 800)
+    )
+
+    # Añadir Mat x Vect
+    plot!(N, GFLOPS2, label="Mat x Vect", lw=3)
+
+    # Añadir Vect x Vect
+    plot!(N, GFLOPS3, label="Vect x Vect", lw=3)
+
+    # Añadir Theoretical
+    plot!(N, GFLOPS4, label="Theoretical", lw=3)
+
 end
 
-# Ejecutar la función de plot con repeticiones
-plot_GFLOPS_MxM(50000)  # Puedes cambiar el número de repeticiones si lo deseas
+plot_GFLOPS_parallel()

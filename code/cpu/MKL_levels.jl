@@ -125,7 +125,7 @@ function plot_GFLOPS()
         title = "GFLOPS versus number of operations", 
         xlabel = "\$ N \$", ylabel = "GFLOPS", 
         label = "Mat x Mat", lw = 3, 
-        xlimits = (0, 5000), ylimits = (0, 800)
+        xlimits = (0, 2000), ylimits = (0, 800)
         )
 
       # Añadir Mat x Vect
