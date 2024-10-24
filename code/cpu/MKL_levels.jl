@@ -120,12 +120,23 @@ function plot_GFLOPS()
       println("max GFLOPS Mat x Vect = ", max2 )
       println( "Ratio max1/ max2 = ", max1/max2 )
   
-      plot!(N, [ GFLOPS1 GFLOPS2 GFLOPS3 GFLOPS4 ],  
-              title = "GFLOPS versus number of operations", 
-              xlabel = "\$ N \$", ylabel = "GFLOPS", 
-              label = ["Mat x Mat" "Mat x Vect" "Vect x Vect" "Theoretical"], lw = 3,
-              xlimits=(0,5000), ylimits=(0,300)
-          )
+      # Primer plot para Mat x Mat
+      plot(N, GFLOPS1, 
+        title = "GFLOPS versus number of operations", 
+        xlabel = "\$ N \$", ylabel = "GFLOPS", 
+        label = "Mat x Mat", lw = 3, 
+        xlimits = (0, 5000), ylimits = (0, 800)
+        )
+
+      # Añadir Mat x Vect
+      plot!(N, GFLOPS2, label = "Mat x Vect", lw = 3)
+
+      # Añadir Vect x Vect
+      plot!(N, GFLOPS3, label = "Vect x Vect", lw = 3)
+
+      # Añadir Theoretical
+      plot!(N, GFLOPS4, label = "Theoretical", lw = 3)
+
   
       
   
