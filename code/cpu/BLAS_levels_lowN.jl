@@ -70,7 +70,7 @@ function plot_GFLOPS_MxM()
     N_range = collect(50:10:200)  # Incrementa los valores de N para forzar mayor carga
 
     # Imprimir información sobre el proveedor de BLAS
-    println("Proveedor BLAS: ", BLAS.vendor())
+    println("Proveedor BLAS: ", BLAS.vendor(), " (using ", BLAS.get_config(), ")")
     
 
     println(" ")
