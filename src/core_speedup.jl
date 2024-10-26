@@ -15,4 +15,6 @@ matrix_multiplication(A, B)
 for threads in N_threads
     BLAS.set_num_threads(threads)
     @time matrix_multiplication(A, B)
+    
+    print( "GFLOPS = ", GFLOPS, " N =", N )
 end
