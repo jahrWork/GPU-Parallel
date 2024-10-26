@@ -1,20 +1,118 @@
 using LinearAlgebra, MKL
 
-N = 10_000
-A = rand(Float32, N, N)
-B = rand(Float32, N, N)
+
+function my_matrix_multiplication(A,B)
+
+    (N, M) = size(A)
+    (M, L) = size(B) 
+  
+    C = zeros(Float32,  (N, L) )
+  
+    for i in 1:N, j in 1:L
+        for k in 1:M
+          C[i,j] = C[i,j] + A[i,k]*B[k,j]
+        end  
+    end
+  
+    return C 
+  
+end
+  
+function my_efficient_matrix_multiplication(A,B)
+  
+    (N, M) = size(A)
+    (M, L) = size(B) 
+    BT = transpose(B) 
+  
+    C = zeros(Float32,  (N, L) )
+  
+    for k in 1:M
+      for j in 1:L, i in 1:N
+        
+          C[i,j] = C[i,j] + A[i,k]*BT[j,k]
+  
+      end  
+    end
+  
+    return C 
+  
+end
+  
+function my_efficient_matrix_multiplication2(A,B)
+  
+    (N, M) = size(A)
+    (M, L) = size(B) 
+    BT = transpose(B) 
+  
+    C = zeros(Float32,  (N, L) )
+    
+  
+    Threads.@threads for k in 1:M
+      for j in 1:L, i in 1:N
+        
+          C[i,j] = C[i,j] + A[i,k]*BT[j,k]
+          
+      end  
+    end
+  
+    return C 
+end 
+
+function my_efficient_matrix_multiplication3(A,B)
+  
+    (N, M) = size(A)
+    (M, L) = size(B) 
+    C = zeros(Float32,  (N, L) )
+   
+
+    Threads.@threads for k in 1:Nt 
+        BLAS.set_num_threads(1)
+        C =  k * A * B 
+    end
+  
+    return C 
+end 
+
 
 function matrix_multiplication(A, B)
     return A * B
 end
 
+
+N = 50
+A = rand(Float32, N, N)
+B = rand(Float32, N, N)
+Nt = 1000
+
+
 N_threads = [1, 2, 4, 8, 16, 32]
+N_threads = [ 4 ]
+matmul_functions = ( 
+    # (my_matrix_multiplication, 2*N^3), 
+    # (my_efficient_matrix_multiplication, 2*N^3),
+    # (my_efficient_matrix_multiplication2, 2*N^3),
+    (my_efficient_matrix_multiplication3, 2*N^3*Nt),
+    (matrix_multiplication, 2*N^3)  )
 
-matrix_multiplication(A, B)
 
-for threads in N_threads
-    BLAS.set_num_threads(threads)
-    @time matrix_multiplication(A, B)
+
+for (mult, Nop) in matmul_functions
+
+  println(" matmul function = ", mult)  
+  mult(A, B)
+
+  for threads in N_threads
+
+  #  BLAS.set_num_threads(threads)
+    t1 = time_ns()
+    mult(A, B)
+    t2 = time_ns()
+    dt = t2-t1
     
-    print( "GFLOPS = ", GFLOPS, " N =", N )
-end
+    Time = dt / Nop 
+    GFLOPS = 1 / Time 
+    println( "GFLOPS = ", GFLOPS, " N =", N, "  threads =", threads )
+  end
+
+end 
+
