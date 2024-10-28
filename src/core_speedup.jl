@@ -128,6 +128,27 @@ function  matrix_mult_________alloc(A, B)
 end
 
 
+function get_avx_value(string_cpuid)
+  # Inicializar la variable AVX_Value
+  AVX_value = 0
+
+# Buscar el size del vector SIMD en la cadena y asignar el valor correspondiente
+  if occursin("256 bit", string_cpuid)
+      AVX_value = 8
+  elseif occursin("512 bit", string_cpuid)
+      AVX_value = 16
+  else
+      AVX_value = 0
+  end
+  
+  return AVX_value
+
+end
+
+
+
+
+
 N = 100
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
@@ -156,6 +177,15 @@ for (mult, Nop) in matmul_functions
 
      N_threads = Threads.nthreads()
      N_cores = N_threads/2
+     cpuid = cpuinfo() 
+     string_cpuid = string(cpuid)
+     println("AVX support: ", occursin("256", string_cpuid))
+     println("AVX-512 support: ", occursin("512 bit", string_cpuid))
+  
+     AVX_value = get_avx_value(string_cpuid)
+     Theoretical_time = 1e9 /(4.5e9 * AVX_value * 2 * N_cores)
+     GFLOPS_max = 1 / Theoretical_time
+
 
   
   # Set the number of BLAS threads based on the number of cores
@@ -168,7 +198,7 @@ for (mult, Nop) in matmul_functions
     Time = dt / Nop 
     GFLOPS = 1 / Time 
    # println( "GFLOPS = ", GFLOPS, " N =", N, "  threads =", threads, " time =", dt  )
-    println(  mult, " N =", N, " Nt =",  Nt," GFLOPS = ", GFLOPS, " num_threads = ", BLAS.get_num_threads() )
+    println(  mult, " N =", N, " Nt =",  Nt," GFLOPS = ", GFLOPS, " num_threads = ", BLAS.get_num_threads(), " GFLOPS_max =", GFLOPS_max )
   #end
 
 end 
