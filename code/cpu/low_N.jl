@@ -1,11 +1,10 @@
-using MKL
 using LinearAlgebra
 using Random
 using Base.Threads
 
 # Dimensiones para las matrices
 n = 100
-iterations = 1000000
+iterations = 100000
 
 # Generar matrices aleatorias
 A = rand(n, n)
@@ -30,11 +29,12 @@ function test_matrix_multiplication(threads::Int, use_threads::Bool)
     elapsed_time = @elapsed begin
         if use_threads
             Threads.@threads  for i in 1:iterations
-                C .= A * B  # Asignación elemento a elemento para rendimiento
+                # BLAS.set_num_threads(1)
+                C .= A * B  
             end
         else
             for i in 1:iterations
-                C .= A * B  # Asignación elemento a elemento para rendimiento
+                C .= A * B  
             end
         end
     end
@@ -52,6 +52,14 @@ end
 configurations = [
     (1, false),  # 1 hilo, sin @threads
     (1, true),   # 1 hilo, con @threads
+    (2, false),  # 2 hilos, sin @threads
+    (2, true),   # 2 hilos, con @threads
+    (3, false),  # 3 hilos, sin @threads
+    (3, true),   # 3 hilos, con @threads
+    (4, false),  # 4 hilos, sin @threads
+    (4, true),   # 4 hilos, con @threads
+    (5, false),  # 5 hilos, sin @threads
+    (5, true),   # 5 hilos, con @threads
     (6, false),  # 6 hilos, sin @threads
     (6, true),   # 6 hilos, con @threads
     # (12, false), # 12 hilos, sin @threads

@@ -33,7 +33,7 @@ function time_MxM_benchmark(N_range, num_iterations)
             GC.gc()  # Limpia la memoria antes de empezar
             t = @benchmarkable $A * $B
             result = run(t)
-            push!(times, median(result.times))
+            push!(times, mean(result.times))
         end
         GC.gc()  # Limpia la memoria después de la operación
 
