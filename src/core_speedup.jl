@@ -1,8 +1,11 @@
-using LinearAlgebra, MKL
+
 # import Pkg 
 # Pkg.add("BLAS")
 #using LinearAlgebra, BLAS
-
+# import Pkg 
+# Pkg.add("MKL")
+# Pkg.instantiate()
+using LinearAlgebra, MKL
 
 function my_matrix_multiplication(A,B)
 
@@ -125,7 +128,7 @@ function  matrix_mult_________alloc(A, B)
 end
 
 
-N = 100
+N = 1000
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
 Nt = 1000
@@ -152,7 +155,7 @@ for (mult, Nop) in matmul_functions
    mult(A, B)
 
   #for threads in N_threads
-
+    BLAS.set_num_threads(128)
   #  BLAS.set_num_threads(threads)
     t1 = time_ns()
     mult(A, B)
@@ -162,7 +165,7 @@ for (mult, Nop) in matmul_functions
     Time = dt / Nop 
     GFLOPS = 1 / Time 
    # println( "GFLOPS = ", GFLOPS, " N =", N, "  threads =", threads, " time =", dt  )
-    println(  mult, " N =", N, " Nt =",  Nt," GFLOPS = ", GFLOPS )
+    println(  mult, " N =", N, " Nt =",  Nt," GFLOPS = ", GFLOPS, " num_threads = ", BLAS.get_num_threads() )
   #end
 
 end 
