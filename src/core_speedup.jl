@@ -2,10 +2,13 @@
 # import Pkg 
 # Pkg.add("BLAS")
 #using LinearAlgebra, BLAS
-# import Pkg 
+#import Pkg 
 # Pkg.add("MKL")
 # Pkg.instantiate()
-using LinearAlgebra, MKL
+#using LinearAlgebra, MKL
+#Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+#using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
+using CPUTime, Plots, LinearAlgebra, MKL, CpuId
 
 function my_matrix_multiplication(A,B)
 
@@ -149,7 +152,7 @@ end
 
 
 
-N = 100
+N = 700
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
 Nt = 1000
@@ -170,6 +173,10 @@ matmul_functions = (
     (matrix_mult______________, 2*N^3)  )
 
 
+cpuid = cpuinfo() 
+string_cpuid = string(cpuid)
+println("AVX support: ", occursin("256", string_cpuid))
+println("AVX-512 support: ", occursin("512 bit", string_cpuid))
 
 for (mult, Nop) in matmul_functions
 
@@ -177,14 +184,11 @@ for (mult, Nop) in matmul_functions
 
      N_threads = Threads.nthreads()
      N_cores = N_threads/2
-     cpuid = cpuinfo() 
-     string_cpuid = string(cpuid)
-     println("AVX support: ", occursin("256", string_cpuid))
-     println("AVX-512 support: ", occursin("512 bit", string_cpuid))
+     
   
      AVX_value = get_avx_value(string_cpuid)
      Theoretical_time = 1e9 /(4.5e9 * AVX_value * 2 * N_cores)
-     GFLOPS_max = 1 / Theoretical_time
+     global GFLOPS_max = 1 / Theoretical_time
 
 
   
@@ -198,8 +202,8 @@ for (mult, Nop) in matmul_functions
     Time = dt / Nop 
     GFLOPS = 1 / Time 
    # println( "GFLOPS = ", GFLOPS, " N =", N, "  threads =", threads, " time =", dt  )
-    println(  mult, " N =", N, " Nt =",  Nt," GFLOPS = ", GFLOPS, " num_threads = ", BLAS.get_num_threads(), " GFLOPS_max =", GFLOPS_max )
+    println(  mult, " N =", N, " Nt =",  Nt,"    GFLOPS = ", round( GFLOPS; digits=0), "    num_threads = ", BLAS.get_num_threads() ) 
   #end
 
 end 
-
+println( "\n GFLOPS_max = ", round( GFLOPS_max; digits=0) )
