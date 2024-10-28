@@ -128,7 +128,7 @@ function  matrix_mult_________alloc(A, B)
 end
 
 
-N = 1000
+N = 100
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
 Nt = 1000
@@ -152,11 +152,14 @@ matmul_functions = (
 
 for (mult, Nop) in matmul_functions
 
-   mult(A, B)
+     mult(A, B)
 
-  #for threads in N_threads
-    BLAS.set_num_threads(128)
-  #  BLAS.set_num_threads(threads)
+     N_threads = Threads.nthreads()
+     N_cores = N_threads/2
+
+  
+  # Set the number of BLAS threads based on the number of cores
+    BLAS.set_num_threads(N_threads) 
     t1 = time_ns()
     mult(A, B)
     t2 = time_ns()
