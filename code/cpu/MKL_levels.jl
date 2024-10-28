@@ -1,5 +1,6 @@
 #import Pkg
 #Pkg.activate(".")
+#Pkg.instantiate()
 #Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
 #using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
 using CPUTime, Plots, LinearAlgebra, MKL, CpuId
@@ -69,7 +70,7 @@ function time_multiplication(problem, N, N_cores)
      
      Time[i] = dt / Nop
      
-     println("N=", n, " Time per operation =", Time[i] , " nsec")
+     #println("N=", n, " Time per operation =", Time[i] , " nsec")
       
     end 
     
@@ -88,13 +89,15 @@ function plot_GFLOPS()
       AVX_value = get_avx_value(string_cpuid)
   
     # Number of cores
-      N_cores = 4
+     println( "num threads =", Threads.nthreads() ) 
+     N_threads = Threads.nthreads()
+     N_cores = N_threads/2
   
     # Range of matrix dimensions to test
       N = Vector([10:25:2500; 2500:100:5000])
   
     # Set the number of BLAS threads based on the number of cores
-      BLAS.set_num_threads(2*N_cores) 
+      BLAS.set_num_threads(N_threads) 
       println(" threads = ", BLAS.get_num_threads(), " N_cores =", N_cores )
   
     # Time the matrix multiplication and matrix-vector multiplication operations
@@ -125,7 +128,7 @@ function plot_GFLOPS()
         title = "GFLOPS versus number of operations", 
         xlabel = "\$ N \$", ylabel = "GFLOPS", 
         label = "Mat x Mat", lw = 3, 
-        xlimits = (0, 1000), ylimits = (0, 400)
+        xlimits = (0, 5000), ylimits = (0, max1+100)
         )
 
       # Añadir Mat x Vect
