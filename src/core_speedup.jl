@@ -2,11 +2,11 @@
 # import Pkg 
 # Pkg.add("BLAS")
 #using LinearAlgebra, BLAS
-#import Pkg 
+import Pkg 
 # Pkg.add("MKL")
 # Pkg.instantiate()
 #using LinearAlgebra, MKL
-#Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
 #using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
 using CPUTime, Plots, LinearAlgebra, MKL, CpuId
 
@@ -152,7 +152,7 @@ end
 
 
 
-N = 700
+N = 1000
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
 Nt = 1000
