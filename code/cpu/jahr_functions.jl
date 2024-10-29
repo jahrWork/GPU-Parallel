@@ -56,7 +56,7 @@ function main()
     N = 100
     A = rand(Float32, N, N)
     B = rand(Float32, N, N)
-    Nt_list = [1, 10, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 100000]
+    Nt_list = [1, 10, 25, 50, 75, 100, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 5000, 7500, 10000, 15000, 20000, 50000, 100000]
     
     matmul_functions = [
         (mult_No_parallel_1_thread, "No Parallel 1 Thread"), 
@@ -83,17 +83,18 @@ function main()
     end
     
     # Plotting the first graph
-    plt1 = plot(title="Performance with N constant (N=$N)", xscale=:log10, yscale=:linear)
+    plt1 = plot(title="Performance with N constant (N=$N)", xscale=:log10, yscale=:linear, dpi=600)
     for (func_name, data) in results
         plot!(plt1, data["Nt"], data["GFLOPS"], label=func_name, marker=:o)
     end
     xlabel!(plt1, "Nt")
     ylabel!(plt1, "GFLOPS")
+    savefig(plt1, "plot1_N_constant.png")
     display(plt1)
     
     # Second Plot: Nt is constant, N increases
     Nt = 1000
-    N_list = [50, 100, 150, 200, 400, 600, 800, 1000]
+    N_list = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000]
     
     matmul_functions = [
         (mult_No_parallel_1_thread, "No Parallel 1 Thread"), 
@@ -139,12 +140,13 @@ function main()
     end
     
     # Plotting the second graph
-    plt2 = plot(title="Performance with Nt constant (Nt=$Nt)", xscale=:linear, yscale=:linear)
+    plt2 = plot(title="Performance with Nt constant (Nt=$Nt)", xscale=:linear, yscale=:linear, dpi=600)
     for (func_name, data) in results
         plot!(plt2, data["N"], data["GFLOPS"], label=func_name, marker=:o)
     end
     xlabel!(plt2, "N")
     ylabel!(plt2, "GFLOPS")
+    savefig(plt2, "plot2_Nt_constant.png")  # Save second plot
     display(plt2)
 end
 
