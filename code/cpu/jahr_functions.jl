@@ -11,7 +11,7 @@ function mult_Nt_parallel_1_thread(A,B,Nt)
     C = zeros(Float32,  (N, L) )
    
     Threads.@threads for k in 1:Nt 
-        # Removed BLAS.set_num_threads(1) from inside the loop
+        BLAS.set_num_threads(1)
         C .=  k .* A * B 
     end
   
@@ -22,6 +22,7 @@ function mult_No_parallel_1_thread(A,B,Nt)
     (N, M) = size(A)
     (M, L) = size(B) 
     C = zeros(Float32,  (N, L) )
+
     BLAS.set_num_threads(1)
     for k in 1:Nt 
         C .=  k .* A * B 
@@ -33,6 +34,7 @@ function mult_Nt_times_parallel___(A, B, Nt)
     (N, M) = size(A)
     (M, L) = size(B) 
     C = zeros(Float32,  (N, L) )
+    
     for k in 1:Nt 
         C .=  k .* A * B 
     end
