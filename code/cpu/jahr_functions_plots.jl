@@ -5,13 +5,27 @@ using Plots
 using Printf
 
 # Define functions
-function mult_Nt_parallel_1_thread(A,B,Nt)
+function mult_Nt_parallel_1_thread_inside(A,B,Nt)
     (N, M) = size(A)
     (M, L) = size(B)
     C = zeros(Float32,  (N, L) )
    
     Threads.@threads for k in 1:Nt 
         BLAS.set_num_threads(1)
+        C .=  k .* A * B 
+    end
+  
+    return C 
+end 
+
+# Define functions
+function mult_Nt_parallel_1_thread(A,B,Nt)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32,  (N, L) )
+   
+    BLAS.set_num_threads(1)
+    Threads.@threads for k in 1:Nt 
         C .=  k .* A * B 
     end
   
@@ -49,6 +63,7 @@ function  matrix_mult_________alloc(A, B)
     (N, M) = size(A)
     (M, L) = size(B) 
     C = zeros(Float32,  (N, L) )
+    
     C .=  A * B 
     return C 
 end
@@ -63,6 +78,7 @@ function main()
     matmul_functions = [
         (mult_No_parallel_1_thread, "No Parallel 1 Thread"), 
         (mult_Nt_parallel_1_thread, "Nt Parallel 1 Thread"),
+        (mult_Nt_parallel_1_thread_inside, "Nt Parallel 1 Thread Inside"),
         (mult_Nt_times_parallel___, "Nt Times Parallel")
     ]
     
