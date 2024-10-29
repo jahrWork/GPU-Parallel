@@ -152,10 +152,10 @@ end
 
 
 
-N = 1000
+N = 50
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
-Nt = 1000
+Nt = 100000
 
 
 #N_threads = [1, 2, 4, 8, 16, 32]
