@@ -67,7 +67,7 @@ function main()
     results = Dict()
     
     for (func, func_name) in matmul_functions
-        results[func_name] = Dict("Nt" => Float64[], "GFLOPS" => Float64[])
+        results[func_name] = Dict("Nt" => [], "GFLOPS" => [])
         for Nt in Nt_list
             # Warm-up
             func(A, B, Nt)
@@ -107,7 +107,7 @@ function main()
     results = Dict()
     
     for (func, func_name) in matmul_functions
-        results[func_name] = Dict("N" => Float64[], "GFLOPS" => Float64[])
+        results[func_name] = Dict("N" => [], "GFLOPS" => [])
         for N in N_list
             local A = rand(Float32, N, N)
             local B = rand(Float32, N, N)
