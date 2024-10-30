@@ -6,9 +6,13 @@ import Pkg
 # Pkg.add("MKL")
 # Pkg.instantiate()
 #using LinearAlgebra, MKL
-Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+#Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+
+#Pkg.add("LoopVectorization")
 #using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
 using CPUTime, Plots, LinearAlgebra, MKL, CpuId
+using Pkg
+using LoopVectorization
 
 function my_matrix_multiplication(A,B)
 
@@ -130,6 +134,22 @@ function  matrix_mult_________alloc(A, B)
   return C 
 end
 
+function matrix_mult_________turbo(A, B)
+
+	@assert size(A, 2) == size(B, 1)
+	m, n, p = size(A, 1), size(A, 2), size(B, 2)
+  
+	C = zeros(Float32, (m, p) )
+
+	@turbo for i = 1:m, j = 1:p, k = 1:n
+		C[i, j] += A[i, k] * B[k, j]
+	end
+	return C
+
+end
+
+
+
 
 function get_avx_value(string_cpuid)
   # Inicializar la variable AVX_Value
@@ -170,7 +190,9 @@ matmul_functions = (
     (mult_Nt_times_parallel___, 2*N^3*Nt),
 
     (matrix_mult_________alloc, 2*N^3),
-    (matrix_mult______________, 2*N^3)  )
+    (matrix_mult______________, 2*N^3),
+    (matrix_mult_________turbo, 2*N^3) 
+      )
 
 
 cpuid = cpuinfo() 
