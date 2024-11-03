@@ -147,6 +147,15 @@ function matrix_mult__________strided(A, B)
     return C
 end
 
+# Distributed.jl @distributed info:
+# The specified range is partitioned and locally executed across all workers.
+# In case an optional reducer function is specified, @distributed performs local reductions
+# on each worker with a final reduction on the calling process.
+
+# Note that without a reducer function, @distributed executes asynchronously,
+# i.e. it spawns independent tasks on all available workers and returns immediately
+# without waiting for completion. To wait for completion, prefix the call with @sync
+
 function matrix_mult______distributed(A, B)
     C = zeros(Float32, size(A, 1), size(B, 2))
     @distributed for i in axes(A, 1)
@@ -213,10 +222,10 @@ matmul_functions = (
     (matrix_mult_________________, 2 * N^3),
     (matrix_mult____________turbo, 2 * N^3),
     (matrix_mult___________tullio, 2 * N^3),
-    # (matrix_mult_________octavian, 2 * N^3),
-    # (matrix_mult__________strided, 2 * N^3),
-    # (matrix_mult______distributed, 2 * N^3),
-    # (matrix_mult_distributed_sync, 2 * N^3),
+    (matrix_mult_________octavian, 2 * N^3),
+    (matrix_mult__________strided, 2 * N^3),
+    (matrix_mult______distributed, 2 * N^3),
+    (matrix_mult_distributed_sync, 2 * N^3),
     (matrix__________________mul!, 2 * N^3)
 )
 
