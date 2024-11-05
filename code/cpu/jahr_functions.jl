@@ -17,6 +17,7 @@ using Octavian
 using Tullio
 using Strided
 using Distributed
+using Base.Threads
 
 
 function my_matrix_multiplication(A, B)
@@ -181,6 +182,65 @@ function matrix__________________mul!(A, B)
     return C
 end
 
+function matrix______________id_check(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32, (N, L))
+
+    @threads for i in 1:nthreads()
+        BLAS.set_num_threads(1)  # Asegurarse de que cada *thread* use un solo núcleo
+        for j in i:nthreads():N  # Distribuir las filas entre los *threads*
+            for k in 1:L
+                C[j, k] = dot(A[j, :], B[:, k])
+            end
+        end
+        println("Thread $(threadid()) processing part of the matrix.")
+    end
+
+    return C
+end
+
+function matrix_________custom_shared(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    BT = transpose(B)
+    C = zeros(Float32, (N, L))
+    
+    # Dividir el trabajo en bloques de filas
+    num_threads = nthreads()
+    rows_per_thread = div(N, num_threads)  # Filas por hilo
+    extra_rows = N % num_threads  # Resto de filas si no es divisible
+    printed = false  # Variable de control para impresión única
+    
+    # Usar un @threads loop para cada hilo
+    Threads.@threads for t in 1:num_threads
+        # Asignar rango de filas que procesará este hilo
+        start_row = (t - 1) * rows_per_thread + 1
+        end_row = t * rows_per_thread
+        if t == num_threads && extra_rows > 0  # Último hilo toma las filas extra
+            end_row += extra_rows
+        end
+
+        println("Thread $(t) processing rows $(start_row):$(end_row).")
+
+        t1 = time_ns()
+
+        # Repetir el cálculo asignado Nt veces
+        for repeat = 1:Nt            
+            # Calcular el bloque de filas asignado
+            for j in start_row:end_row
+                for k in 1:L
+                    C[j, k] = dot(A[j, :], B[:, k])
+                end
+            end
+        end
+    end
+    
+    return C
+end
+
+
+
 
 
 function get_avx_value(string_cpuid)
@@ -221,12 +281,14 @@ matmul_functions = (
     (matrix_mult____________alloc, 2 * N^3),
     (matrix_mult_________________, 2 * N^3),
     (matrix_mult____________turbo, 2 * N^3),
-    (matrix_mult___________tullio, 2 * N^3),
-    (matrix_mult_________octavian, 2 * N^3),
-    (matrix_mult__________strided, 2 * N^3),
-    (matrix_mult______distributed, 2 * N^3),
-    (matrix_mult_distributed_sync, 2 * N^3),
-    (matrix__________________mul!, 2 * N^3)
+    # (matrix_mult___________tullio, 2 * N^3),
+    # (matrix_mult_________octavian, 2 * N^3),
+    # (matrix_mult__________strided, 2 * N^3),
+    # (matrix_mult______distributed, 2 * N^3),
+    # (matrix_mult_distributed_sync, 2 * N^3),
+    # (matrix__________________mul!, 2 * N^3),
+    # (matrix______________id_check, 2 * N^3),
+    (matrix_________custom_shared, 2 * N^3 * Nt),
 )
 
 
