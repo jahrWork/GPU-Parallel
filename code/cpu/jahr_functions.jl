@@ -10,7 +10,7 @@ import Pkg
 
 #Pkg.add("LoopVectorization")
 #using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
-using CPUTime, Plots, LinearAlgebra, MKL, CpuId
+using CPUTime, Plots, LinearAlgebra, MKL, CpuId, BenchmarkTools
 using Pkg
 using LoopVectorization
 using Octavian
@@ -148,16 +148,16 @@ function matrix_mult__________strided(A, B)
     return C
 end
 
-# Distributed.jl @distributed info:
-# The specified range is partitioned and locally executed across all workers.
-# In case an optional reducer function is specified, @distributed performs local reductions
-# on each worker with a final reduction on the calling process.
-
-# Note that without a reducer function, @distributed executes asynchronously,
-# i.e. it spawns independent tasks on all available workers and returns immediately
-# without waiting for completion. To wait for completion, prefix the call with @sync
 
 function matrix_mult______distributed(A, B)
+    # Distributed.jl @distributed info:
+    # The specified range is partitioned and locally executed across all workers.
+    # In case an optional reducer function is specified, @distributed performs local reductions
+    # on each worker with a final reduction on the calling process.
+
+    # Note that without a reducer function, @distributed executes asynchronously,
+    # i.e. it spawns independent tasks on all available workers and returns immediately
+    # without waiting for completion. To wait for completion, prefix the call with @sync
     C = zeros(Float32, size(A, 1), size(B, 2))
     @distributed for i in axes(A, 1)
         for j in axes(B, 2)
@@ -239,6 +239,34 @@ function matrix_________custom_shared(A, B)
     return C
 end
 
+function mult______no_new_allocations(A, B, C)
+    (N, M) = size(A)
+    (M, L) = size(B)
+
+    # Set BLAS to single-thread mode
+    BLAS.set_num_threads(1)
+
+    Threads.@threads for k in 1:Nt
+        # Perform in-place multiplication to avoid allocations
+        mul!(C, A, B)
+    end
+
+    return C
+end
+
+function mult_1_nt_no_new_allocations(A, B, C)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    
+    Threads.@threads for k in 1:Nt
+        BLAS.set_num_threads(1)
+        C = k * A * B
+    end
+    return C
+end
+
+
+
 
 
 
@@ -266,6 +294,7 @@ end
 N = 100
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
+C = zeros(Float32, size(A, 1), size(B, 2))
 Nt = 10000
 
 
@@ -277,18 +306,19 @@ matmul_functions = (
     # (my_efficient_matrix_multiplication2, 2*N^3),
     (mult_No_parallel_1_thread___, 2 * N^3 * Nt),
     (mult_Nt_parallel_1_thread___, 2 * N^3 * Nt),
+    (mult______no_new_allocations, 2 * N^3 * Nt),
     (mult_Nt_times_parallel______, 2 * N^3 * Nt),
-    (matrix_mult____________alloc, 2 * N^3),
-    (matrix_mult_________________, 2 * N^3),
-    (matrix_mult____________turbo, 2 * N^3),
+    # (matrix_mult____________alloc, 2 * N^3),
+    # (matrix_mult_________________, 2 * N^3),
+    # (matrix_mult____________turbo, 2 * N^3),
     # (matrix_mult___________tullio, 2 * N^3),
     # (matrix_mult_________octavian, 2 * N^3),
     # (matrix_mult__________strided, 2 * N^3),
     # (matrix_mult______distributed, 2 * N^3),
     # (matrix_mult_distributed_sync, 2 * N^3),
-    # (matrix__________________mul!, 2 * N^3),
+    (matrix__________________mul!, 2 * N^3),
     # (matrix______________id_check, 2 * N^3),
-    (matrix_________custom_shared, 2 * N^3 * Nt),
+    # (matrix_________custom_shared, 2 * N^3 * Nt),
 )
 
 
@@ -299,31 +329,47 @@ println("AVX support: ", occursin("256", string_cpuid))
 println("AVX-512 support: ", occursin("512 bit", string_cpuid))
 
 for (mult, Nop) in matmul_functions
+    println("\nRunning: ", mult)
 
-    mult(A, B)
+    # Benchmark the function with three arguments if it's `mult______no_new_allocations`
+    if mult == mult______no_new_allocations
+        benchmark_result = @benchmark $mult($A, $B, $C)
+    else
+        benchmark_result = @benchmark $mult($A, $B)
+    end
 
     N_threads = Threads.nthreads()
     N_cores = N_threads / 2
-
 
     AVX_value = get_avx_value(string_cpuid)
     Theoretical_time = 1e9 / (4.5e9 * AVX_value * 2 * N_cores)
     global GFLOPS_max = 1 / Theoretical_time
 
-
-
     # Set the number of BLAS threads based on the number of cores
     BLAS.set_num_threads(N_threads)
     t1 = time_ns()
-    mult(A, B)
-    t2 = time_ns()
-    dt = t2 - t1
+
+    if mult == mult______no_new_allocations
+        mult(A, B, C)
+    else
+        mult(A, B)
+    end
+
+t2 = time_ns()
+dt = t2 - t1
 
     Time = dt / Nop
     GFLOPS = 1 / Time
-    # println( "GFLOPS = ", GFLOPS, " N =", N, "  threads =", threads, " time =", dt  )
     println(mult, " N =", N, " Nt =", Nt, "    GFLOPS = ", round(GFLOPS; digits=0), "    num_threads = ", BLAS.get_num_threads())
-    #end
 
+    # Obtain the median allocations and memory usage
+    median_allocations = median(benchmark_result).allocs
+    median_memory = round(median(benchmark_result).memory / 1024, digits=2)
+    
+    # Print allocations and memory metrics
+    println("Allocations: ", median_allocations)
+    println("Memory allocated: ", median_memory, " KB")
 end
+
+
 println("\n GFLOPS_max = ", round(GFLOPS_max; digits=0))
