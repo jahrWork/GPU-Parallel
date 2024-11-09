@@ -10,7 +10,8 @@ t_CPU = ( 2 * N^2 / (432/6 * 10^9) ) * 10^6
 t_memory = ( ( N^2 + 2N) / (3200 * 10^6) ) * 10^6
 
 println("=====================================")
-
+println(" ")
+println("MxV")
 println("t_CPU: ", t_CPU, " μs")
 println("t_memory: ", t_memory, " μs")
 println(" ")
