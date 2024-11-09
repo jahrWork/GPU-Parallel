@@ -291,11 +291,11 @@ end
 
 
 
-N = 100
+N = 50
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
 C = zeros(Float32, size(A, 1), size(B, 2))
-Nt = 10000
+Nt = 1000
 
 
 #N_threads = [1, 2, 4, 8, 16, 32]
@@ -308,17 +308,18 @@ matmul_functions = (
     (mult_Nt_parallel_1_thread___, 2 * N^3 * Nt),
     (mult______no_new_allocations, 2 * N^3 * Nt),
     (mult_Nt_times_parallel______, 2 * N^3 * Nt),
-    # (matrix_mult____________alloc, 2 * N^3),
-    # (matrix_mult_________________, 2 * N^3),
-    # (matrix_mult____________turbo, 2 * N^3),
-    # (matrix_mult___________tullio, 2 * N^3),
-    # (matrix_mult_________octavian, 2 * N^3),
-    # (matrix_mult__________strided, 2 * N^3),
-    # (matrix_mult______distributed, 2 * N^3),
-    # (matrix_mult_distributed_sync, 2 * N^3),
+    (matrix_mult____________alloc, 2 * N^3),
+    (matrix_mult_________________, 2 * N^3),
+    (matrix_mult____________turbo, 2 * N^3),
+    (matrix_mult___________tullio, 2 * N^3),
+    (matrix_mult_________octavian, 2 * N^3),
+    (matrix_mult__________strided, 2 * N^3),
+    (matrix_mult______distributed, 2 * N^3),
+    (matrix_mult_distributed_sync, 2 * N^3),
     (matrix__________________mul!, 2 * N^3),
-    # (matrix______________id_check, 2 * N^3),
-    # (matrix_________custom_shared, 2 * N^3 * Nt),
+    (matrix______________id_check, 2 * N^3),
+    (matrix_________custom_shared, 2 * N^3 * Nt),
+    (mult_1_nt_no_new_allocations, 2 * N^3 * Nt)
 )
 
 
@@ -345,30 +346,35 @@ for (mult, Nop) in matmul_functions
     Theoretical_time = 1e9 / (4.5e9 * AVX_value * 2 * N_cores)
     global GFLOPS_max = 1 / Theoretical_time
 
-    # Set the number of BLAS threads based on the number of cores
-    BLAS.set_num_threads(N_threads)
-    t1 = time_ns()
-
+    # warm up
     if mult == mult______no_new_allocations
         mult(A, B, C)
     else
         mult(A, B)
     end
 
-t2 = time_ns()
-dt = t2 - t1
+    # Set the number of BLAS threads based on the number of cores
+    BLAS.set_num_threads(N_threads)
+    t1 = time_ns()
 
-    Time = dt / Nop
-    GFLOPS = 1 / Time
+    if mult == mult______no_new_allocations
+        dt = @belapsed $mult($A, $B, $C)
+    else
+        dt = @belapsed $mult($A, $B)
+    end
+    
+    # Convert elapsed time to GFLOPS
+    Time = dt  # Time is directly in seconds from @belapsed
+    GFLOPS = Nop / (Time * 1e9)  # Convert to GFLOPS by dividing by 10^9
     println(mult, " N =", N, " Nt =", Nt, "    GFLOPS = ", round(GFLOPS; digits=0), "    num_threads = ", BLAS.get_num_threads())
 
-    # Obtain the median allocations and memory usage
-    median_allocations = median(benchmark_result).allocs
-    median_memory = round(median(benchmark_result).memory / 1024, digits=2)
+    # # Obtain the median allocations and memory usage
+    # median_allocations = median(benchmark_result).allocs
+    # median_memory = round(median(benchmark_result).memory / 1024, digits=2)
     
-    # Print allocations and memory metrics
-    println("Allocations: ", median_allocations)
-    println("Memory allocated: ", median_memory, " KB")
+    # # Print allocations and memory metrics
+    # println("Allocations: ", median_allocations)
+    # println("Memory allocated: ", median_memory, " KB")
 end
 
 
