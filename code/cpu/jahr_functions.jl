@@ -1,5 +1,6 @@
 
-# import Pkg 
+import Pkg 
+Pkg.update()
 # Pkg.add("BLAS")
 #using LinearAlgebra, BLAS
 # import Pkg
@@ -19,6 +20,7 @@ using Tullio
 using Strided
 using Distributed
 using Base.Threads
+using BenchmarkTools
 
 
 function my_matrix_multiplication(A, B)
@@ -274,6 +276,22 @@ function mult_1_nt_no_new_allocations(A, B, C)
     return C
 end
 
+function mul__________________(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32, (N, L))
+
+    # Set BLAS to single-thread mode
+    BLAS.set_num_threads(1)
+
+    Threads.@threads for k in 1:Nt
+        # Perform in-place multiplication to avoid allocations
+        mul!(C, A, B)
+    end
+
+    return C
+end
+
 
 
 
@@ -316,31 +334,32 @@ matmul_functions = (
     (mult_No_parallel_1_thread___, 2 * N^3 * Nt),
     (mult_Nt_parallel_1_thread___, 2 * N^3 * Nt),
     (mult______no_new_allocations, 2 * N^3 * Nt),
-    (mult_Nt_times_parallel______, 2 * N^3 * Nt),
+    #(mult_Nt_times_parallel______, 2 * N^3 * Nt),
 
     # (matrix_mult____________alloc, 2 * N^3),
     # (matrix_mult_________________, 2 * N^3),
     # (matrix_mult____________turbo, 2 * N^3),
     # (matrix_mult___________tullio, 2 * N^3),
-     (matrix_mult_________octavian, 2 * N^3* Nt),
+    # (matrix_mult_________octavian, 2 * N^3* Nt),
     # (matrix_mult__________strided, 2 * N^3),
     # (matrix_mult______distributed, 2 * N^3),
     # (matrix_mult_distributed_sync, 2 * N^3),
-    (matrix__________________mul!, 2 * N^3),
+    #(matrix__________________mul!, 2 * N^3),
     # (matrix______________id_check, 2 * N^3),
     # (matrix_________custom_shared, 2 * N^3 * Nt),
-    (matrix_mult____________alloc, 2 * N^3),
-    (matrix_mult_________________, 2 * N^3),
-    (matrix_mult____________turbo, 2 * N^3),
-    (matrix_mult___________tullio, 2 * N^3),
-    (matrix_mult_________octavian, 2 * N^3),
-    (matrix_mult__________strided, 2 * N^3),
-    (matrix_mult______distributed, 2 * N^3),
-    (matrix_mult_distributed_sync, 2 * N^3),
-    (matrix__________________mul!, 2 * N^3),
-    (matrix______________id_check, 2 * N^3),
-    (matrix_________custom_shared, 2 * N^3 * Nt),
-    (mult_1_nt_no_new_allocations, 2 * N^3 * Nt)
+    # (matrix_mult____________alloc, 2 * N^3),
+    # (matrix_mult_________________, 2 * N^3),
+    # (matrix_mult____________turbo, 2 * N^3),
+    # (matrix_mult___________tullio, 2 * N^3),
+    # (matrix_mult_________octavian, 2 * N^3),
+    # (matrix_mult__________strided, 2 * N^3),
+    # (matrix_mult______distributed, 2 * N^3),
+    # (matrix_mult_distributed_sync, 2 * N^3),
+    # (matrix__________________mul!, 2 * N^3),
+    # (matrix______________id_check, 2 * N^3),
+    # (matrix_________custom_shared, 2 * N^3 * Nt),
+    (mult_1_nt_no_new_allocations, 2 * N^3 * Nt), 
+    (mul__________________, 2 * N^3 * Nt ), 
 
 )
 
@@ -355,7 +374,7 @@ for (mult, Nop) in matmul_functions
     println("\nRunning: ", mult)
 
     # Benchmark the function with three arguments if it's `mult______no_new_allocations`
-    if mult == mult______no_new_allocations
+    if mult == mult______no_new_allocations || mult == mult_1_nt_no_new_allocations
         benchmark_result = @benchmark $mult($A, $B, $C)
     else
         benchmark_result = @benchmark $mult($A, $B)
@@ -369,7 +388,7 @@ for (mult, Nop) in matmul_functions
     global GFLOPS_max = 1 / Theoretical_time
 
     # warm up
-    if mult == mult______no_new_allocations
+    if mult == mult______no_new_allocations || mult == mult_1_nt_no_new_allocations
         mult(A, B, C)
     else
         mult(A, B)
@@ -378,7 +397,7 @@ for (mult, Nop) in matmul_functions
     # Set the number of BLAS threads based on the number of cores
     BLAS.set_num_threads(N_threads)
 
-    if mult == mult______no_new_allocations
+    if mult == mult______no_new_allocations || mult == mult_1_nt_no_new_allocations
         dt = @belapsed $mult($A, $B, $C)
     else
         dt = @belapsed $mult($A, $B)
