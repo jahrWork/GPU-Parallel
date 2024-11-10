@@ -135,7 +135,7 @@ function plot_GFLOPS()
 
 	# Primer plot
 	plot(N, GFLOPS1,
-		title = "GFLOPS versus number of operations",
+		title = "GFLOPS versus N - @belapsed",
 		xlabel = "\$ N \$", ylabel = "GFLOPS",
 		label = "Mat x Mat", lw = 3,
 		xlimits = (0, 5000), ylimits = (0, max1 + 100),
@@ -152,11 +152,11 @@ function plot_GFLOPS()
 
 
   # Save the plot as SVG
-  savefig("plot_GFLOPS_zoom.png")
+  savefig("plot_GFLOPS_belapsed.png")
 
   # Segundo plot con zoom
 	plot(N, GFLOPS1,
-  title = "GFLOPS versus number of operations",
+  title = "GFLOPS versus N - Zoom @belapsed",
   xlabel = "\$ N \$", ylabel = "GFLOPS",
   label = "Mat x Mat", lw = 3,
   xlimits = (0, 1000), ylimits = (0, max1 + 100),
@@ -172,7 +172,7 @@ function plot_GFLOPS()
   plot!(N, GFLOPS4, label = "Theoretical", lw = 3)
 
 	# Save the plot as SVG
-	savefig("plot_GFLOPS_zoom.png")
+	savefig("plot_GFLOPS_zoom_belapsed.png")
 
 	# println(x)
 	# println(y1)
