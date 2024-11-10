@@ -2,13 +2,14 @@
 # import Pkg 
 # Pkg.add("BLAS")
 #using LinearAlgebra, BLAS
-import Pkg
+# import Pkg
 # Pkg.add("MKL")
 # Pkg.instantiate()
 #using LinearAlgebra, MKL
 #Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
 
-#Pkg.add("LoopVectorization")
+# Pkg.add("LoopVectorization")
+# Pkg.add("Octavian")
 #using CPUTime, Plots, LinearAlgebra, MKL, PGFPlotsX, CpuId
 using CPUTime, Plots, LinearAlgebra, MKL, CpuId
 using Pkg
@@ -138,7 +139,15 @@ function matrix_mult___________tullio(A, B)
 end
 
 function matrix_mult_________octavian(A, B)
-    C = Octavian.matmul(A, B)
+
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32, (N, L))
+    
+    for k in 1:Nt
+        C = k * Octavian.matmul(A, B)
+    end
+
     return C
 end
 
@@ -278,17 +287,17 @@ matmul_functions = (
     (mult_No_parallel_1_thread___, 2 * N^3 * Nt),
     (mult_Nt_parallel_1_thread___, 2 * N^3 * Nt),
     (mult_Nt_times_parallel______, 2 * N^3 * Nt),
-    (matrix_mult____________alloc, 2 * N^3),
-    (matrix_mult_________________, 2 * N^3),
-    (matrix_mult____________turbo, 2 * N^3),
+    # (matrix_mult____________alloc, 2 * N^3),
+    # (matrix_mult_________________, 2 * N^3),
+    # (matrix_mult____________turbo, 2 * N^3),
     # (matrix_mult___________tullio, 2 * N^3),
-    # (matrix_mult_________octavian, 2 * N^3),
+     (matrix_mult_________octavian, 2 * N^3* Nt),
     # (matrix_mult__________strided, 2 * N^3),
     # (matrix_mult______distributed, 2 * N^3),
     # (matrix_mult_distributed_sync, 2 * N^3),
-    # (matrix__________________mul!, 2 * N^3),
+    (matrix__________________mul!, 2 * N^3),
     # (matrix______________id_check, 2 * N^3),
-    (matrix_________custom_shared, 2 * N^3 * Nt),
+    # (matrix_________custom_shared, 2 * N^3 * Nt),
 )
 
 
