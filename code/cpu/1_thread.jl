@@ -11,7 +11,7 @@ t_memory = ( 3 * N^2 / (3200 * 10^6) ) * 10^6
 
 println("=====================================")
 println(" ")
-println("MxM")
+println("MxM Benchmark 1 thread")
 println("t_CPU: ", t_CPU, " μs")
 println("t_memory: ", t_memory, " μs")
 println(" ")
@@ -36,8 +36,8 @@ dt2 = ( @belapsed matrix_mult(A, B) ) / Nt
 # println("t1: ", t1)
 # println("t2: ", t2)
 # println("dt: ", dt)
-println("Time 1: ", dt1 * 10^6, " μs")
-println("Time 2: ", dt2 * 10^6, " μs")
+println("Time 1: ", dt1 * 10^6, " μs - GFLOPS: ", 2 * N^3 / dt1 / 10^9)
+println("Time 2: ", dt2 * 10^6, " μs - GFLOPS: ", 2 * N^3 / dt2 / 10^9)
 
 
 

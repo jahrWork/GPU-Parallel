@@ -1,4 +1,4 @@
-using CPUTime, LinearAlgebra, MKL, BenchmarkTools
+using CPUTime, LinearAlgebra, MKL, BenchmarkTools, Base.Threads
 
 N = 50
 Nt = 1000
@@ -11,7 +11,7 @@ t_memory = ( ( N^2 + 2N) / (3200 * 10^6) ) * 10^6
 
 println("=====================================")
 println(" ")
-println("MxV Benchmark 1 thread")
+println("MxV Benchmark Nt parallel 1 thread")
 println("t_CPU: ", t_CPU, " μs")
 println("t_memory: ", t_memory, " μs")
 println(" ")
@@ -23,21 +23,21 @@ BLAS.set_num_threads(1)
 C = A * B
 
 function matrix_vector_mult(A, B)
-    for i in 1:Nt
+    @threads for i in 1:Nt
         C = A * B
     end
 end
 
 
 # Benchmark the matrix multiplication
-dt1 = @belapsed C = A * B
+dt1 = @belapsed C = A * B # This is the time for the single-threaded matrix_vector multiplication
 dt2 = ( @belapsed matrix_vector_mult(A, B) ) / Nt
 
 # println("t1: ", t1)
 # println("t2: ", t2)
 # println("dt: ", dt)
-println("Time 1: ", dt1 * 10^6, " μs")
-println("Time 2: ", dt2 * 10^6, " μs")
+println("Time 1: ", dt1 * 10^6, " μs - GFLOPS: ", 2 * N^2 / (dt1 * 10^9)) 
+println("Time 2: ", dt2 * 10^6, " μs - GFLOPS: ", 2 * N^2 / (dt2 * 10^9))
 
 
 
