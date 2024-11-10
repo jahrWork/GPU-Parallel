@@ -355,7 +355,6 @@ for (mult, Nop) in matmul_functions
 
     # Set the number of BLAS threads based on the number of cores
     BLAS.set_num_threads(N_threads)
-    t1 = time_ns()
 
     if mult == mult______no_new_allocations
         dt = @belapsed $mult($A, $B, $C)
