@@ -19,9 +19,6 @@ println(" ")
 # Set BLAS to single-thread mode
 BLAS.set_num_threads(1)
 
-# Warm up (not really needed as we are using @belapsed)
-C = A * B
-
 function matrix_mult_manual_threads(A, B, Nt)
     n_threads = Threads.nthreads()
     Nt_per_thread = div(Nt, n_threads)  # Number of iterations per thread

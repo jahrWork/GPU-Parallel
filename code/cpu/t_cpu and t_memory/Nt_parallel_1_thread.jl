@@ -19,9 +19,6 @@ println(" ")
 # Set BLAS to single-thread mode
 BLAS.set_num_threads(1)
 
-# Warm up (not really needed as we are using @belapsed)
-C = A * B
-
 function matrix_mult_parallel(A, B, Nt)
     @threads for i in 1:Nt
         C = A * B

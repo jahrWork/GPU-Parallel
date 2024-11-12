@@ -19,9 +19,6 @@ println(" ")
 # Set BLAS to single-thread mode
 BLAS.set_num_threads(1)
 
-# warm up
-C = A * B
-
 function matrix_mult(A, B)
     for i in 1:Nt
         C = A * B
