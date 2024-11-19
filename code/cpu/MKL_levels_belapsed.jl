@@ -95,6 +95,7 @@ function plot_GFLOPS()
 
 	# Range of matrix dimensions to test
 	N = Vector([25:25:500; 600:50:1000; 1200:200:2000; 2500:500:5000])
+	N = Vector([25:25:500; 600:50:1000])
 
 	# Set the number of BLAS threads based on the number of cores
 	BLAS.set_num_threads(N_threads)

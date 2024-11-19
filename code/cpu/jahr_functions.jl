@@ -1,13 +1,13 @@
 
 import Pkg 
-Pkg.update()
+#Pkg.update()
 # Pkg.add("BLAS")
 #using LinearAlgebra, BLAS
 # import Pkg
 # Pkg.add("MKL")
 # Pkg.instantiate()
 #using LinearAlgebra, MKL
-#Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
+# Pkg.add(["CPUTime", "Plots", "LinearAlgebra", "MKL", "PGFPlotsX", "CpuId"])
 
 # Pkg.add("LoopVectorization")
 # Pkg.add("Octavian")
@@ -113,6 +113,7 @@ function mult_Nt_times_parallel______(A, B)
 end
 
 function matrix_mult_________________(A, B)
+
     return A * B
 end
 
@@ -276,6 +277,19 @@ function mult_1_nt_no_new_allocations(A, B, C)
     return C
 end
 
+function matrix_mult2(A, B)
+    (N, M) = size(A)
+    (M, L) = size(B)
+    C = zeros(Float32, (N, L))
+
+    
+    for k in 1:Nt
+        C = k * A * B
+    end
+
+    return C
+end
+
 function mul__________________(A, B)
     (N, M) = size(A)
     (M, L) = size(B)
@@ -322,7 +336,7 @@ N = 50
 A = rand(Float32, N, N)
 B = rand(Float32, N, N)
 C = zeros(Float32, size(A, 1), size(B, 2))
-Nt = 1000
+Nt = 10000
 
 
 #N_threads = [1, 2, 4, 8, 16, 32]
@@ -334,10 +348,10 @@ matmul_functions = (
     (mult_No_parallel_1_thread___, 2 * N^3 * Nt),
     (mult_Nt_parallel_1_thread___, 2 * N^3 * Nt),
     (mult______no_new_allocations, 2 * N^3 * Nt),
-    #(mult_Nt_times_parallel______, 2 * N^3 * Nt),
+    (mult_Nt_times_parallel______, 2 * N^3 * Nt),
 
     # (matrix_mult____________alloc, 2 * N^3),
-    # (matrix_mult_________________, 2 * N^3),
+     (matrix_mult_________________, 2 * N^3),
     # (matrix_mult____________turbo, 2 * N^3),
     # (matrix_mult___________tullio, 2 * N^3),
     # (matrix_mult_________octavian, 2 * N^3* Nt),
@@ -360,6 +374,8 @@ matmul_functions = (
     # (matrix_________custom_shared, 2 * N^3 * Nt),
     (mult_1_nt_no_new_allocations, 2 * N^3 * Nt), 
     (mul__________________, 2 * N^3 * Nt ), 
+    (matrix_mult2, 2 * N^3 * Nt ), 
+  
 
 )
 
@@ -371,7 +387,7 @@ println("AVX support: ", occursin("256", string_cpuid))
 println("AVX-512 support: ", occursin("512 bit", string_cpuid))
 
 for (mult, Nop) in matmul_functions
-    println("\nRunning: ", mult)
+    #println("\nRunning: ", mult)
 
     # Benchmark the function with three arguments if it's `mult______no_new_allocations`
     if mult == mult______no_new_allocations || mult == mult_1_nt_no_new_allocations
@@ -398,9 +414,17 @@ for (mult, Nop) in matmul_functions
     BLAS.set_num_threads(N_threads)
 
     if mult == mult______no_new_allocations || mult == mult_1_nt_no_new_allocations
-        dt = @belapsed $mult($A, $B, $C)
+        t1 = time_ns()
+        mult(A,B,C)
+       # dt = @belapsed $mult($A, $B, $C)
+        t2 = time_ns()
+        dt = (t2 -t1)/1e9
     else
-        dt = @belapsed $mult($A, $B)
+        #dt = @belapsed $mult($A, $B)
+        t1 = time_ns()
+        mult(A,B)
+        t2 = time_ns()
+        dt = (t2 -t1)/1e9
     end
     
     # Convert elapsed time to GFLOPS
