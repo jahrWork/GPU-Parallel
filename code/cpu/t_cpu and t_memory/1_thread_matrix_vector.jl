@@ -32,8 +32,8 @@ dt2 = ( @belapsed matrix_vector_mult(A, B) ) / Nt
 # println("t1: ", t1)
 # println("t2: ", t2)
 # println("dt: ", dt)
-println("Time 1: ", dt1 * 10^6, " μs")
-println("Time 2: ", dt2 * 10^6, " μs")
+println("Time 1: ", dt1 * 10^6, " μs - GFLOPS: ", 2 * N^2 / dt1 / 10^9)
+println("Time 2: ", dt2 * 10^6, " μs - GFLOPS: ", 2 * N^2 / dt2 / 10^9)
 
 
 
