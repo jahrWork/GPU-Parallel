@@ -28,7 +28,7 @@ function plot_GFLOPS()
 
 
  
-  N =  Vector( [50:50:1000;] )
+  N =  Vector( [50:25:1000;] )
 
   GFLOPS = zeros(size(N))
 
@@ -52,7 +52,7 @@ function plot_GFLOPS()
        xlabel = "\$ N \$", ylabel = "\$ GFLOPS \$", 
        ylimits=(0,maximum(GFLOPS)+100)
       )
-  #savefig("plot_GFLOPS_32cores.png")
+  savefig("plot_GFLOPS_R5_5625u_laptop.png")
 
 end 
 
