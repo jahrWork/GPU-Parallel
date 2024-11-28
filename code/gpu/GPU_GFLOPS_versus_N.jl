@@ -86,6 +86,8 @@ function init(N)
 end
 
 function plot_GFLOPS_GPU()
+    gpu_info() # Print GPU information
+
 	N = collect(50:25:1000)
 	GFLOPS = zeros(length(N))
 
