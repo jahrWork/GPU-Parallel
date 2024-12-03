@@ -38,6 +38,8 @@ function measure_gpu(operations, Nt, N, Nop)
 	# Time_belapsed = (dt_belapsed / Nop) * 1e9  # Convertir segundos a nanosegundos
 	# GFLOPS_belapsed = round(1 / Time_belapsed, digits = 2)
 
+	CUDA.synchronize()
+
 	###### Forma 2 de medir tiempo con CUDA.@elapsed ######
 	dt_cu_elapsed = CUDA.@elapsed operations(Nt, A, B, C)
 	Time_cu_elapsed = (dt_cu_elapsed / Nop) * 1e9  # Convertir segundos a nanosegundos
@@ -56,7 +58,7 @@ end
 function pretty_print(c1, c2, c3, c4, c5)
 
 
-	@printf("%10s %10s %15s %10s  %10s  \n", c1, c2, c3, c4, c5)
+	@printf("%10s %10s %20s %15s  %10s  \n", c1, c2, c3, c4, c5)
 
 
 end
@@ -80,6 +82,7 @@ for (N, Nt) in dims
 	for f in test
 		GFLOPS = measure_gpu(f, Nt, N, 2 * N^3 * Nt)
 	end
+	println(" ")
 end
 
 
