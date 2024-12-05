@@ -1,4 +1,4 @@
-nimport Pkg
+import Pkg
 Pkg.activate(".")  # environment in this folder
 #Pkg.add( "Plots" ) 
 #Pkg.add( "CPUTime" ) 
