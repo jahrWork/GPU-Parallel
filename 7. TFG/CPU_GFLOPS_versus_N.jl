@@ -17,7 +17,7 @@ function init(N)
 end
 
 function plot_GFLOPS()
-	N = Vector(50:25:1000)
+	N = Vector(50:25:100)
 	GFLOPS = zeros(size(N))
 
 	# Obtain maximum CPU GFLOPS
@@ -46,7 +46,7 @@ function plot_GFLOPS()
 		title = "GFLOPS matmul versus N",
 		xlabel = "\$ N \$",
 		ylabel = "\$ GFLOPS \$",
-		ylimits = (0, maximum(GFLOPS) + 100),
+		ylimits = (0, max_cpu_gflops + 100),
 		label = "Measured GFLOPS",
 		lw = 3,
 	)
@@ -60,7 +60,7 @@ function plot_GFLOPS()
 
 	println(" ")
 
-	savefig("new_branch/plots/plot_GFLOPS_CPU.png")
+	savefig("7. TFG/plots/plot_GFLOPS_CPU.png")
 end
 
 plot_GFLOPS()

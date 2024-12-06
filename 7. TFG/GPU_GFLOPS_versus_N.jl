@@ -74,7 +74,7 @@ function plot_GFLOPS()
 
     println(" ")
 
-    savefig("new_branch/plots/plot_GFLOPS_GPU.png")
+    savefig("7. TFG/plots/plot_GFLOPS_GPU.png")
 end
 
 plot_GFLOPS()
