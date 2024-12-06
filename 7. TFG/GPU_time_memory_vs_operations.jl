@@ -16,7 +16,7 @@ end
 function mul_gpu(Nt, A, B, C)
 
 	for j in 1:Nt
-		mul!(A, B, C)
+		mul!(C, A, B)
 	end
 
 	return C
