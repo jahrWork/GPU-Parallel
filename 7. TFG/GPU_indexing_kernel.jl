@@ -40,19 +40,22 @@ function kernel(R, C)
         # No lo conocía, dejo link de la explicación de qué es cada cosa exactamente.
         # https://es.mathworks.com/matlabcentral/answers/403870-difference-between-mod-and-rem-functions
         
+        # Se puede ver cómo sería en zero-based indexing en:
+        # https://stackoverflow.com/questions/11821899/how-to-get-row-and-column-from-index
         # row: Cada m elementos cambiamos de columna.
         # (idx - 1) % m da un valor entre 0 y m-1 que indica la fila.
+        # Sumamos 1 para volver a base-1.
         row = (idx - 1) % m + 1
 
         # col: Cada m elementos completamos una columna y pasamos a la siguiente.
         # ((idx - 1) ÷ m) nos dice cuántas columnas completas hemos "saltado".
         # Luego, tomamos ese valor modulo p para quedar en el rango [0, p-1].
-        # Al final sumamos 1 para volver a base-1.
+        # Sumamos 1 para volver a base-1.
         col = ((idx - 1) ÷ m) % p + 1
 
         # k: Cada bloque de m*p elementos corresponde a una "capa" en la tercera dimensión.
         # ((idx - 1) ÷ (m*p)) nos dice cuántas "capas" hemos pasado.
-        # Sumamos 1 para indexar desde 1.
+        # Sumamos 1 para volver a base-1.
         k   = ((idx - 1) ÷ (m*p)) + 1
 
         # Asignamos el valor correspondiente de R a la posición 3D de C.
