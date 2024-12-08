@@ -23,6 +23,39 @@ function mul_gpu(Nt, A, B, C)
 
 end
 
+
+function matmul_kernel!(C, A, B, N, Nt)
+	# Índice global lineal del thread
+    idx = (blockIdx().x - 1)*blockDim().x + threadIdx().x #Ver GPU_indexing_kernel.jl para entender cómo se calcula
+    stride = blockDim().x * gridDim().x # Calcula el salto para determinar cómo repartir las operaciones entre los hilos.
+    
+    # Se reparten las operaciones entre los hilos tal que no se solapen.
+    for t in idx:stride:Nt
+        @inbounds for i in 1:N
+            for j in 1:N
+                temp = 0.0f0
+                for k in 1:N
+					# Suma de los productos de los elementos de la fila i de A por los elementos de la columna j de B
+                    temp += A[i, k] * B[k, j]
+                end
+                C[i, j] = temp
+            end
+        end
+    end
+    return
+end
+
+# Función para lanzar el kernel
+function custom_gpu!(Nt, A::CuArray, B::CuArray, C::CuArray)
+    N = size(A, 1)
+    threads = 128  # Número de hilos por bloque (debe ser múltiplo de 32 y menor de 1024, el número máximo de threads por bloque)
+    blocks = cld(Nt, threads)  # Número de bloques necesarios
+
+    @cuda threads=threads blocks=blocks matmul_kernel!(C, A, B, N, Nt)
+    return C
+end
+
+
 # Benchmarking sin uso de hilos de CPU
 function measure_gpu(operations, Nt, N, Nop)
 	# Crear matrices en GPU
@@ -76,8 +109,8 @@ println("Theoretical max GPU GFLOPS: ", round(max_gpu_gflops, digits = 2), " GFL
 println(" ")
 
 pretty_print("N", "Nt", "Operations", "GFLOPS", "Device")
-dims = [(50, 10000), (500, 1000), (1000, 100), (5000, 10), (10000, 5), (15000, 1)]  # Dimensiones de prueba (N, Nt)
-test = [matmul_gpu, mul_gpu]
+dims = [(50, 100000), (100, 10000), (200, 1000), (400, 100), (800, 10)]
+test = [matmul_gpu, mul_gpu, custom_gpu!]
 for (N, Nt) in dims
 	for f in test
 		GFLOPS = measure_gpu(f, Nt, N, 2 * N^3 * Nt)
