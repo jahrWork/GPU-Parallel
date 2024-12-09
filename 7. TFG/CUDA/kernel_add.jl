@@ -29,11 +29,11 @@ function my_add_kernel!(c, a, b)
     return nothing
 end
 
-function my_add!(c::CuArray, a::CuArray, b::CuArray)
+function my_add_custom!(c::CuArray, a::CuArray, b::CuArray)
     @cuda blocks=cld(length(c), 1024) threads=1024 my_add_kernel!(c, a, b)
 end
 
-my_add!(c, a, b)
+my_add_custom!(c, a, b)
 
 # Check if the addition is correct
 isapprox(Array(c), Array(a) .+ Array(b))

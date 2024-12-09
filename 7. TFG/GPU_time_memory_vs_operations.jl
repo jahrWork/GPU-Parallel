@@ -24,7 +24,7 @@ function mul_gpu(Nt, A, B, C)
 end
 
 
-function matmul_kernel!(C, A, B, N, Nt)
+function matmul1_kernel!(C, A, B, N, Nt)
 	# Índice global lineal del thread
     idx = (blockIdx().x - 1)*blockDim().x + threadIdx().x #Ver GPU_indexing_kernel.jl para entender cómo se calcula
     stride = blockDim().x * gridDim().x # Calcula el salto para determinar cómo repartir las operaciones entre los hilos.
@@ -46,14 +46,41 @@ function matmul_kernel!(C, A, B, N, Nt)
 end
 
 # Función para lanzar el kernel
-function custom_gpu!(Nt, A::CuArray, B::CuArray, C::CuArray)
+function matmul1_gpu!(Nt, A::CuArray, B::CuArray, C::CuArray)
     N = size(A, 1)
     threads = 128  # Número de hilos por bloque (debe ser múltiplo de 32 y menor de 1024, el número máximo de threads por bloque)
     blocks = cld(Nt, threads)  # Número de bloques necesarios
 
-    @cuda threads=threads blocks=blocks matmul_kernel!(C, A, B, N, Nt)
+    @cuda threads=threads blocks=blocks matmul1_kernel!(C, A, B, N, Nt)
     return C
 end
+
+function matmul2_kernel!(C, A, B, N)
+    i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
+    j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
+
+    if i <= N && j <= N
+        sum = zero(eltype(C))
+        for k in 1:N
+            sum += A[i, k] * B[k, j]
+        end
+        C[i, j] = sum
+    end
+    return nothing
+end
+
+function matmul2_gpu!(Nt, C::CuArray, A::CuArray, B::CuArray)
+    N = size(A, 1)
+    threads = (16, 16)  # Threads por bloque (16x16)
+    blocks = (cld(N, threads[1]), cld(N, threads[2]))  # Bloques necesarios
+
+    for _ in 1:Nt
+        @cuda threads=threads blocks=blocks matmul2_kernel!(C, A, B, N)
+    end
+
+    return C
+end
+
 
 
 # Benchmarking sin uso de hilos de CPU
@@ -110,7 +137,7 @@ println(" ")
 
 pretty_print("N", "Nt", "Operations", "GFLOPS", "Device")
 dims = [(50, 100000), (100, 10000), (200, 1000), (400, 100), (800, 10)]
-test = [matmul_gpu, mul_gpu, custom_gpu!]
+test = [matmul_gpu, mul_gpu, matmul1_gpu!, matmul2_gpu!]
 for (N, Nt) in dims
 	for f in test
 		GFLOPS = measure_gpu(f, Nt, N, 2 * N^3 * Nt)
