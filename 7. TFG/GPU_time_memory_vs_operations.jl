@@ -71,6 +71,39 @@ function matmul2_gpu!(Nt, C::CuArray, A::CuArray, B::CuArray)
     return C
 end
 
+# Kernel matmul3 igual que le matmul1 pero haciendo el Nt dentro del kernel
+# no debe de hacerse así, pero en N pequeño parece ir mejor...
+function matmul3_kernel!(C, A, B, N, Nt)
+	# Índice global lineal del thread
+    idx = (blockIdx().x - 1)*blockDim().x + threadIdx().x #Ver GPU_indexing_kernel.jl para entender cómo se calcula
+    stride = blockDim().x * gridDim().x # Calcula el salto para determinar cómo repartir las operaciones entre los hilos.
+    
+    # Se reparten las operaciones entre los hilos tal que no se solapen.
+    for t in idx:stride:Nt
+        @inbounds for i in 1:N
+            for j in 1:N
+                temp = 0.0f0
+                for k in 1:N
+					# Suma de los productos de los elementos de la fila i de A por los elementos de la columna j de B
+                    temp += A[i, k] * B[k, j]
+                end
+                C[i, j] = temp
+            end
+        end
+    end
+    return
+end
+
+# Función para lanzar el kernel
+function matmul3_gpu!(Nt, A::CuArray, B::CuArray, C::CuArray)
+    N = size(A, 1)
+    threads = 128  # Número de hilos por bloque (debe ser múltiplo de 32 y menor de 1024, el número máximo de threads por bloque)
+    blocks = cld(Nt, threads)  # Número de bloques necesarios
+
+    @cuda threads=threads blocks=blocks matmul3_kernel!(C, A, B, N, Nt)
+    return C
+end
+
 # Benchmarking sin uso de hilos de CPU
 function measure_gpu(operations, Nt, N, Nop)
     # Crear matrices en GPU
@@ -110,7 +143,7 @@ println(" ")
 
 pretty_print("N", "Nt", "Operations", "GFLOPS", "Device")
 dims = [(50, 100000), (100, 10000), (200, 2000), (400, 1000), (800, 100)]
-test = [matmul_gpu, mul_gpu, matmul1_gpu!, matmul2_gpu!]
+test = [matmul_gpu, mul_gpu, matmul1_gpu!, matmul2_gpu!, matmul3_gpu!]
 
 for (N, Nt) in dims
     for f in test
