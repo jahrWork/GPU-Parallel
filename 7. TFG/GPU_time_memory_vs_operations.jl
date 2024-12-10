@@ -19,6 +19,8 @@ function mul_gpu(Nt, A, B, C)
     return C
 end
 
+
+# Kernel matmul1
 function matmul1_kernel!(C, A, B, N)
     idx = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     stride = blockDim().x * gridDim().x
@@ -46,6 +48,8 @@ function matmul1_gpu!(Nt, A::CuArray, B::CuArray, C::CuArray)
     return C
 end
 
+
+# Kernel matmul2
 function matmul2_kernel!(C, A, B, N)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
@@ -71,8 +75,7 @@ function matmul2_gpu!(Nt, C::CuArray, A::CuArray, B::CuArray)
     return C
 end
 
-# Kernel matmul3 igual que le matmul1 pero haciendo el Nt dentro del kernel
-# no debe de hacerse así, pero en N pequeño parece ir mejor...
+# Kernel matmul3, Nt dentro del kernel
 function matmul3_kernel!(C, A, B, N, Nt)
 	# Índice global lineal del thread
     idx = (blockIdx().x - 1)*blockDim().x + threadIdx().x #Ver GPU_indexing_kernel.jl para entender cómo se calcula
