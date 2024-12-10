@@ -1,28 +1,56 @@
 using Pkg
 
-# Project.toml path, where the packages are listed
+# Ruta al Project.toml donde están las dependencias
 project_path = pwd()
 
 println("Activating the project environment...")
-println(" ")
 Pkg.activate(project_path)
 
 println(" ")
 
-println("Installing the packages according to [deps]...")
+println("Checking for inconsistencies in the project...")
+# Intenta resolver y reparar cualquier inconsistencia
+try
+    Pkg.resolve()
+    println("Inconsistencies resolved.")
+catch e
+    println("Error while resolving dependencies: ", e)
+    println("Trying to fix dependencies...")
+    try
+        Pkg.instantiate()
+        println("Dependencies fixed.")
+    catch e_inner
+        println("Error while fixing dependencies: ", e_inner)
+        println("Consider manually inspecting Project.toml and Manifest.toml.")
+        return
+    end
+end
+
 println(" ")
-Pkg.instantiate()
+
+println("Installing the packages according to [deps]...")
+try
+    Pkg.instantiate()
+    println("Packages installed successfully.")
+catch e
+    println("Error while installing packages: ", e)
+    println("Ensure that Project.toml is correctly configured.")
+    return
+end
 
 println(" ")
 
 println("Updating the packages according to [compat]...")
-println(" ")
-Pkg.resolve()
+try
+    Pkg.resolve()
+    println("Packages updated successfully.")
+catch e
+    println("Error while updating packages: ", e)
+end
 
 println(" ")
 
 println("Versions of the packages installed:")
-println(" ")
 Pkg.status()
 
 println(" ")
