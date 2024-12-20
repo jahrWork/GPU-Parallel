@@ -2,6 +2,7 @@ using CUDA
 CUDA.allowscalar(false)
 using BenchmarkTools
 using LinearAlgebra
+CUDA.@profile external=true
 
 N = 2050
 a = CUDA.rand(Float32, N)
@@ -24,10 +25,28 @@ end
 
 function my_dot_custom!(c::CuArray, a::CuArray, b::CuArray)
     @cuda blocks=cld(length(a), 1024) threads=1024 my_dot_kernel!(c, a, b)
+    CUDA.synchronize()
     return nothing
 end
+
+println("High-level custom dot kernel started running")
+
+CUDA.synchronize()
 
 my_dot_custom!(c, a, b)
 
 # Check if the addition is correct
-isapprox(Array(c)[1], dot(Array(a), Array(b)))
+println("isapprox: ", isapprox(Array(c)[1], dot(Array(a), Array(b))))
+
+# Benchmark de dot oficial
+official_dot_benchmark = @benchmark dot($a, $b) samples=1000 evals=100 seconds=30
+official_dot_mean = mean(official_dot_benchmark.times) / 1e9 # Convertir de nanosegundos a segundos
+
+# Benchmark de dot personalizado
+custom_dot_benchmark = @benchmark my_dot_custom!($c, $a, $b) samples=1000 evals=100 seconds=30
+custom_dot_mean = mean(custom_dot_benchmark.times) / 1e9 # Convertir de nanosegundos a segundos
+
+println("Tiempo oficial dot: ", official_dot_mean, " segundos")
+println("Tiempo dot high-level: ", custom_dot_mean, " segundos")
+println(" ")
+println("Speedup: ", official_dot_mean / custom_dot_mean)
