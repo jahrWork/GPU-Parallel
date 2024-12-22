@@ -1,6 +1,6 @@
 using CUDA, Hwloc, CpuId
 
-# Remeber to enter your cpu_frequency manually
+# Remember to enter your cpu_frequency manually
 
 # GPU Functions
 function get_GPU_architecture(capability)
@@ -46,7 +46,23 @@ function gpu_info(return_max_gflops=false)
     cores_per_sm = cuda_cores_per_sm(capability)
     total_cuda_cores = sm_count * cores_per_sm
     clock_rate = CUDA.attribute(device, CUDA.DEVICE_ATTRIBUTE_CLOCK_RATE) / 1e6
+
     max_gflops = 2 * clock_rate * total_cuda_cores
+    # The multiplication by 2 is because the GPU can perform one FMA
+    # (Fused Multiply-Add) operation per clock cycle. FMA performs
+    # two operations in a single cycle: a multiplication and an addition
+
+    # Memory bandwidth calculation
+    memory_clock_khz = CUDA.attribute(device, CUDA.DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE)
+    bus_width_bits = CUDA.attribute(device, CUDA.DEVICE_ATTRIBUTE_GLOBAL_MEMORY_BUS_WIDTH)
+    memory_clock_ghz = (memory_clock_khz / 1e6) * 2  # Convert to GHz and the multiplication
+    # by 2 is because the DDR (Double Data Rate) is a technology used in memory systems that
+    # allows data transfer on both the rising and falling edges of the clock signal.
+    # Clock:     ‾\__/‾\__/‾\__/‾
+    # SDR Data:   D1  D2  D3  D4   (one transfer per clock cycle)
+    # DDR Data:   D1D2 D3D4 D5D6   (two transfers per clock cycle)
+
+    memory_bandwidth = memory_clock_ghz * (bus_width_bits / 8)  # GB/s (8 bits = 1 byte)
 
     if return_max_gflops
         return max_gflops
@@ -56,8 +72,11 @@ function gpu_info(return_max_gflops=false)
         println(" ")
         println("GPU Name: ", CUDA.name(device))
         println("GPU Compute Capability: ", capability.major, ".", capability.minor, " (", get_GPU_architecture(capability), ")")
+        # Disclaimer: we can see about the GPU Capability documentation here:
+        # https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities
         println("GPU Memory: ", round(CUDA.totalmem(device) / 1e9, digits=2), " GB (base-10, where 1 GB = 1,000,000,000 bytes)")
         println("GPU Memory: ", round(CUDA.totalmem(device) / 2^30, digits=2), " GiB (base-2, where 1 GiB = 1,073,741,824 bytes)")
+        println("GPU Global Memory Bandwidth: ", round(memory_bandwidth, digits=2), " GB/s")
         println("GPU Streaming Multiprocessor (SM) Count: ", sm_count)
         println("CUDA Cores per SM: ", cores_per_sm)
         println("Total CUDA Cores: ", total_cuda_cores)
@@ -67,10 +86,8 @@ function gpu_info(return_max_gflops=false)
     end
 end
 
-
 # CPU Functions
 function get_avx_value(string_cpuid)
-
     if occursin("256 bit", string_cpuid)
         return 8
     elseif occursin("512 bit", string_cpuid)
@@ -125,7 +142,7 @@ function system_info()
 end
 
 # Run the system_info function to get the CPU and GPU information
-# system_info()
+system_info()
 
 # Run the cpu_info function to get the CPU information
 # cpu_info()
